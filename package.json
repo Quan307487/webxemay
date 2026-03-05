@@ -1,0 +1,19 @@
+{
+  "name": "webxemay",
+  "version": "1.0.0",
+  "description": "```\r webxemay/\r ├── backend/       ← NestJS API (port 3001)\r ├── frontend/      ← Next.js Customer (port 3000)\r ├── admin/         ← React Vite Admin (port 5173)\r └── database_mysql.sql\r ```",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND,ADMIN\" -c \"bgBlue.bold,bgGreen.bold,bgMagenta.bold\" \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:admin\"",
+    "dev:app": "concurrently -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run start:dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:admin": "cd admin && npm run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
