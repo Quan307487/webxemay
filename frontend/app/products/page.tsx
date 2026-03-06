@@ -36,6 +36,21 @@ function ProductsContent() {
     }, []);
 
     useEffect(() => {
+        const search = searchParams.get('search') || '';
+        const ma_danhmuc = searchParams.get('ma_danhmuc') || '';
+        const ma_thuonghieu = searchParams.get('ma_thuonghieu') || '';
+        const kieu_xe = searchParams.get('kieu_xe') || '';
+
+        setFilters(prev => ({
+            ...prev,
+            search,
+            ma_danhmuc,
+            ma_thuonghieu,
+            kieu_xe
+        }));
+    }, [searchParams]);
+
+    useEffect(() => {
         setLoading(true);
         // Remove empty fields
         const params: any = {};

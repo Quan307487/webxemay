@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { reportsApi, ordersApi } from '../lib/api';
-import { ShoppingBag, Users, AlertTriangle, Trophy, Bike, DollarSign, Activity, ArrowUpRight, Clock, CheckCircle, Truck, XCircle, ChevronRight, RotateCcw } from 'lucide-react';
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, Legend } from 'recharts';
+import { ShoppingBag, Users, Activity, Clock, CheckCircle, Truck, XCircle, RotateCcw, Wallet } from 'lucide-react';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 import { Link } from 'react-router-dom';
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: any; bg: string }> = {
-    pending: { label: 'Chờ xử lý', color: '#f59e0b', icon: Clock, bg: 'rgba(245, 158, 11, 0.1)' },
+    pending: { label: 'Chờ XN', color: '#f59e0b', icon: Clock, bg: 'rgba(245, 158, 11, 0.1)' },
     confirmed: { label: 'Đã xác nhận', color: '#3b82f6', icon: CheckCircle, bg: 'rgba(59, 130, 246, 0.1)' },
     shipped: { label: 'Đang giao', color: '#8b5cf6', icon: Truck, bg: 'rgba(139, 92, 246, 0.1)' },
     delivered: { label: 'Đã giao', color: '#10b981', icon: CheckCircle, bg: 'rgba(16, 185, 129, 0.1)' },
@@ -17,97 +17,53 @@ function StatCard({ icon: Icon, label, value, sub, color, trend }: any) {
     return (
         <div className="premium-card animate-slide-up" style={{
             display: 'flex',
-            alignItems: 'center',
-            gap: '24px',
-            background: 'rgba(30, 41, 59, 0.3)'
+            flexDirection: 'column',
+            gap: '16px',
+            padding: '24px',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <div style={{
-                background: `${color}15`,
-                borderRadius: '18px',
-                padding: '18px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: `1px solid ${color}20`,
-                boxShadow: `0 0 30px ${color}10`,
-                position: 'relative',
-                overflow: 'hidden'
-            }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    background: `radial-gradient(circle at center, ${color}20 0%, transparent 70%)`,
-                }} />
-                <Icon size={28} color={color} style={{ position: 'relative', zIndex: 1 }} />
-            </div>
-            <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1.5px' }}>{label}</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-                    <p style={{ fontSize: '32px', fontWeight: 900, color: 'white', lineHeight: 1, letterSpacing: '-1px', fontFamily: 'Outfit, sans-serif' }}>{value}</p>
-                    {trend != null && (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '2px',
-                            color: trend >= 0 ? '#10b981' : '#ef4444',
-                            background: trend >= 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                            padding: '2px 8px',
-                            borderRadius: '8px',
-                            fontSize: '12px',
-                            fontWeight: 800
-                        }}>
-                            <ArrowUpRight size={14} style={{ transform: trend < 0 ? 'rotate(90deg)' : 'none' }} />
-                            <span>{Math.abs(trend)}%</span>
-                        </div>
-                    )}
-                </div>
-                {sub && <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '8px', fontWeight: 600 }}>{sub}</p>}
-            </div>
-        </div>
-    );
-}
-
-function QuickAction({ to, icon: Icon, label, desc, color }: any) {
-    return (
-        <Link to={to} style={{ textDecoration: 'none', display: 'block' }}>
-            <div
-                className="premium-card"
-                style={{
-                    padding: '24px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '20px',
-                    background: 'rgba(15, 23, 42, 0.4)',
-                    cursor: 'pointer',
-                    border: '1px solid var(--border-light)'
-                }}
-            >
-                <div style={{
-                    width: '54px', height: '54px',
-                    borderRadius: '16px',
                     background: `${color}15`,
+                    padding: '12px',
+                    borderRadius: '16px',
+                    color: color,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    border: `1px solid ${color}20`,
-                    boxShadow: `0 8px 15px ${color}10`
+                    justifyContent: 'center'
                 }}>
-                    <Icon size={24} color={color} />
+                    <Icon size={24} />
                 </div>
-                <div style={{ flex: 1 }}>
-                    <p style={{ fontWeight: 800, fontSize: '16px', color: 'white', marginBottom: '4px', fontFamily: 'Outfit, sans-serif' }}>{label}</p>
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>{desc}</p>
-                </div>
-                <div style={{
-                    width: '32px', height: '32px',
-                    borderRadius: '10px',
-                    background: 'rgba(255,255,255,0.03)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                    <ChevronRight size={18} color="var(--text-muted)" />
-                </div>
+                {trend && (
+                    <div style={{
+                        fontSize: '11px',
+                        fontWeight: 900,
+                        color: 'var(--success)',
+                        background: 'rgba(16, 185, 129, 0.1)',
+                        padding: '4px 10px',
+                        borderRadius: '50px'
+                    }}>
+                        ↑ {trend}
+                    </div>
+                )}
             </div>
-        </Link>
+            <div>
+                <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</p>
+                <p style={{ fontSize: '28px', fontWeight: 950, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif' }}>{value}</p>
+                {sub && <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', fontWeight: 600 }}>{sub}</p>}
+            </div>
+            <div style={{
+                position: 'absolute',
+                right: '-10px',
+                bottom: '-10px',
+                width: '60px',
+                height: '60px',
+                background: color,
+                opacity: 0.03,
+                borderRadius: '30px'
+            }} />
+        </div>
     );
 }
 
@@ -117,240 +73,268 @@ export default function DashboardPage() {
 
     useEffect(() => {
         reportsApi.getDashboard().then(r => setData(r.data)).catch(() => { });
-        ordersApi.getAll({ limit: 5 }).then(r => {
+        ordersApi.getAll({ limit: 10 }).then(r => {
             const raw = r.data;
-            setRecentOrders(Array.isArray(raw) ? raw.slice(0, 5) : (raw.data || []).slice(0, 5));
+            setRecentOrders(Array.isArray(raw) ? raw.slice(0, 10) : (raw.data || []).slice(0, 10));
         }).catch(() => { });
     }, []);
 
-    const formatVN = (n: number) => n ? Number(n).toLocaleString('vi-VN') + 'đ' : '0đ';
+    const formatVN = (n: number) => n ? Number(n).toLocaleString('vi-VN') + ' ₫' : '0 ₫';
 
     if (!data) return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '400px', gap: '24px' }}>
-            <div style={{ width: '64px', height: '64px', border: '5px solid rgba(230,57,70,0.1)', borderTopColor: '#e63946', borderRadius: '50%', animation: 'spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite', boxShadow: '0 0 30px rgba(230,57,70,0.2)' }} />
-            <p style={{ color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px' }}>Đang đồng bộ dữ liệu...</p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '600px' }}>
+            <div style={{
+                width: '50px',
+                height: '50px',
+                border: '4px solid var(--bg-deep)',
+                borderTopColor: 'var(--primary)',
+                borderRadius: '50%',
+                animation: 'spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite'
+            }} />
         </div>
     );
 
-    const quickActions = [
-        { to: '/products', icon: Bike, label: 'Thêm sản phẩm', desc: 'Tạo mẫu xe mới', color: '#e63946' },
-        { to: '/orders', icon: ShoppingBag, label: 'Xử lý đơn hàng', desc: 'Duyệt & gửi vận chuyển', color: '#3b82f6' },
-        { to: '/inventory', icon: Activity, label: 'Kiểm kê kho', desc: 'Số lượng tồn kho', color: '#10b981' },
-        { to: '/coupons', icon: Trophy, label: 'Khuyến mãi', desc: 'Chiến dịch mới', color: '#f59e0b' },
-    ];
-
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
-            {/* Header Content */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', animation: 'fadeIn 0.6s ease' }}>
-                <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Tổng quan hệ thống</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>Cập nhật tình hình kinh doanh và quản lý vận hành theo thời gian thực.</p>
-                </div>
-                <div style={{ display: 'flex', gap: '16px' }}>
-                    <button className="btn-premium" style={{ background: 'rgba(255,255,255,0.03)', color: 'white' }}>Tải báo cáo</button>
-                    <button className="btn-premium">Tạo đơn hàng</button>
-                </div>
-            </div>
-
-            {/* Main Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-                <StatCard icon={DollarSign} label="Doanh thu tháng" value={formatVN(data.doanh_thu_thang)} color="#e63946" trend={12.5} />
-                <StatCard icon={ShoppingBag} label="Tổng đơn hàng" value={data.tong_don} sub={`Hôm nay: +${data.don_hom_nay}`} color="#3b82f6" trend={8.2} />
-                <StatCard icon={Users} label="Khách hàng mới" value={124} sub="Khách hàng trung thành" color="#8b5cf6" trend={15} />
-                <StatCard icon={AlertTriangle} label="Thông báo kho" value={data.sp_het_hang} sub="Sản phẩm sắp hết hàng" color="#f59e0b" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', paddingBottom: '40px' }}>
+            {/* Top Bar Stats */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+                <StatCard icon={Wallet} label="Doanh thu thực" value={formatVN(data.doanh_thu_thang)} sub="Thu nhập ròng trong tháng" color="var(--primary)" trend="12.5%" />
+                <StatCard icon={ShoppingBag} label="Đơn hàng mới" value={data.tong_don} sub={`${data.don_da_huy} đơn đã hủy/trả`} color="var(--accent)" trend="8.2%" />
+                <StatCard icon={Users} label="Khách hàng mới" value={data.tong_khach || 0} sub="Tài khoản đăng ký mới" color="#8b5cf6" trend="5.1%" />
+                <StatCard icon={Activity} label="Tồn kho" value={data.tong_san_pham} sub={`${data.sp_het_hang} sản phẩm hết hàng`} color="#f97316" />
             </div>
 
             {/* Charts Section */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.2fr', gap: '40px' }}>
-                {/* Visual Analytics - Revenue AreaChart */}
-                <div className="premium-card" style={{ padding: '40px', background: 'rgba(15, 23, 42, 0.4)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
+                <div className="premium-card" style={{ padding: '32px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                         <div>
-                            <h2 style={{ fontSize: '20px', fontWeight: 900, color: 'white', marginBottom: '6px', fontFamily: 'Outfit, sans-serif' }}>Biến động doanh thu</h2>
-                            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>Thống kê thực thu và hoàn tiền theo thời gian</p>
+                            <h3 style={{ fontSize: '18px', fontWeight: 900, color: 'var(--text-primary)' }}>Phân tích doanh thu</h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>Thống kê 7 ngày gần nhất</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)' }} />
+                                <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)' }}>DOANH THU</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent)' }} />
+                                <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)' }}>HOÀN TIỀN</span>
+                            </div>
                         </div>
                     </div>
-
-                    <div style={{ height: '350px', width: '100%' }}>
+                    <div style={{ height: '350px' }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={data.doanh_thu_theo_thang}>
+                            <AreaChart data={data.doanh_thu_7_ngay}>
                                 <defs>
-                                    <linearGradient id="colorThucThu" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                                    </linearGradient>
-                                    <linearGradient id="colorRefund" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                                    <linearGradient id="premiumGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.12} />
+                                        <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-light)" />
                                 <XAxis
                                     dataKey="thang"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#475569', fontSize: 12, fontWeight: 700 }}
-                                    dy={20}
+                                    tick={{ fontSize: 12, fontWeight: 700, fill: 'var(--text-muted)' }}
+                                    dy={10}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#475569', fontSize: 12, fontWeight: 700 }}
-                                    tickFormatter={v => `${(v / 1000000).toFixed(0)}tr`}
+                                    tick={{ fontSize: 12, fontWeight: 700, fill: 'var(--text-muted)' }}
+                                    tickFormatter={v => `${(v / 1000000).toFixed(0)}M`}
                                 />
                                 <Tooltip
-                                    contentStyle={{ background: 'rgba(30, 41, 59, 0.95)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}
-                                    itemStyle={{ color: 'white', fontWeight: 800, fontSize: '14px' }}
-                                    labelStyle={{ color: 'var(--text-muted)', marginBottom: '6px', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase' }}
-                                    formatter={(v: any) => [formatVN(v), '']}
+                                    cursor={{ stroke: 'var(--border-light)', strokeWidth: 2 }}
+                                    contentStyle={{
+                                        borderRadius: '16px',
+                                        border: 'none',
+                                        boxShadow: 'var(--shadow-lg)',
+                                        padding: '16px'
+                                    }}
+                                    itemStyle={{ fontSize: '13px', fontWeight: 800, fontFamily: 'Outfit, sans-serif' }}
+                                    formatter={(v: any) => formatVN(v)}
                                 />
-                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                                <Area type="monotone" dataKey="thuc_thu" name="Doanh thu thực" stroke="#10b981" fillOpacity={1} fill="url(#colorThucThu)" strokeWidth={3} />
-                                <Area type="monotone" dataKey="refund" name="Hoàn tiền" stroke="#ef4444" fillOpacity={1} fill="url(#colorRefund)" strokeWidth={3} />
+                                <Area type="monotone" dataKey="thuc_thu" stroke="var(--primary)" strokeWidth={4} fill="url(#premiumGradient)" dot={false} activeDot={{ r: 6, strokeWidth: 0, fill: 'var(--primary)' }} />
+                                <Area type="monotone" dataKey="refund" stroke="var(--accent)" strokeWidth={3} fill="none" strokeDasharray="6 6" dot={false} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Status Distribution PieChart */}
-                <div className="premium-card" style={{ padding: '40px', background: 'rgba(15, 23, 42, 0.4)', minHeight: '430px' }}>
-                    <h2 style={{ fontSize: '20px', fontWeight: 900, color: 'white', marginBottom: '32px', fontFamily: 'Outfit, sans-serif' }}>Trạng thái đơn hàng</h2>
-                    <div style={{ height: '350px', width: '100%', position: 'relative' }}>
-                        <ResponsiveContainer width="100%" height="100%" debounce={1}>
+                <div className="premium-card" style={{ padding: '32px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px' }}>Trạng thái đơn hàng</h3>
+                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '32px' }}>Tỷ lệ đơn hàng theo trạng thái</p>
+                    <div style={{ height: '300px', position: 'relative' }}>
+                        <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={data.status_distribution}
+                                    data={data.status_distribution || []}
                                     dataKey="count"
                                     nameKey="status"
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={90}
-                                    paddingAngle={5}
-                                    animationBegin={0}
-                                    animationDuration={400}
+                                    cx="50%" cy="50%"
+                                    innerRadius={80}
+                                    outerRadius={105}
+                                    paddingAngle={8}
                                 >
-                                    {data.status_distribution?.map((entry: any, index: number) => {
-                                        const config = STATUS_LABELS[entry.status] || { color: '#94a3b8' };
-                                        return <Cell key={`cell-${index}`} fill={config.color} stroke="none" />;
-                                    })}
+                                    {(data.status_distribution || []).map((entry: any, index: number) => (
+                                        <Cell key={index} fill={STATUS_LABELS[entry.status]?.color || '#cbd5e1'} stroke="none" />
+                                    ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ background: 'rgba(30, 41, 59, 0.95)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px' }}
-                                    itemStyle={{ color: 'white', fontWeight: 800 }}
-                                    formatter={(value: any, name: any) => [value, (STATUS_LABELS[name]?.label || name)]}
-                                />
-                                <Legend
-                                    formatter={(value: any) => STATUS_LABELS[value]?.label || value}
-                                    layout="horizontal"
-                                    verticalAlign="bottom"
-                                    align="center"
+                                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-lg)' }}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
+                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                            <p style={{ fontSize: '32px', fontWeight: 950, margin: 0, color: 'var(--text-primary)' }}>{data.tong_don}</p>
+                            <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', margin: 0 }}>ĐƠN HÀNG</p>
+                        </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '24px' }}>
+                        {(data.status_distribution || []).slice(0, 4).map((entry: any) => (
+                            <div key={entry.status} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: STATUS_LABELS[entry.status]?.color }} />
+                                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)' }}>{STATUS_LABELS[entry.status]?.label}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
 
-            {/* Activity and Actions Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '40px' }}>
-                {/* Left Column: Quick Actions & Products */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-                    {/* Quick Actions */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                        <h3 style={{ fontSize: '14px', fontWeight: 900, color: 'var(--text-muted)', letterSpacing: '2px', textTransform: 'uppercase' }}>Phục vụ nhanh</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {quickActions.map(qa => <QuickAction key={qa.to} {...qa} />)}
-                        </div>
-                    </div>
-
-                    {/* Products Rank */}
-                    <div className="premium-card" style={{ padding: '40px', background: 'rgba(15, 23, 42, 0.4)' }}>
-                        <h2 style={{ fontSize: '20px', fontWeight: 900, color: 'white', marginBottom: '32px', fontFamily: 'Outfit, sans-serif' }}>Sản phẩm nổi bật</h2>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {data.top_ban_chay?.slice(0, 5).map((item: any, i: number) => {
-                                const colors = ['#f59e0b', '#3b82f6', '#10b981', '#6366f1', '#8b5cf6'];
-                                return (
-                                    <div key={item.ma_sanpham} className="row-item-hover" style={{
-                                        display: 'flex', alignItems: 'center', gap: '20px', padding: '16px',
-                                        background: 'rgba(2, 6, 23, 0.4)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.03)',
-                                        transition: '0.3s'
-                                    }}>
-                                        <div style={{ width: '48px', height: '48px', background: `${colors[i]}15`, borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', border: `1px solid ${colors[i]}30`, boxShadow: `0 0 20px ${colors[i]}10` }}>
-                                            {['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][i]}
-                                        </div>
-                                        <div style={{ flex: 1, minWidth: 0 }}>
-                                            <p style={{ fontSize: '15px', fontWeight: 800, color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.ten_sanpham}</p>
-                                            <p style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 700, marginTop: '4px' }}>{item.da_ban} xe đã bán</p>
-                                        </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <p style={{ fontSize: '15px', fontWeight: 900, color: '#e63946', fontFamily: 'Outfit, sans-serif' }}>{formatVN(item.gia)}</p>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Column: Recent Activity */}
+            {/* Bottom Section */}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '32px' }}>
                 <div className="modern-table-container">
-                    <div style={{ padding: '32px', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 style={{ fontSize: '18px', fontWeight: 900, color: 'white', fontFamily: 'Outfit, sans-serif' }}>Đơn hàng mới nhất</h3>
-                        <Link to="/orders" className="btn-premium" style={{
-                            fontSize: '12px', padding: '8px 16px', textDecoration: 'none', background: 'rgba(255,255,255,0.03)',
-                            color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px'
-                        }}>
-                            XEM TẤT CẢ <ArrowUpRight size={14} />
+                    <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h3 style={{ fontSize: '18px', fontWeight: 950, color: 'var(--text-primary)' }}>Giao dịch gần đây</h3>
+                            <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>Thông tin chi tiết các đơn hàng mới nhất</p>
+                        </div>
+                        <Link to="/orders" className="btn-premium" style={{ background: 'var(--bg-deep)', color: 'var(--text-primary)', padding: '10px 20px' }}>
+                            TẤT CẢ GIAO DỊCH
                         </Link>
                     </div>
-                    <div style={{ padding: '16px' }}>
-                        <table className="modern-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã đơn</th>
-                                    <th>Khách hàng</th>
-                                    <th style={{ textAlign: 'right' }}>Giá trị</th>
-                                    <th style={{ textAlign: 'center' }}>Trạng thái</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {recentOrders.map(o => {
-                                    const s = STATUS_LABELS[o.trang_thai] || { label: o.trang_thai, color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.1)' };
-                                    return (
-                                        <tr key={o.ma_donhang} style={{ cursor: 'pointer' }}>
-                                            <td style={{ fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.5px' }}>#{o.donhang_code}</td>
-                                            <td>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)' }}>
-                                                        {(o.user?.hovaten || 'G')[0]}
-                                                    </div>
-                                                    <span style={{ fontWeight: 700 }}>{o.user?.hovaten || o.user?.ten_user || 'Khách vãng lai'}</span>
-                                                </div>
-                                            </td>
-                                            <td style={{ fontWeight: 900, color: 'white', textAlign: 'right', fontFamily: 'Outfit, sans-serif' }}>{formatVN(o.tong_tien)}</td>
-                                            <td style={{ textAlign: 'center' }}>
-                                                <div className="status-pill" style={{ color: s.color, background: s.bg, border: `1px solid ${s.color}20` }}>
-                                                    <div className="status-glow" style={{ color: s.color }} />
-                                                    {s.label}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                    <table className="modern-table">
+                        <thead>
+                            <tr>
+                                <th>MÃ ĐƠN</th>
+                                <th>KHÁCH HÀNG</th>
+                                <th>SỐ TIỀN</th>
+                                <th style={{ textAlign: 'center' }}>PHƯƠNG THỨC</th>
+                                <th style={{ textAlign: 'center' }}>TRẠNG THÁI</th>
+                                <th style={{ textAlign: 'right' }}>THỜI GIAN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {recentOrders.map(o => {
+                                const s = STATUS_LABELS[o.trang_thai] || { label: o.trang_thai, color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.1)' };
+                                return (
+                                    <tr key={o.ma_donhang}>
+                                        <td style={{ color: 'var(--primary)', fontWeight: 900 }}>#{o.donhang_code}</td>
+                                        <td>
+                                            <div style={{ fontWeight: 800, color: 'var(--text-primary)' }}>{o.user?.hovaten || 'Khách lẻ'}</div>
+                                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>{o.user?.so_dien_thoai || '--'}</div>
+                                        </td>
+                                        <td style={{ fontWeight: 900, color: 'var(--text-primary)' }}>{Number(o.tong_tien).toLocaleString()} ₫</td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)' }}>{o.phuong_thuc_TT}</span>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <div className="status-pill" style={{ color: s.color, background: s.bg }}>
+                                                <div className="status-glow" />
+                                                {s.label}
+                                            </div>
+                                        </td>
+                                        <td style={{ textAlign: 'right', color: 'var(--text-muted)', fontWeight: 600 }}>
+                                            {new Date(o.ngay_dat).toLocaleDateString('vi-VN')}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                    <div className="premium-card">
+                        <h3 style={{ fontSize: '16px', fontWeight: 950, marginBottom: '24px', color: 'var(--text-primary)' }}>Top sản phẩm bán chạy</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            {data.top_ban_chay?.slice(0, 5).map((item: any, idx: number) => (
+                                <div key={item.ma_sanpham} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                    <div style={{ position: 'relative' }}>
+                                        <div style={{ width: '50px', height: '50px', borderRadius: '16px', background: 'var(--bg-deep)', overflow: 'hidden' }}>
+                                            <img
+                                                src={item.image_url ? `http://localhost:3001${item.image_url}` : 'https://via.placeholder.com/50'}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                alt=""
+                                            />
+                                        </div>
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '-8px',
+                                            right: '-8px',
+                                            width: '20px',
+                                            height: '20px',
+                                            background: idx < 3 ? 'var(--primary)' : 'var(--text-muted)',
+                                            color: 'white',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '10px',
+                                            fontWeight: 900,
+                                            boxShadow: 'var(--shadow-sm)'
+                                        }}>
+                                            {idx + 1}
+                                        </div>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--text-primary)' }}>{item.ten_sanpham}</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700 }}>Đã bán {item.da_ban} sản phẩm</div>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{ fontWeight: 900, color: 'var(--primary)', fontSize: '14px' }}>{(item.gia / 1000000).toFixed(1)}M</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="premium-card" style={{ border: '1px solid var(--primary-light)' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: 950, marginBottom: '24px', color: 'var(--primary)' }}>Cảnh báo tồn kho</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {data.canh_bao_kho?.slice(0, 4).map((item: any) => (
+                                <div key={item.ma_sanpham} style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    background: 'var(--primary-light)',
+                                    padding: '14px 20px',
+                                    borderRadius: '16px',
+                                    borderLeft: '4px solid var(--primary)'
+                                }}>
+                                    <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--primary-dark)' }}>{item.ten_sanpham}</div>
+                                    <div style={{
+                                        fontSize: '11px',
+                                        fontWeight: 950,
+                                        color: 'white',
+                                        background: 'var(--primary)',
+                                        padding: '4px 10px',
+                                        borderRadius: '8px'
+                                    }}>
+                                        CÒN: {item.ton_kho}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
 
             <style>{`
-                .row-item-hover:hover {
-                    background: rgba(230, 57, 70, 0.05) !important;
-                    border-color: rgba(230, 57, 70, 0.2) !important;
-                    transform: translateX(10px);
-                }
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
             `}</style>
         </div>
     );

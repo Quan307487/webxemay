@@ -30,12 +30,12 @@ export default function PaymentsPage() {
             {/* Header */}
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
                 <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Lịch sử thanh toán</h1>
+                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Lịch sử thanh toán</h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
                         Theo dõi và đối soát các giao dịch tài chính với <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> lệnh thanh toán.
                     </p>
                 </div>
-                <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', padding: '6px', borderRadius: '16px', border: '1px solid var(--border-light)', backdropFilter: 'blur(10px)' }}>
+                <div style={{ display: 'flex', background: 'var(--bg-deep)', padding: '6px', borderRadius: '16px', border: '1px solid var(--border-subtle)', backdropFilter: 'blur(10px)' }}>
                     {['', 'pending', 'success', 'failed', 'refunded'].map(s => (
                         <button
                             key={s}
@@ -96,7 +96,7 @@ export default function PaymentsPage() {
                                         <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, marginTop: '2px' }}>TRX_ID: {item.ma_thanhtoan}</div>
                                     </td>
                                     <td>
-                                        <div style={{ fontSize: '16px', fontWeight: 900, color: 'white', fontFamily: 'Outfit, sans-serif' }}>
+                                        <div style={{ fontSize: '16px', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif' }}>
                                             {Number(item.thanh_tien).toLocaleString('vi-VN')}
                                             <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginLeft: '4px' }}>VNĐ</span>
                                         </div>
@@ -111,15 +111,15 @@ export default function PaymentsPage() {
                                             }}>
                                                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.PT_thanhtoan === 'vnpay' ? '#005baa' : '#f59e0b', boxShadow: `0 0 10px ${item.PT_thanhtoan === 'vnpay' ? '#005baa' : '#f59e0b'}` }} />
                                             </div>
-                                            <span style={{ fontSize: '13px', fontWeight: 800, color: 'white', textTransform: 'uppercase' }}>{item.PT_thanhtoan}</span>
+                                            <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)', textTransform: 'uppercase' }}>{item.PT_thanhtoan}</span>
                                         </div>
                                     </td>
                                     <td>
                                         <div style={{
                                             padding: '6px 12px',
-                                            background: 'rgba(255,255,255,0.03)',
+                                            background: 'var(--bg-main)',
                                             borderRadius: '8px',
-                                            border: '1px solid var(--border-light)',
+                                            border: '1px solid var(--border-subtle)',
                                             display: 'inline-block'
                                         }}>
                                             <code style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 700, fontFamily: 'monospace' }}>

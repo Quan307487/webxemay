@@ -14,7 +14,7 @@ export default function ProfilePage() {
     const router = useRouter();
     const { add: toast } = useToast();
     const [tab, setTab] = useState<'info' | 'password'>('info');
-    const [form, setForm] = useState({ hovaten: '', email: '', sdt: '' });
+    const [form, setForm] = useState({ hovaten: '', email: '', sdt: '', diachi: '' });
     const [pwForm, setPwForm] = useState({ current_password: '', new_password: '', confirm: '' });
     const [showPw, setShowPw] = useState({ cur: false, new: false, con: false });
     const [saving, setSaving] = useState(false);
@@ -22,14 +22,23 @@ export default function ProfilePage() {
     useEffect(() => {
         if (!_hasHydrated) return;
         if (!user) { router.push('/auth/login'); return; }
-        setForm({ hovaten: user.hovaten || '', email: user.email || '', sdt: user.sdt || '' });
+        setForm({
+            hovaten: user.hovaten || '',
+            email: user.email || '',
+            sdt: user.SDT || user.sdt || '',
+            diachi: user.diachi || ''
+        });
     }, [_hasHydrated, user]);
 
     const saveInfo = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
         try {
-            const r = await usersApi.updateMe({ hovaten: form.hovaten, sdt: form.sdt });
+            const r = await usersApi.updateMe({
+                hovaten: form.hovaten,
+                SDT: form.sdt,
+                diachi: form.diachi
+            });
             setAuth(token, r.data);
             toast('Cập nhật thông tin thành công!');
         } catch (e: any) { toast(e.response?.data?.message || 'Lỗi cập nhật', 'error'); }
@@ -99,6 +108,16 @@ export default function ProfilePage() {
                             <div>
                                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>Số điện thoại</label>
                                 <input className="input-field" value={form.sdt} onChange={e => setForm({ ...form, sdt: e.target.value })} placeholder="0912 xxx xxx" type="tel" />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>Địa chỉ</label>
+                                <textarea
+                                    className="input-field"
+                                    value={form.diachi}
+                                    onChange={e => setForm({ ...form, diachi: e.target.value })}
+                                    placeholder="Nhập địa chỉ của bạn..."
+                                    style={{ height: '80px', padding: '12px', resize: 'none' }}
+                                />
                             </div>
                             <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start', padding: '12px 28px' }} disabled={saving}>
                                 <Save size={16} /> {saving ? 'Đang lưu...' : 'Lưu thay đổi'}

@@ -17,7 +17,7 @@ export class UsersService {
     }
 
     async findOne(id: number) {
-        const u = await this.repo.findOne({ where: { ma_user: id }, select: ['ma_user', 'ten_user', 'email', 'hovaten', 'SDT', 'diachi', 'quyen', 'status', 'ngay_lap', 'cap_nhat_ngay'] });
+        const u = await this.repo.findOne({ where: { ma_user: id } });
         if (!u) throw new NotFoundException('Không tìm thấy người dùng');
         return u;
     }
@@ -47,5 +47,18 @@ export class UsersService {
     async deactivate(id: number) {
         await this.repo.update(id, { status: 'inactive' } as any);
         return { message: 'Tài khoản đã bị vô hiệu hoá' };
+    }
+
+    async adminUpdate(id: number, dto: Partial<User>) {
+        // Allows updating quyen, status, hovaten, etc.
+        await this.repo.update(id, dto);
+        return this.findOne(id);
+    }
+
+    async remove(id: number) {
+        const u = await this.findOne(id);
+        if (u.quyen === 'admin') throw new ForbiddenException('Không thể xóa tài khoản quản trị viên');
+        await this.repo.delete(id);
+        return { message: 'Đã xóa người dùng thành công' };
     }
 }

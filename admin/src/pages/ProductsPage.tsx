@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { productsApi, categoriesApi, brandsApi } from '../lib/api';
 import toast from 'react-hot-toast';
-import { Trash2, Search, Bike, Plus, Pencil, Star, X, Save, Image, ChevronDown, Zap, Gauge, Box, DollarSign } from 'lucide-react';
+import { Trash2, Search, Bike, Plus, Pencil, X, Save, Image, ChevronDown, Zap, Gauge, Box, DollarSign } from 'lucide-react';
 
 const INITIAL_FORM = {
     ten_sanpham: '', sanpham_code: '',
@@ -168,139 +168,205 @@ export default function ProductsPage() {
     const f = (k: string) => (v: any) => setForm((prev: any) => ({ ...prev, [k]: v.target.value }));
 
     return (
-        <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            {/* Header */}
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
-                <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Kho sản phẩm</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
-                        Hệ thống đang quản lý <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{total}</span> mẫu xe máy các loại.
-                    </p>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ position: 'relative' }}>
-                        <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
-                        <input
-                            className="input-premium"
-                            style={{ paddingLeft: '42px', height: '44px', width: '260px', fontWeight: 600 }}
-                            placeholder="Tìm tên, mã sản phẩm..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                        />
+        <div className="animate-slide-up" style={{ paddingBottom: '40px' }}>
+            {/* Page Header & Stats */}
+            <header style={{ marginBottom: '48px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+                    <div>
+                        <h1 style={{ fontSize: '32px', fontWeight: 950, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif', letterSpacing: '-1px', marginBottom: '8px' }}>Kho Sản Phẩm</h1>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: 600 }}>Quản lý danh sách xe, cấu hình thông số và giá bán</p>
                     </div>
-                    <button className="btn-premium" onClick={openCreate} style={{ height: '44px', gap: '8px' }}>
-                        <Plus size={18} /> Thêm xe mới
-                    </button>
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                        <div style={{ position: 'relative', width: '300px' }}>
+                            <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                            <input
+                                className="input-premium"
+                                style={{ paddingLeft: '48px', height: '48px', width: '100%' }}
+                                placeholder="Tìm kiếm xe..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                            />
+                        </div>
+                        <button className="btn-premium" onClick={openCreate} style={{ height: '48px', padding: '0 24px' }}>
+                            <Plus size={20} /> Thêm sản phẩm
+                        </button>
+                    </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+                    <div className="premium-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Bike size={24} />
+                        </div>
+                        <div>
+                            <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', margin: 0 }}>Tổng số xe</p>
+                            <p style={{ fontSize: '20px', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>{total}</p>
+                        </div>
+                    </div>
+                    <div className="premium-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Box size={24} />
+                        </div>
+                        <div>
+                            <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', margin: 0 }}>Có sẵn</p>
+                            <p style={{ fontSize: '20px', fontWeight: 900, color: '#10b981', margin: 0 }}>{products.filter(p => p.ton_kho > 5).length}</p>
+                        </div>
+                    </div>
+                    <div className="premium-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#fff7ed', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Zap size={24} />
+                        </div>
+                        <div>
+                            <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', margin: 0 }}>Sắp hết</p>
+                            <p style={{ fontSize: '20px', fontWeight: 900, color: '#f59e0b', margin: 0 }}>{products.filter(p => p.ton_kho > 0 && p.ton_kho <= 5).length}</p>
+                        </div>
+                    </div>
+                    <div className="premium-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#fef2f2', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Trash2 size={24} />
+                        </div>
+                        <div>
+                            <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', margin: 0 }}>Hết hàng</p>
+                            <p style={{ fontSize: '20px', fontWeight: 900, color: '#ef4444', margin: 0 }}>{products.filter(p => p.ton_kho === 0).length}</p>
+                        </div>
+                    </div>
                 </div>
             </header>
 
-            {/* Table */}
+            {/* Table Container */}
             <div className="modern-table-container">
                 <table className="modern-table">
                     <thead>
                         <tr>
-                            {['Mã', 'Sản phẩm', 'Danh mục / Brand', 'Giá bán', 'Kho hàng', 'Đánh giá', 'Trạng thái', 'Hành động'].map(h => (
-                                <th key={h}>{h}</th>
-                            ))}
+                            <th style={{ width: '80px' }}>MÃ</th>
+                            <th>SẢN PHẨM</th>
+                            <th>DANH MỤC / HÃNG</th>
+                            <th>GIÁ BÁN</th>
+                            <th style={{ textAlign: 'center' }}>KHO HÀNG</th>
+                            <th style={{ textAlign: 'center' }}>TRẠNG THÁI</th>
+                            <th style={{ textAlign: 'right' }}>THAO TÁC</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={8} style={{ padding: '80px', textAlign: 'center' }}>
-                                <div style={{ display: 'inline-block', width: '36px', height: '36px', border: '4px solid rgba(230,57,70,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                            <tr><td colSpan={7} style={{ padding: '100px', textAlign: 'center' }}>
+                                <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid var(--bg-deep)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                             </td></tr>
                         ) : products.length === 0 ? (
-                            <tr><td colSpan={8} style={{ padding: '80px', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 700 }}>Hệ thống chưa ghi nhận sản phẩm nào.</td></tr>
-                        ) : products.map((p: any) => (
-                            <tr key={p.ma_sanpham}>
-                                <td style={{ color: 'var(--text-muted)', fontWeight: 800, fontSize: '12px' }}>#{p.ma_sanpham}</td>
-                                <td>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                        <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-light)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                            {p.hinhanh?.[0]?.image_url
-                                                ? <img src={`http://localhost:3001${p.hinhanh[0].image_url}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                : <Bike size={22} color="#334155" />
-                                            }
+                            <tr><td colSpan={7} style={{ padding: '100px', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 700 }}>Không tìm thấy sản phẩm nào.</td></tr>
+                        ) : products.map((p: any) => {
+                            const lowStock = p.ton_kho <= 5;
+                            const outOfStock = p.ton_kho === 0;
+                            return (
+                                <tr key={p.ma_sanpham}>
+                                    <td style={{ fontWeight: 800, color: 'var(--text-muted)', fontSize: '13px' }}>#{p.ma_sanpham}</td>
+                                    <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                            <div style={{
+                                                width: '64px',
+                                                height: '64px',
+                                                borderRadius: '16px',
+                                                background: 'var(--bg-deep)',
+                                                border: '1px solid var(--border-light)',
+                                                padding: '4px',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <img
+                                                    src={p.hinhanh?.[0]?.image_url ? `http://localhost:3001${p.hinhanh[0].image_url}` : 'https://via.placeholder.com/64'}
+                                                    alt=""
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text-primary)' }}>{p.ten_sanpham}</div>
+                                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', marginTop: '2px' }}>{p.sanpham_code}</div>
+                                            </div>
                                         </div>
-                                        <div style={{ minWidth: 0 }}>
-                                            <div style={{ fontSize: '14px', fontWeight: 800, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '200px' }}>{p.ten_sanpham}</div>
-                                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, marginTop: '3px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{p.kieu_xe?.replace(/_/g, ' ')}</div>
+                                    </td>
+                                    <td>
+                                        <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)' }}>{p.danhmuc?.ten_danhmuc}</div>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, marginTop: '2px' }}>{p.thuonghieu?.ten_thuonghieu}</div>
+                                    </td>
+                                    <td>
+                                        <div style={{ fontSize: '16px', fontWeight: 950, color: 'var(--primary)' }}>{Number(p.gia).toLocaleString()}đ</div>
+                                        {Number(p.gia_tri_giam) > 0 && (
+                                            <div style={{ fontSize: '11px', color: '#10b981', fontWeight: 800, marginTop: '2px' }}>
+                                                -{p.kieu_giam_gia === 'percentage' ? `${p.gia_tri_giam}%` : `${p.gia_tri_giam.toLocaleString()}đ`}
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{
+                                                fontSize: '14px',
+                                                fontWeight: 900,
+                                                color: outOfStock ? '#ef4444' : lowStock ? '#f59e0b' : 'var(--text-primary)'
+                                            }}>
+                                                {p.ton_kho} <small style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700 }}>XE</small>
+                                            </span>
+                                            <div style={{ width: '60px', height: '6px', background: 'var(--bg-deep)', borderRadius: '10px', overflow: 'hidden' }}>
+                                                <div style={{
+                                                    width: `${Math.min(100, (p.ton_kho / 40) * 100)}%`,
+                                                    height: '100%',
+                                                    background: outOfStock ? '#ef4444' : lowStock ? '#f59e0b' : 'var(--primary)',
+                                                    borderRadius: '10px'
+                                                }} />
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div style={{ fontSize: '13px', fontWeight: 800, color: 'white' }}>{p.danhmuc?.ten_danhmuc || '—'}</div>
-                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '3px', fontWeight: 700 }}>{p.thuonghieu?.ten_thuonghieu || '—'}</div>
-                                </td>
-                                <td>
-                                    <div style={{ fontSize: '15px', fontWeight: 950, color: 'var(--primary)' }}>{Number(p.gia).toLocaleString('vi-VN')}đ</div>
-                                    {Number(p.gia_tri_giam) > 0 && <div style={{ fontSize: '11px', color: '#10b981', marginTop: '3px', fontWeight: 700 }}>-{p.kieu_giam_gia === 'percentage' ? `${p.gia_tri_giam}%` : `${Number(p.gia_tri_giam).toLocaleString()}đ`}</div>}
-                                </td>
-                                <td>
-                                    <div style={{ fontSize: '14px', fontWeight: 800, color: p.ton_kho === 0 ? '#ef4444' : 'white' }}>{p.ton_kho} <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700 }}>XE</span></div>
-                                    <div style={{ width: '64px', height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden', marginTop: '6px' }}>
-                                        <div style={{ width: `${Math.min(100, (p.ton_kho / 50) * 100)}%`, height: '100%', background: p.ton_kho === 0 ? '#ef4444' : '#3b82f6', borderRadius: '2px', transition: '0.3s' }} />
-                                    </div>
-                                </td>
-                                <td>
-                                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)', padding: '5px 12px', borderRadius: '10px' }}>
-                                        <Star size={12} color="#f59e0b" fill="#f59e0b" />
-                                        <span style={{ fontSize: '13px', fontWeight: 800, color: 'white' }}>{Number(p.diem_danh_gia).toFixed(1)}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    <button onClick={() => toggleActive(p)} style={{ cursor: 'pointer', border: 'none', background: 'none', padding: 0 }}>
-                                        <span className="status-pill" style={{
-                                            background: p.is_active ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                                            color: p.is_active ? '#10b981' : '#ef4444',
-                                            border: `1px solid ${p.is_active ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'}`,
-                                        }}>
-                                            <div className="status-glow" style={{ color: p.is_active ? '#10b981' : '#ef4444' }} />
-                                            {p.is_active ? 'Đang bán' : 'Ẩn'}
-                                        </span>
-                                    </button>
-                                </td>
-                                <td>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <button onClick={() => openEdit(p)} className="action-icon-btn">
-                                            <Pencil size={15} />
+                                    </td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <button onClick={() => toggleActive(p)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
+                                            <div className="status-pill" style={{
+                                                background: p.is_active ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                                color: p.is_active ? '#10b981' : '#ef4444'
+                                            }}>
+                                                <div className="status-glow" />
+                                                {p.is_active ? 'Đang bán' : 'Tạm ẩn'}
+                                            </div>
                                         </button>
-                                        <button onClick={() => del(p.ma_sanpham)} className="action-icon-btn danger">
-                                            <Trash2 size={15} />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                                    </td>
+                                    <td style={{ textAlign: 'right' }}>
+                                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                            <button onClick={() => openEdit(p)} className="action-icon-btn">
+                                                <Pencil size={18} />
+                                            </button>
+                                            <button onClick={() => del(p.ma_sanpham)} className="action-icon-btn danger">
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
 
             {/* === PREMIUM MODAL === */}
             {modalOpen && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(2,6,23,0.85)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', backdropFilter: 'blur(16px)' }}
+                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', backdropFilter: 'blur(8px)' }}
                     onClick={e => e.target === e.currentTarget && setModalOpen(false)}>
                     <div style={{
                         width: '760px', maxWidth: '100vw', height: '100vh',
-                        background: 'linear-gradient(180deg, #0d1526 0%, #0a0f1e 100%)',
-                        borderLeft: '1px solid rgba(255,255,255,0.06)',
+                        background: 'var(--bg-main)',
+                        borderLeft: '1px solid var(--border-subtle)',
                         overflowY: 'auto', display: 'flex', flexDirection: 'column',
                         animation: 'slideInRight 0.3s cubic-bezier(0.22,1,0.36,1)',
-                        boxShadow: '-40px 0 120px rgba(0,0,0,0.7)',
+                        boxShadow: '-20px 0 60px rgba(0,0,0,0.05)',
                     }}>
                         {/* Modal Header */}
                         <div style={{
-                            padding: '28px 32px 0', borderBottom: '1px solid rgba(255,255,255,0.06)',
-                            position: 'sticky', top: 0, background: 'rgba(13,21,38,0.98)',
+                            padding: '28px 32px 0', borderBottom: '1px solid var(--border-subtle)',
+                            position: 'sticky', top: 0, background: 'var(--bg-main)',
                             backdropFilter: 'blur(20px)', zIndex: 10,
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', background: 'linear-gradient(135deg, var(--primary), #7f1d1d)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <div style={{ width: '48px', height: '48px', background: 'var(--primary)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(var(--primary-rgb), 0.2)' }}>
                                         {editProduct ? <Pencil size={20} color="white" /> : <Plus size={22} color="white" />}
                                     </div>
                                     <div>
-                                        <h2 style={{ fontSize: '22px', fontWeight: 950, color: 'white', fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.5px' }}>
+                                        <h2 style={{ fontSize: '22px', fontWeight: 950, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.5px' }}>
                                             {editProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm xe mới'}
                                         </h2>
                                         <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: 600 }}>
@@ -309,7 +375,7 @@ export default function ProductsPage() {
                                     </div>
                                 </div>
                                 <button onClick={() => setModalOpen(false)}
-                                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '10px', cursor: 'pointer', color: 'var(--text-muted)', transition: '0.2s', lineHeight: 0 }}>
+                                    style={{ background: 'var(--bg-deep)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '10px', cursor: 'pointer', color: 'var(--text-secondary)', transition: '0.2s', lineHeight: 0 }}>
                                     <X size={18} />
                                 </button>
                             </div>
@@ -324,7 +390,7 @@ export default function ProductsPage() {
                                             display: 'flex', alignItems: 'center', gap: '8px',
                                             padding: '12px 20px', background: 'none', border: 'none',
                                             borderBottom: isActive ? '2px solid var(--primary)' : '2px solid transparent',
-                                            color: isActive ? 'white' : 'var(--text-muted)',
+                                            color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
                                             fontWeight: isActive ? 800 : 600, fontSize: '13px',
                                             cursor: 'pointer', transition: '0.2s', letterSpacing: '0.3px',
                                             fontFamily: 'Outfit, sans-serif',
@@ -632,14 +698,14 @@ export default function ProductsPage() {
                         </div>
 
                         {/* Footer */}
-                        <div style={{ padding: '20px 32px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(10,15,30,0.98)', position: 'sticky', bottom: 0, zIndex: 10 }}>
+                        <div style={{ padding: '20px 32px', borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-main)', position: 'sticky', bottom: 0, zIndex: 10 }}>
                             <div style={{ display: 'flex', gap: '8px' }}>
-                                {TABS.map((tab, i) => (
-                                    <div key={tab.id} style={{ width: '8px', height: '8px', borderRadius: '50%', background: activeTab === tab.id ? 'var(--primary)' : 'rgba(255,255,255,0.1)', transition: '0.2s', cursor: 'pointer' }} onClick={() => setActiveTab(tab.id)} title={tab.label} />
+                                {TABS.map((tab) => (
+                                    <div key={tab.id} style={{ width: '8px', height: '8px', borderRadius: '50%', background: activeTab === tab.id ? 'var(--primary)' : 'var(--bg-deep)', transition: '0.2s', cursor: 'pointer' }} onClick={() => setActiveTab(tab.id)} title={tab.label} />
                                 ))}
                             </div>
                             <div style={{ display: 'flex', gap: '12px' }}>
-                                <button style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-muted)', padding: '0 24px', height: '48px', borderRadius: '14px', cursor: 'pointer', fontWeight: 700, fontSize: '14px' }} onClick={() => setModalOpen(false)}>Hủy</button>
+                                <button style={{ background: 'var(--bg-deep)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)', padding: '0 24px', height: '48px', borderRadius: '14px', cursor: 'pointer', fontWeight: 700, fontSize: '14px' }} onClick={() => setModalOpen(false)}>Hủy</button>
                                 <button className="btn-premium" onClick={handleSave} disabled={saving} style={{ opacity: saving ? 0.7 : 1, height: '48px', padding: '0 32px', gap: '10px', fontSize: '15px', fontWeight: 800 }}>
                                     {saving ? <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,255,255,0.2)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} /> : <Save size={18} />}
                                     {saving ? 'Đang lưu...' : editProduct ? 'Cập nhật sản phẩm' : 'Tạo sản phẩm'}

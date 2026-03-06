@@ -65,7 +65,7 @@ export default function CategoriesPage() {
             {/* Header */}
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
                 <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Quản lý danh mục</h1>
+                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Quản lý danh mục</h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
                         Phân loại sản phẩm thông minh với <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> danh mục hiện hành.
                     </p>
@@ -81,7 +81,7 @@ export default function CategoriesPage() {
             {showForm && (
                 <div className="premium-card glass-panel" style={{ marginBottom: '40px', animation: 'slideUp 0.4s ease-out', border: '1px solid rgba(var(--primary-rgb), 0.2)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-                        <h3 style={{ fontSize: '20px', fontWeight: 900, color: 'white', fontFamily: 'Outfit, sans-serif' }}>{editing ? 'Cập nhật danh mục' : 'Khởi tạo danh mục mới'}</h3>
+                        <h3 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif' }}>{editing ? 'Cập nhật danh mục' : 'Khởi tạo danh mục mới'}</h3>
                         <button onClick={() => setShowForm(false)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', transition: '0.3s' }} className="hover:text-white">
                             <X size={24} />
                         </button>
@@ -141,21 +141,21 @@ export default function CategoriesPage() {
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button
                                     onClick={() => { setForm({ ten_danhmuc: item.ten_danhmuc, mo_ta: item.mo_ta || '' }); setEditing(item.ma_danhmuc); setShowForm(true); }}
-                                    style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-secondary)', border: '1px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }}
-                                    className="hover:bg-white hover:text-black"
+                                    style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'var(--bg-deep)', color: 'var(--text-secondary)', border: '1px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }}
+                                    className="action-icon-btn"
                                 >
                                     <Pencil size={18} />
                                 </button>
                                 <button
                                     onClick={() => del(item.ma_danhmuc)}
                                     style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(230,57,70,0.05)', color: '#ef4444', border: '1px solid rgba(230,57,70,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }}
-                                    className="hover:bg-red-500 hover:text-white"
+                                    className="action-icon-btn danger"
                                 >
                                     <Trash2 size={18} />
                                 </button>
                             </div>
                         </div>
-                        <h3 style={{ fontSize: '22px', fontWeight: 900, color: 'white', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>{item.ten_danhmuc}</h3>
+                        <h3 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>{item.ten_danhmuc}</h3>
                         <p style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500, lineHeight: '1.6', height: '44px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                             {item.mo_ta || 'Danh mục sản phẩm chất lượng cao từ MotoShop.'}
                         </p>

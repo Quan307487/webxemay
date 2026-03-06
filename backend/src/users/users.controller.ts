@@ -20,5 +20,9 @@ export class UsersController {
     // Admin: quản lý tất cả users
     @Get() @Roles('admin') findAll(@Query() query: any) { return this.svc.findAll(query); }
     @Get(':id') @Roles('admin') findOne(@Param('id', ParseIntPipe) id: number) { return this.svc.findOne(id); }
+    @Put(':id') @Roles('admin') update(@Param('id', ParseIntPipe) id: number, @Body() dto: any) { return this.svc.adminUpdate(id, dto); }
     @Put(':id/status') @Roles('admin') updateStatus(@Param('id', ParseIntPipe) id: number, @Body('status') status: string) { return this.svc.updateStatus(id, status); }
+    @Delete(':id') @Roles('admin') remove(@Param('id', ParseIntPipe) id: number) { return this.svc.remove(id); }
+
+    @Get('debug/:id') findOneDebug(@Param('id', ParseIntPipe) id: number) { return this.svc.findOne(id); }
 }

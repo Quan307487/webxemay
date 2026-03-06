@@ -65,7 +65,7 @@ export default function BrandsPage() {
             {/* Header */}
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
                 <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Quản lý thương hiệu</h1>
+                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Quản lý thương hiệu</h1>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
                         Quản lý các đối tác chiến lược với <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> thương hiệu uy tín.
                     </p>
@@ -81,7 +81,7 @@ export default function BrandsPage() {
             {showForm && (
                 <div className="premium-card glass-panel" style={{ marginBottom: '40px', animation: 'slideUp 0.4s ease-out', border: '1px solid rgba(var(--primary-rgb), 0.2)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-                        <h3 style={{ fontSize: '20px', fontWeight: 900, color: 'white', fontFamily: 'Outfit, sans-serif' }}>{editing ? 'Cập nhật thương hiệu' : 'Khởi tạo đối tác mới'}</h3>
+                        <h3 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif' }}>{editing ? 'Cập nhật thương hiệu' : 'Khởi tạo đối tác mới'}</h3>
                         <button onClick={() => setShowForm(false)} style={{ color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', transition: '0.3s' }} className="hover:text-white">
                             <X size={24} />
                         </button>
@@ -151,21 +151,21 @@ export default function BrandsPage() {
                             <div style={{ display: 'flex', gap: '10px' }}>
                                 <button
                                     onClick={() => { setForm({ ten_thuonghieu: item.ten_thuonghieu, nuoc_san_xuat: item.nuoc_san_xuat || '', mo_ta: item.mo_ta || '' }); setEditing(item.ma_thuonghieu); setShowForm(true); }}
-                                    style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', color: 'var(--text-secondary)', border: '1px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }}
-                                    className="hover:bg-white hover:text-black"
+                                    style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'var(--bg-deep)', color: 'var(--text-secondary)', border: '1px solid var(--border-light)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }}
+                                    className="action-icon-btn"
                                 >
                                     <Pencil size={18} />
                                 </button>
                                 <button
                                     onClick={() => del(item.ma_thuonghieu)}
                                     style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(230,57,70,0.05)', color: '#ef4444', border: '1px solid rgba(230,57,70,0.1)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.3s' }}
-                                    className="hover:bg-red-500 hover:text-white"
+                                    className="action-icon-btn danger"
                                 >
                                     <Trash2 size={18} />
                                 </button>
                             </div>
                         </div>
-                        <h3 style={{ fontSize: '22px', fontWeight: 900, color: 'white', marginBottom: '4px', fontFamily: 'Outfit, sans-serif' }}>{item.ten_thuonghieu}</h3>
+                        <h3 style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '4px', fontFamily: 'Outfit, sans-serif' }}>{item.ten_thuonghieu}</h3>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                             <Globe size={14} style={{ color: 'var(--text-muted)' }} />
                             <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 700 }}>{item.nuoc_san_xuat || 'International'}</span>
