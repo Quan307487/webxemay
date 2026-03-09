@@ -1,135 +1,234 @@
 'use client';
 import Link from 'next/link';
-import { Bike, Phone, Mail, MapPin, Facebook, Youtube, Instagram, ArrowUpRight } from 'lucide-react';
+import { Bike, Phone, Mail, MapPin, Facebook, Youtube, Instagram, ArrowUpRight, MessageCircle } from 'lucide-react';
 
 export default function Footer() {
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     return (
-        <footer className="site-footer">
-            {/* Top gradient */}
-            <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(230,57,70,0.4), rgba(244,162,97,0.3), transparent)' }} />
+        <footer className="site-footer" style={{
+            background: 'linear-gradient(180deg, #0f172a 0%, #020617 100%)',
+            position: 'relative',
+            overflow: 'hidden',
+            borderTop: '1px solid rgba(255,255,255,0.05)'
+        }}>
+            {/* Background decorative elements */}
+            <div style={{ position: 'absolute', top: '-150px', right: '-100px', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(230,57,70,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: '-100px', left: '-50px', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '72px 32px 40px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '56px' }}>
-                {/* Brand */}
-                <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                        <div style={{ background: 'linear-gradient(135deg, var(--primary), #7f1d1d)', borderRadius: '14px', padding: '10px', display: 'flex', boxShadow: '0 8px 24px rgba(230,57,70,0.3)' }}>
-                            <Bike size={22} color="white" />
-                        </div>
-                        <span style={{ fontWeight: 900, fontSize: '24px', fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(135deg, var(--primary), var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>MotoShop</span>
-                    </div>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.9, marginBottom: '24px' }}>
-                        Hệ thống phân phối xe máy chính hãng hàng đầu Việt Nam. Hơn 200+ mẫu xe, giao hàng toàn quốc.
-                    </p>
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '28px' }}>
-                        {[
-                            { Icon: Facebook, href: '#', label: 'Facebook', color: '#3b82f6' },
-                            { Icon: Youtube, href: '#', label: 'Youtube', color: '#ef4444' },
-                            { Icon: Instagram, href: '#', label: 'Instagram', color: '#ec4899' },
-                        ].map(({ Icon, href, label, color }) => (
-                            <a key={label} href={href} aria-label={label}
-                                style={{ width: '40px', height: '40px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', transition: 'all 0.3s', background: 'rgba(255,255,255,0.03)' }}
-                                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = `${color}40`; el.style.background = `${color}15`; el.style.color = color; el.style.transform = 'translateY(-2px)'; }}
-                                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = 'rgba(255,255,255,0.07)'; el.style.background = 'rgba(255,255,255,0.03)'; el.style.color = 'var(--text-muted)'; el.style.transform = 'translateY(0)'; }}>
-                                <Icon size={16} />
-                            </a>
-                        ))}
-                    </div>
+            <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '80px 32px 40px', position: 'relative', zIndex: 1 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '64px' }}>
 
-                    {/* Trust badges */}
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        {['✅ Chính hãng', '🔒 Bảo mật', '⭐ 4.9★'].map(badge => (
-                            <span key={badge} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '5px 10px', fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>{badge}</span>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Products */}
-                <div>
-                    <h3 style={{ fontWeight: 800, fontSize: '14px', color: 'white', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'Outfit, sans-serif' }}>Sản phẩm</h3>
-                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {[
-                            ['🏍 Xe số', '/products?kieu_xe=xe_so'],
-                            ['🛵 Xe ga', '/products?kieu_xe=xe_ga'],
-                            ['🏁 Xe côn tay', '/products?kieu_xe=xe_con_tay'],
-                            ['⚡ Xe điện', '/products?kieu_xe=xe_dien'],
-                            ['🔥 Phân khối lớn', '/products?kieu_xe=phan_khoi_lon'],
-                        ].map(([label, href]) => (
-                            <li key={label}>
-                                <Link href={href} style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}
-                                    onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'white'; el.style.paddingLeft = '6px'; }}
-                                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--text-muted)'; el.style.paddingLeft = '0'; }}>
-                                    {label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Help */}
-                <div>
-                    <h3 style={{ fontWeight: 800, fontSize: '14px', color: 'white', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'Outfit, sans-serif' }}>Hỗ trợ</h3>
-                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {[
-                            ['Đơn hàng của tôi', '/orders'],
-                            ['Danh sách yêu thích', '/wishlist'],
-                            ['Hồ sơ cá nhân', '/profile'],
-                            ['Đăng nhập', '/auth/login'],
-                            ['Đăng ký tài khoản', '/auth/register'],
-                        ].map(([label, href]) => (
-                            <li key={label}>
-                                <Link href={href} style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px', transition: 'all 0.2s', fontWeight: 500 }}
-                                    onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--primary)'; }}
-                                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--text-muted)'; }}>
-                                    {label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Contact */}
-                <div>
-                    <h3 style={{ fontWeight: 800, fontSize: '14px', color: 'white', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '1px', fontFamily: 'Outfit, sans-serif' }}>Liên hệ</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {[
-                            { Icon: Phone, text: '1900-xxxx', sub: 'Hotline 24/7 miễn phí', color: '#4ade80' },
-                            { Icon: Mail, text: 'support@motoshop.vn', sub: 'Phản hồi trong 2 giờ', color: '#60a5fa' },
-                            { Icon: MapPin, text: '123 Đường ABC, TP.HCM', sub: 'Showroom chính + Bảo hành', color: '#f87171' },
-                        ].map(({ Icon, text, sub, color }, i) => (
-                            <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `${color}15`, border: `1px solid ${color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color }}>
-                                    <Icon size={15} />
-                                </div>
-                                <div>
-                                    <p style={{ fontSize: '14px', color: 'white', fontWeight: 600 }}>{text}</p>
-                                    <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{sub}</p>
-                                </div>
+                    {/* Brand & Mission */}
+                    <div style={{ gridColumn: 'span 1.5' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '28px' }}>
+                            <div style={{
+                                background: 'linear-gradient(135deg, var(--primary), #991b1b)',
+                                borderRadius: '16px',
+                                padding: '12px',
+                                display: 'flex',
+                                boxShadow: '0 10px 30px rgba(230,57,70,0.4)',
+                                transform: 'rotate(-5deg)'
+                            }}>
+                                <Bike size={24} color="white" />
                             </div>
-                        ))}
+                            <span style={{
+                                fontWeight: 900,
+                                fontSize: '28px',
+                                fontFamily: 'Outfit, sans-serif',
+                                letterSpacing: '-1px',
+                                background: 'linear-gradient(135deg, #fff 0%, #94a3b8 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent'
+                            }}>
+                                MotoShop<span style={{ color: 'var(--primary)', WebkitTextFillColor: 'var(--primary)' }}>.</span>
+                            </span>
+                        </div>
+
+                        <p style={{ color: '#94a3b8', fontSize: '15px', lineHeight: 1.8, marginBottom: '32px', maxWidth: '380px' }}>
+                            Trải nghiệm hệ sinh thái xe máy điện và động cơ đốt trong hàng đầu Việt Nam. Tận hưởng đặc quyền mua sắm cao cấp với dịch vụ hậu mãi 5 sao.
+                        </p>
+
+                        <div style={{ display: 'flex', gap: '12px', marginBottom: '40px' }}>
+                            {[
+                                { Icon: Facebook, href: 'https://www.facebook.com/share/1C6edfa7SN/', label: 'Facebook', color: '#1877F2' },
+                                { Icon: Youtube, href: 'https://youtube.com/@quanbui2507?si=4WSTdar01MDoCAyE', label: 'Youtube', color: '#FF0000' },
+                                { Icon: Instagram, href: 'https://www.instagram.com/direct/inbox/', label: 'Instagram', color: '#E1306C' },
+                                { Icon: MessageCircle, href: 'https://zalo.me/0339886769', label: 'Zalo', color: '#0068ff' },
+                            ].map(({ Icon, href, label, color }) => (
+                                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
+                                    style={{
+                                        width: '44px',
+                                        height: '44px',
+                                        borderRadius: '50%',
+                                        border: '1px solid rgba(255,255,255,0.08)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#94a3b8',
+                                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        background: 'rgba(255,255,255,0.02)',
+                                        backdropFilter: 'blur(10px)'
+                                    }}
+                                    onMouseEnter={e => {
+                                        const el = e.currentTarget as HTMLElement;
+                                        el.style.borderColor = `${color}`;
+                                        el.style.background = `${color}`;
+                                        el.style.color = 'white';
+                                        el.style.transform = 'translateY(-5px) scale(1.1)';
+                                        el.style.boxShadow = `0 10px 20px ${color}40`;
+                                    }}
+                                    onMouseLeave={e => {
+                                        const el = e.currentTarget as HTMLElement;
+                                        el.style.borderColor = 'rgba(255,255,255,0.08)';
+                                        el.style.background = 'rgba(255,255,255,0.02)';
+                                        el.style.color = '#94a3b8';
+                                        el.style.transform = 'translateY(0) scale(1)';
+                                        el.style.boxShadow = 'none';
+                                    }}>
+                                    <Icon size={18} />
+                                </a>
+                            ))}
+                        </div>
+
+                        {/* Premium Trust Pillars */}
+                        <div style={{ display: 'flex', gap: '20px' }}>
+                            {[
+                                { t: '100%', s: 'Chính Hãng' },
+                                { t: '24/7', s: 'Tận Tâm' },
+                                { t: 'Free', s: 'Vận Chuyển' }
+                            ].map((p, i) => (
+                                <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ color: 'white', fontWeight: 800, fontSize: '16px', fontFamily: 'Outfit' }}>{p.t}</span>
+                                    <span style={{ color: '#64748b', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.s}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Quick Navigation */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', gridColumn: 'span 2' }}>
+                        <div>
+                            <h4 style={{ fontWeight: 800, fontSize: '13px', color: 'white', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'Outfit' }}>Sản Phẩm</h4>
+                            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                {[
+                                    ['Xe Tay Ga Thời Thượng', '/products?kieu_xe=xe_ga'],
+                                    ['Xe Số Bền Bỉ', '/products?kieu_xe=xe_so'],
+                                    ['PKL & Thể Thao', '/products?kieu_xe=phan_khoi_lon'],
+                                    ['Kỷ Nguyên Xe Điện', '/products?kieu_xe=xe_dien'],
+                                    ['Phụ Kiện Chính Hãng', '/accessories'],
+                                ].map(([label, href]) => (
+                                    <li key={label}>
+                                        <Link href={href} style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px', transition: 'all 0.3s', display: 'flex', alignItems: 'center', gap: '0px', fontWeight: 500 }}
+                                            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'white'; el.style.paddingLeft = '10px'; el.style.fontSize = '14.5px'; }}
+                                            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = '#94a3b8'; el.style.paddingLeft = '0'; el.style.fontSize = '14px'; }}>
+                                            <span style={{ color: 'var(--primary)', marginRight: '8px', opacity: 0, transition: 'all 0.3s' }}>—</span>
+                                            {label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 style={{ fontWeight: 800, fontSize: '13px', color: 'white', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'Outfit' }}>Trải Nghiệm</h4>
+                            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                                {[
+                                    ['Đăng Ký Lái Thử', '/test-ride'],
+                                    ['Hệ Thống Showroom', '/stores'],
+                                    ['Ưu Đãi Đặc Quyền', '/offers'],
+                                    ['Bảo Dưỡng Định Kỳ', '/service'],
+                                    ['Cộng Đồng Rider', '/community'],
+                                ].map(([label, href]) => (
+                                    <li key={label}>
+                                        <Link href={href} style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px', transition: 'all 0.3s', fontWeight: 500 }}
+                                            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--primary)'; }}
+                                            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = '#94a3b8'; }}>
+                                            {label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Contact & Newsletter */}
+                    <div style={{ gridColumn: 'span 1.5' }}>
+                        <h4 style={{ fontWeight: 800, fontSize: '13px', color: 'white', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'Outfit' }}>Kết Nối</h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            {[
+                                { Icon: Phone, text: '1900-8888', sub: 'Tổng đài hỗ trợ 24/7 (Miễn phí)', color: '#4ade80' },
+                                { Icon: Mail, text: 'vip@motoshop.vn', sub: 'Hợp tác & Phản hồi khách hàng', color: '#60a5fa' },
+                                { Icon: MapPin, text: 'Quận 1, TP. Hồ Chí Minh', sub: 'Flagship Store & Global Office', color: '#f87171' },
+                            ].map(({ Icon, text, sub, color }, i) => (
+                                <div key={i} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                                    <div style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        borderRadius: '12px',
+                                        background: 'rgba(255,255,255,0.03)',
+                                        border: '1px solid rgba(255,255,255,0.08)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        flexShrink: 0,
+                                        color: color
+                                    }}>
+                                        <Icon size={16} />
+                                    </div>
+                                    <div>
+                                        <p style={{ fontSize: '15px', color: 'white', fontWeight: 700 }}>{text}</p>
+                                        <p style={{ fontSize: '12px', color: '#64748b', marginTop: '1px' }}>{sub}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Bottom bar */}
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '20px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', maxWidth: '1280px', margin: '0 auto' }}>
-                <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-                    © 2026 MotoShop. Tất cả quyền được bảo lưu. 🏍
-                </p>
-                <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                    {[['Chính sách bảo mật', '#'], ['Điều khoản sử dụng', '#'], ['DMCA', '#']].map(([l, h]) => (
-                        <a key={l} href={h} style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }}
-                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'var(--primary)'}
-                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'}>
-                            {l}
-                        </a>
-                    ))}
+                {/* Bottom section */}
+                <div style={{
+                    marginTop: '80px',
+                    paddingTop: '32px',
+                    borderTop: '1px solid rgba(255,255,255,0.05)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '24px'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                        <p style={{ color: '#475569', fontSize: '13px', fontWeight: 500 }}>
+                            © 2026 MotoShop Vietnam. All rights reserved.
+                        </p>
+                        <div style={{ display: 'flex', gap: '20px' }}>
+                            {['Chính sách', 'Bảo mật', 'Tuyển dụng'].map(l => (
+                                <a key={l} href="#" style={{ color: '#475569', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }}
+                                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#94a3b8'}
+                                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#475569'}>
+                                    {l}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
                     <button onClick={scrollToTop}
-                        style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--primary)', transition: 'all 0.2s' }}
-                        onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'rgba(230,57,70,0.2)'; el.style.transform = 'translateY(-2px)'; }}
-                        onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'rgba(230,57,70,0.1)'; el.style.transform = 'translateY(0)'; }}>
-                        <ArrowUpRight size={16} />
+                        style={{
+                            width: '48px',
+                            height: '48px',
+                            borderRadius: '16px',
+                            background: 'rgba(230,57,70,0.1)',
+                            border: '1px solid rgba(230,57,70,0.2)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            color: 'var(--primary)',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                        }}
+                        onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--primary)'; el.style.color = 'white'; el.style.transform = 'translateY(-5px)'; el.style.boxShadow = '0 10px 20px rgba(230,57,70,0.3)'; }}
+                        onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'rgba(230,57,70,0.1)'; el.style.color = 'var(--primary)'; el.style.transform = 'translateY(0)'; el.style.boxShadow = 'none'; }}>
+                        <ArrowUpRight size={20} />
                     </button>
                 </div>
             </div>

@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 import { useToast } from '@/components/Toast';
-import { ShoppingCart, Heart, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Heart, Star, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 function formatPrice(n: number) { return n?.toLocaleString('vi-VN') + 'đ'; }
@@ -183,13 +183,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         )}
 
                         {/* Actions */}
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button className="btn-primary" onClick={handleCart} disabled={adding || product.ton_kho === 0}
-                                style={{ flex: 1, justifyContent: 'center', padding: '14px', fontSize: '15px', opacity: adding || product.ton_kho === 0 ? 0.6 : 1 }}>
-                                <ShoppingCart size={18} /> {adding ? 'Đang thêm...' : 'Thêm vào giỏ'}
-                            </button>
-                            <button onClick={handleWishlist} style={{ background: inWishlist ? 'rgba(230,57,70,0.15)' : 'var(--bg-card)', border: `1px solid ${inWishlist ? 'var(--primary)' : 'var(--border)'}`, borderRadius: '8px', padding: '14px 18px', cursor: 'pointer', color: inWishlist ? 'var(--primary)' : 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}>
-                                <Heart size={20} fill={inWishlist ? 'var(--primary)' : 'none'} />
+                        <div style={{ display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <button className="btn-primary" onClick={handleCart} disabled={adding || product.ton_kho === 0}
+                                    style={{ flex: 1.5, justifyContent: 'center', padding: '16px', fontSize: '15px', opacity: adding || product.ton_kho === 0 ? 0.6 : 1, borderRadius: '14px' }}>
+                                    <ShoppingCart size={18} /> {adding ? 'Đang thêm...' : 'Thêm vào giỏ'}
+                                </button>
+                                <button onClick={handleWishlist} style={{ background: inWishlist ? 'rgba(230,57,70,0.15)' : 'var(--bg-card)', border: `1px solid ${inWishlist ? 'var(--primary)' : 'var(--border)'}`, borderRadius: '14px', width: '56px', height: '56px', cursor: 'pointer', color: inWishlist ? 'var(--primary)' : 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', flexShrink: 0 }}>
+                                    <Heart size={20} fill={inWishlist ? 'var(--primary)' : 'none'} />
+                                </button>
+                            </div>
+                            <button className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '15px', borderRadius: '14px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', fontWeight: 800, color: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--secondary)'; el.style.color = 'white'; }}
+                                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--bg-elevated)'; el.style.color = 'var(--secondary)'; }}>
+                                🏍 Đăng ký lái thử ngay
                             </button>
                         </div>
 
@@ -283,7 +290,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                             {(r.user?.hovaten || r.user?.ten_user || '?')[0].toUpperCase()}
                                         </div>
                                         <div>
-                                            <p style={{ fontWeight: 700, fontSize: '14px' }}>{r.user?.hovaten || r.user?.ten_user}</p>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <p style={{ fontWeight: 700, fontSize: '14px' }}>{r.user?.hovaten || r.user?.ten_user}</p>
+                                                <span style={{ fontSize: '10px', background: 'rgba(34,197,94,0.1)', color: '#22c55e', padding: '2px 8px', borderRadius: '10px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                    <Sparkles size={10} /> Đã mua hàng
+                                                </span>
+                                            </div>
                                             <div style={{ display: 'flex', gap: '2px', marginTop: '2px' }}>{[...Array(5)].map((_, i) => <Star key={i} size={12} fill={i < r.diem_danhgia ? '#eab308' : 'transparent'} color="#eab308" />)}</div>
                                         </div>
                                         <span style={{ marginLeft: 'auto', fontSize: '12px', color: 'var(--text-muted)' }}>{new Date(r.ngay_lap).toLocaleDateString('vi-VN')}</span>

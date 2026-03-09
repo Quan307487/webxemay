@@ -4,12 +4,17 @@ import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { useAuthStore, useCartStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
+import { productsApi } from '@/lib/api';
 
 export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [userDropdown, setUserDropdown] = useState(false);
     const [search, setSearch] = useState('');
     const [scrolled, setScrolled] = useState(false);
+    const [results, setResults] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [showResults, setShowResults] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
     const { user, logout } = useAuthStore();
     const cartCount = useCartStore(s => s.count());
     const router = useRouter();
@@ -23,10 +28,25 @@ export default function Navbar() {
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setUserDropdown(false);
+            if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowResults(false);
         };
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, []);
+
+    useEffect(() => {
+        if (!search.trim()) { setResults([]); setShowResults(false); return; }
+        const timer = setTimeout(async () => {
+            setLoading(true);
+            try {
+                const r = await productsApi.getAll({ search, limit: 5, active: '1' });
+                setResults(r.data.data || []);
+                setShowResults(true);
+            } catch (e) { console.error(e); }
+            finally { setLoading(false); }
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 30);
@@ -79,30 +99,68 @@ export default function Navbar() {
                     </Link>
 
                     {/* Search (Desktop) */}
-                    <form onSubmit={handleSearch} className="hidden lg:flex" style={{ flex: 1, maxWidth: '600px', margin: '0 48px', position: 'relative' }}>
-                        <div style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
-                            <Search size={18} />
-                        </div>
-                        <input
-                            className="input-field"
-                            placeholder="Tìm kiếm xe máy, hãng xe, phụ kiện..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            style={{
-                                paddingLeft: '52px',
-                                paddingRight: '56px',
-                                height: '52px',
-                                borderRadius: '18px',
-                                background: scrolled ? 'var(--bg-elevated)' : 'rgba(0,0,0,0.03)',
-                                border: '1px solid var(--border)',
-                                fontSize: '15px',
-                                transition: 'all 0.3s'
-                            }}
-                        />
-                        <button type="submit" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)', background: 'var(--primary)', border: 'none', borderRadius: '14px', width: '40px', height: '40px', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(var(--primary-rgb), 0.2)' }}>
-                            <ArrowRight size={16} />
-                        </button>
-                    </form>
+                    <div ref={searchRef} style={{ flex: 1, maxWidth: '600px', margin: '0 48px', position: 'relative' }} className="hidden lg:block">
+                        <form onSubmit={handleSearch}>
+                            <div style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
+                                <Search size={18} />
+                            </div>
+                            <input
+                                className="input-field"
+                                placeholder="Tìm kiếm xe máy, hãng xe, phụ kiện..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                onFocus={() => results.length > 0 && setShowResults(true)}
+                                style={{
+                                    paddingLeft: '52px',
+                                    paddingRight: '56px',
+                                    height: '52px',
+                                    borderRadius: '18px',
+                                    background: scrolled ? 'var(--bg-elevated)' : 'rgba(0,0,0,0.03)',
+                                    border: '1px solid var(--border)',
+                                    fontSize: '15px',
+                                    transition: 'all 0.3s'
+                                }}
+                            />
+                            <button type="submit" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)', background: 'var(--primary)', border: 'none', borderRadius: '14px', width: '40px', height: '40px', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(var(--primary-rgb), 0.2)' }}>
+                                <ArrowRight size={16} />
+                            </button>
+                        </form>
+
+                        {/* Search Results Dropdown */}
+                        {showResults && (
+                            <div className="glass-panel" style={{ position: 'absolute', top: 'calc(100% + 12px)', left: 0, right: 0, padding: '12px', zIndex: 2000, maxHeight: '450px', overflowY: 'auto', animation: 'fadeInDown 0.3s cubic-bezier(0.2, 1, 0.2, 1)' }}>
+                                {loading ? (
+                                    <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>Đang tìm kiếm...</div>
+                                ) : results.length > 0 ? (
+                                    <>
+                                        <p style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Sản phẩm gợi ý</p>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            {results.map((p: any) => (
+                                                <Link key={p.ma_sanpham} href={`/products/${p.ma_sanpham}`} onClick={() => setShowResults(false)}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 16px', borderRadius: '14px', textDecoration: 'none', color: 'var(--text-secondary)', transition: 'all 0.2s' }}
+                                                    className="nav-item-hover">
+                                                    <img src={p.hinhanh?.[0]?.image_url ? `http://localhost:3001${p.hinhanh[0].image_url}` : '/placeholder-bike.jpg'} alt="" style={{ width: '56px', height: '42px', objectFit: 'cover', borderRadius: '8px', background: 'var(--bg-card)' }} />
+                                                    <div style={{ flex: 1 }}>
+                                                        <p style={{ fontWeight: 800, fontSize: '14px', color: 'var(--secondary)', marginBottom: '2px' }}>{p.ten_sanpham}</p>
+                                                        <p style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 700 }}>{Number(p.gia).toLocaleString('vi-VN')}đ</p>
+                                                    </div>
+                                                    <ArrowRight size={14} style={{ opacity: 0.3 }} />
+                                                </Link>
+                                            ))}
+                                        </div>
+                                        <Link href={`/products?search=${encodeURIComponent(search)}`} onClick={() => setShowResults(false)}
+                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', marginTop: '8px', borderTop: '1px solid var(--border)', textDecoration: 'none', color: 'var(--primary)', fontSize: '14px', fontWeight: 800 }}
+                                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(var(--primary-rgb), 0.05)'}
+                                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
+                                            Xem tất cả kết quả <ArrowRight size={14} />
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>Không tìm thấy xe nào khớp với "{search}"</div>
+                                )}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Desktop Right (User Actions) */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
