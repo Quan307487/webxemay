@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Mail, Phone, Shield, Calendar, Eye, EyeOff } from 'lucide-react';
+import { Mail, Phone, Shield, Calendar, Eye, EyeOff, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../lib/api';
 
@@ -9,8 +9,9 @@ export default function ProfilePage() {
     const [form, setForm] = useState({ hovaten: '', SDT: '', diachi: '' });
     const [pwForm, setPwForm] = useState({ old_password: '', new_password: '', confirm: '' });
     const [showPw, setShowPw] = useState(false);
-    const [saving, setSaving] = useState(false);
+    const [savingProfile, setSavingProfile] = useState(false);
     const [savingPw, setSavingPw] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         try {
@@ -30,7 +31,7 @@ export default function ProfilePage() {
     }
 
     const handleSaveProfile = async () => {
-        setSaving(true);
+        setSavingProfile(true);
         try {
             const res = await api.put('/users/me', form);
             const updated = { ...admin, ...res.data };
@@ -40,7 +41,7 @@ export default function ProfilePage() {
             toast.success('Cập nhật thông tin thành công!');
         } catch (e: any) {
             toast.error(e.response?.data?.message || 'Lỗi cập nhật');
-        } finally { setSaving(false); }
+        } finally { setSavingProfile(false); }
     };
 
     const handleChangePassword = async () => {
@@ -54,6 +55,30 @@ export default function ProfilePage() {
         } catch (e: any) {
             toast.error(e.response?.data?.message || 'Mật khẩu cũ không đúng');
         } finally { setSavingPw(false); }
+    };
+
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        setUploading(true);
+        const loadToast = toast.loading('Đang tải ảnh lên...');
+        try {
+            const res = await api.post('/users/me/avatar', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            const updated = { ...admin, ...res.data };
+            localStorage.setItem('admin_user', JSON.stringify(updated));
+            setAdmin(updated);
+            toast.success('Cập nhật ảnh đại diện thành công!', { id: loadToast });
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Lỗi khi tải ảnh lên', { id: loadToast });
+        } finally {
+            setUploading(false);
+        }
     };
 
     if (!admin) return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-muted)' }}>
@@ -73,20 +98,50 @@ export default function ProfilePage() {
                 </p>
             </header>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '32px', alignItems: 'start' }}>
+            <form autoComplete="off" onSubmit={(e) => e.preventDefault()} style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '32px', alignItems: 'start' }}>
+                {/* Autofill Trap */}
+                <input type="text" style={{ display: 'none' }} />
+                <input type="password" style={{ display: 'none' }} />
                 {/* Left: Avatar Card */}
                 <div className="premium-card glass-panel" style={{ padding: '48px 32px', textAlign: 'center', border: '1px solid var(--border-light)' }}>
-                    <div style={{
-                        width: '140px', height: '140px',
-                        background: 'linear-gradient(135deg, var(--primary), #7f1d1d)',
-                        borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        margin: '0 auto 32px', fontSize: '56px', fontWeight: 950, color: 'white',
-                        boxShadow: '0 20px 40px -10px rgba(var(--primary-rgb), 0.4)',
-                        border: '2px solid rgba(255,255,255,0.1)',
-                        transform: 'rotate(-3deg)',
-                        textShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                    }}>
-                        {initials}
+                    <div style={{ position: 'relative', width: 'fit-content', margin: '0 auto 32px' }}>
+                        <div style={{
+                            width: '140px', height: '140px',
+                            background: admin.hinh_anh ? `url(${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${admin.hinh_anh})` : 'linear-gradient(135deg, var(--primary), #7f1d1d)',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '56px', fontWeight: 950, color: 'white',
+                            boxShadow: '0 20px 40px -10px rgba(var(--primary-rgb), 0.4)',
+                            border: '2px solid rgba(255,255,255,0.1)',
+                            transform: 'rotate(-3deg)',
+                            textShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                            overflow: 'hidden'
+                        }}>
+                            {!admin.hinh_anh && initials}
+                        </div>
+
+                        <label className="avatar-upload-label" style={{
+                            position: 'absolute',
+                            bottom: '-10px',
+                            right: '-10px',
+                            width: '44px',
+                            height: '44px',
+                            background: 'var(--primary)',
+                            borderRadius: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            cursor: 'pointer',
+                            boxShadow: '0 8px 16px rgba(var(--primary-rgb), 0.4)',
+                            transition: 'all 0.3s ease',
+                            zIndex: 10,
+                            border: '3px solid var(--bg-main)'
+                        }}>
+                            <Camera size={20} />
+                            <input type="file" hidden accept="image/*" onChange={handleAvatarUpload} disabled={uploading} />
+                        </label>
                     </div>
 
                     <h2 style={{ fontSize: '28px', fontWeight: 950, color: 'white', marginBottom: '6px', letterSpacing: '-1px', fontFamily: 'Outfit, sans-serif' }}>{displayName}</h2>
@@ -146,8 +201,8 @@ export default function ProfilePage() {
                             ) : (
                                 <div style={{ display: 'flex', gap: '16px' }}>
                                     <button onClick={() => setEditMode(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontWeight: 800, cursor: 'pointer', fontSize: '14px' }}>Hủy bỏ</button>
-                                    <button className="btn-premium" style={{ height: '44px', padding: '0 28px', fontSize: '14px', opacity: saving ? 0.7 : 1 }} onClick={handleSaveProfile} disabled={saving}>
-                                        {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+                                    <button className="btn-premium" style={{ height: '44px', padding: '0 28px', fontSize: '14px', opacity: savingProfile ? 0.7 : 1 }} onClick={handleSaveProfile} disabled={savingProfile}>
+                                        {savingProfile ? 'Đang lưu...' : 'Lưu thay đổi'}
                                     </button>
                                 </div>
                             )}
@@ -191,6 +246,7 @@ export default function ProfilePage() {
                                     onChange={e => setForm({ ...form, diachi: e.target.value })}
                                     disabled={!editMode}
                                     placeholder="Nhập địa chỉ của bạn"
+                                    autoComplete="new-password"
                                 />
                             </div>
                         </div>
@@ -236,12 +292,13 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
 
             <style>{`
                 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                .info-item:hover { background: rgba(var(--primary-rgb), 0.05) !important; transform: translateX(4px); border-color: rgba(var(--primary-rgb), 0.2) !important; }
+                .info-item:hover { background: rgba(255,255,255,0.04) !important; transform: translateX(8px); border-color: var(--primary) !important; }
                 .eye-toggle:hover { color: var(--primary) !important; }
+                .avatar-upload-label:hover { transform: scale(1.1) rotate(5deg); background: white !important; color: var(--primary) !important; }
             `}</style>
         </div>
     );

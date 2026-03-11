@@ -14,7 +14,10 @@ export class User {
     @Column({ nullable: true }) SDT: string;
     @Column({ nullable: true }) diachi: string;
     @Column({ type: 'enum', enum: ['customer', 'admin'], default: 'customer' }) quyen: string;
+    @Column({ nullable: true }) hinh_anh: string;
     @Column({ type: 'enum', enum: ['active', 'inactive', 'banned'], default: 'active' }) status: string;
+    @Column({ name: 'reset_token', type: 'varchar', length: 255, nullable: true }) reset_token: string | null;
+    @Column({ name: 'reset_token_expires', type: 'datetime', nullable: true }) reset_token_expires: Date | null;
     @CreateDateColumn() ngay_lap: Date;
     @UpdateDateColumn() cap_nhat_ngay: Date;
 

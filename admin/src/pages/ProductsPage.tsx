@@ -528,6 +528,7 @@ export default function ProductsPage() {
                                                     <option value="xe_con_tay">Xe côn tay</option>
                                                     <option value="xe_dien">Xe điện</option>
                                                     <option value="phan_khoi_lon">Phân khối lớn</option>
+                                                    <option value="naked_bike">Naked-bike</option>
                                                 </select>
                                                 <ChevronDown size={14} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
                                             </div>
@@ -556,7 +557,9 @@ export default function ProductsPage() {
                                             <div style={{ position: 'relative' }}>
                                                 <select className="input-premium" style={{ width: '100%', appearance: 'none', paddingRight: '36px' }} value={form.hop_so} onChange={f('hop_so')}>
                                                     <option value="tu_dong">Tự động</option>
+                                                    <option value="vo_cap">Vô cấp (CVT)</option>
                                                     <option value="so_tay">Số tay (4 cấp)</option>
+                                                    <option value="so_tay_6">Số tay (6 cấp)</option>
                                                     <option value="ban_tu_dong">Bán tự động</option>
                                                     <option value="khong_hop_so">Không hộp số</option>
                                                 </select>
@@ -569,6 +572,8 @@ export default function ProductsPage() {
                                                     <option value="trong">Phanh trống cả 2 bánh</option>
                                                     <option value="dia">Phanh đĩa cả 2 bánh</option>
                                                     <option value="trong_truoc_dia_sau">Đĩa trước - Trống sau</option>
+                                                    <option value="dia_don_thuy_luc">Phanh đĩa đơn thuỷ lực</option>
+                                                    <option value="brembo_kibs">Đĩa đôi 330mm (Brembo M50) trước, Đĩa đơn 220mm sau. Tích hợp KIBS (ABS thông minh)</option>
                                                     <option value="abs">Phanh ABS</option>
                                                 </select>
                                                 <ChevronDown size={14} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
@@ -593,6 +598,7 @@ export default function ProductsPage() {
                                                     <option value="de_chan">Đề chân</option>
                                                     <option value="de_dien">Đề điện</option>
                                                     <option value="ca_hai">Cả hai (Đề điện + Đề chân)</option>
+                                                    <option value="nut_bam_app">Khởi động bằng nút bấm hoặc App</option>
                                                 </select>
                                                 <ChevronDown size={14} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
                                             </div>

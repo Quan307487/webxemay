@@ -74,55 +74,56 @@ export default function Navbar() {
                     zIndex: 1000
                 }}>
                 {/* --- TOP TIER --- */}
-                <div className="flex items-center justify-between w-full px-4 md:px-12 py-4">
+                <div className="flex items-center justify-between w-full px-6 md:px-16 py-5">
 
                     {/* Logo */}
-                    <Link href="/" style={{ textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{
+                    <Link href="/" className="group" style={{ textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <div className="logo-animate" style={{
                             background: 'var(--primary)',
-                            borderRadius: '16px',
-                            padding: '10px',
+                            borderRadius: '18px',
+                            padding: '11px',
                             display: 'flex',
-                            boxShadow: '0 10px 20px rgba(var(--primary-rgb), 0.15)',
-                            transition: 'all 0.3s'
+                            boxShadow: '0 10px 24px rgba(var(--primary-rgb), 0.25)',
+                            transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
                         }}>
-                            <Bike size={24} color="white" />
+                            <Bike size={26} color="white" />
                         </div>
                         <span style={{
                             fontWeight: 900,
-                            fontSize: '26px',
-                            letterSpacing: '-1.5px',
+                            fontSize: '28px',
+                            letterSpacing: '-1.8px',
                             fontFamily: 'Outfit, sans-serif',
                             color: 'var(--secondary)',
                             transition: 'all 0.3s'
-                        }}>MotoShop<span className="gradient-text" style={{ background: 'linear-gradient(to right, var(--primary), var(--accent))' }}>.</span></span>
+                        }}>MotoShop<span className="gradient-text gradient-move" style={{ background: 'linear-gradient(to right, var(--primary), #3b82f6, var(--primary))', backgroundSize: '200% auto' }}>.</span></span>
                     </Link>
 
                     {/* Search (Desktop) */}
-                    <div ref={searchRef} style={{ flex: 1, maxWidth: '600px', margin: '0 48px', position: 'relative' }} className="hidden lg:block">
+                    <div ref={searchRef} style={{ flex: 1, maxWidth: '520px', margin: '0 56px', position: 'relative' }} className="hidden lg:block">
                         <form onSubmit={handleSearch}>
-                            <div style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
+                            <div style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }}>
                                 <Search size={18} />
                             </div>
                             <input
                                 className="input-field"
-                                placeholder="Tìm kiếm xe máy, hãng xe, phụ kiện..."
+                                placeholder="Tìm kiếm xe, thương hiệu..."
                                 value={search}
                                 onChange={e => setSearch(e.target.value)}
                                 onFocus={() => results.length > 0 && setShowResults(true)}
                                 style={{
-                                    paddingLeft: '52px',
+                                    paddingLeft: '56px',
                                     paddingRight: '56px',
-                                    height: '52px',
-                                    borderRadius: '18px',
-                                    background: scrolled ? 'var(--bg-elevated)' : 'rgba(0,0,0,0.03)',
-                                    border: '1px solid var(--border)',
+                                    height: '54px',
+                                    borderRadius: '20px',
+                                    background: scrolled ? 'var(--bg-elevated)' : 'rgba(0,0,0,0.04)',
+                                    border: '1.5px solid var(--border)',
                                     fontSize: '15px',
+                                    fontWeight: 500,
                                     transition: 'all 0.3s'
                                 }}
                             />
-                            <button type="submit" style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)', background: 'var(--primary)', border: 'none', borderRadius: '14px', width: '40px', height: '40px', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(var(--primary-rgb), 0.2)' }}>
-                                <ArrowRight size={16} />
+                            <button type="submit" style={{ position: 'absolute', right: '7px', top: '50%', transform: 'translateY(-50%)', background: 'var(--primary)', border: 'none', borderRadius: '15px', width: '40px', height: '40px', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: '0 6px 15px rgba(var(--primary-rgb), 0.3)' }}>
+                                <ArrowRight size={18} />
                             </button>
                         </form>
 
@@ -249,13 +250,13 @@ export default function Navbar() {
                 </div>
 
                 {/* --- BOTTOM TIER (Navigation Menu) --- */}
-                <div className="hidden lg:flex items-center justify-center w-full py-3"
-                    style={{ borderTop: scrolled ? 'none' : '1px solid var(--border)' }}>
-                    <div className="flex items-center gap-12">
-                        <Link href="/products" className="nav-link" style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', color: 'var(--secondary)' }}>SẢN PHẨM</Link>
-                        <Link href="/#khuyen-mai" className="nav-link" style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', color: 'var(--secondary)' }}>ƯU ĐÃI</Link>
-                        <Link href="/#gioi-thieu" className="nav-link" style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', color: 'var(--secondary)' }}>GIỚI THIỆU</Link>
-                        <Link href="/#lien-he" className="nav-link" style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', color: 'var(--secondary)' }}>LIÊN HỆ</Link>
+                <div className="hidden lg:flex items-center justify-center w-full py-4"
+                    style={{ borderTop: scrolled ? 'none' : '1.5px solid var(--border)' }}>
+                    <div className="flex items-center gap-14">
+                        <Link href="/products" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>SẢN PHẨM</Link>
+                        <Link href="/#khuyen-mai" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>ƯU ĐÃI</Link>
+                        <Link href="/#gioi-thieu" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>GIỚI THIỆU</Link>
+                        <Link href="/#lien-he" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>LIÊN HỆ</Link>
                     </div>
                 </div>
             </nav>

@@ -97,13 +97,13 @@ export default function HomePage() {
                 <div className="hero-gradient-overlay" />
 
                 <div style={{ position: 'relative', marginLeft: '10%', maxWidth: '600px', zIndex: 10 }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', color: 'var(--primary)', border: '1px solid var(--border)', borderRadius: '12px', padding: '10px 20px', marginBottom: '32px', fontWeight: 800, fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                    <Sparkles size={14} /> NEW COLLECTION 2025
+                  <div className="reveal-in" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'white', color: 'var(--primary)', border: '1.5px solid var(--border)', borderRadius: '14px', padding: '12px 24px', marginBottom: '32px', fontWeight: 900, fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', boxShadow: '0 8px 20px rgba(0,0,0,0.06)' }}>
+                    <Sparkles size={16} /> NEW COLLECTION 2025
                   </div>
 
-                  <h1 style={{ fontSize: 'clamp(40px, 5vw, 76px)', fontWeight: 900, lineHeight: 1, letterSpacing: '-3px', marginBottom: '32px', color: '#0f172a', textShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                  <h1 className="reveal-in" style={{ fontSize: 'clamp(44px, 6vw, 84px)', fontWeight: 900, lineHeight: 0.95, letterSpacing: '-3.5px', marginBottom: '36px', color: 'var(--secondary)', textShadow: '0 10px 40px rgba(0,0,0,0.08)' }}>
                     Đỉnh Cao <br />
-                    <span className="gradient-text" style={{ background: 'linear-gradient(135deg, var(--primary) 0%, #ff4d4d 100%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Tốc Độ.</span>
+                    <span className="gradient-text">Tốc Độ.</span>
                   </h1>
 
                   <p style={{ fontSize: '18px', color: '#334155', marginBottom: '48px', lineHeight: 1.6, maxWidth: '480px' }}>
@@ -222,11 +222,11 @@ export default function HomePage() {
             <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px 100px' }}>
               <div className="section-header" style={{ alignItems: 'center', marginBottom: '56px' }}>
                 <div>
-                  <div className="section-eyebrow">
-                    <Flame size={12} /> Categories
+                  <div className="section-eyebrow" style={{ background: 'var(--secondary)', color: 'white', borderColor: 'rgba(255,255,255,0.1)' }}>
+                    <Flame size={12} /> CATEGORIES
                   </div>
-                  <h2 className="section-title" style={{ fontSize: '42px' }}>Browse by Type</h2>
-                  <p className="section-subtitle">Find the perfect ride for your lifestyle</p>
+                  <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Browse by Type</h2>
+                  <p className="section-subtitle" style={{ fontSize: '17px' }}>Find the perfect ride for your lifestyle</p>
                 </div>
                 <Link href="/products" style={{ textDecoration: 'none' }}>
                   <button className="btn-premium btn-secondary" style={{ padding: '12px 24px', fontSize: '14px' }}>
@@ -269,11 +269,11 @@ export default function HomePage() {
         <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px 100px' }}>
           <div className="section-header" style={{ alignItems: 'center', marginBottom: '56px' }}>
             <div>
-              <div className="section-eyebrow" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
-                <Star size={12} fill="currentColor" /> Top Rated
+              <div className="section-eyebrow" style={{ background: 'var(--primary)', color: 'white', borderColor: 'transparent' }}>
+                <Star size={12} fill="currentColor" /> TOP RATED
               </div>
-              <h2 className="section-title" style={{ fontSize: '42px' }}>Featured Collection</h2>
-              <p className="section-subtitle">Hand-picked premium rides for the ultimate experience</p>
+              <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Featured Collection</h2>
+              <p className="section-subtitle" style={{ fontSize: '17px' }}>Hand-picked premium rides for the ultimate experience</p>
             </div>
             <Link href="/products?sort=diem_danh_gia" style={{ textDecoration: 'none' }}>
               <button className="btn-premium btn-secondary">View Collection <ArrowRight size={16} /></button>
@@ -304,11 +304,11 @@ export default function HomePage() {
               <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 1 }}>
                 <div className="section-header" style={{ alignItems: 'flex-end', marginBottom: '56px' }}>
                   <div>
-                    <div className="section-eyebrow" style={{ background: '#fffbeb', color: '#b45309', borderColor: '#fde68a' }}>
-                      <Flame size={12} fill="currentColor" /> Flash Deals
+                    <div className="section-eyebrow" style={{ background: '#f59e0b', color: 'white', borderColor: 'transparent' }}>
+                      <Flame size={12} fill="currentColor" /> FLASH DEALS
                     </div>
-                    <h2 className="section-title" style={{ fontSize: '42px' }}>Limited Offers</h2>
-                    <p className="section-subtitle">Exclusive discounts on premium models — act fast!</p>
+                    <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Limited Offers</h2>
+                    <p className="section-subtitle" style={{ fontSize: '17px' }}>Exclusive discounts on premium models — act fast!</p>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                     <div style={{ padding: '12px 20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -334,11 +334,11 @@ export default function HomePage() {
         <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '100px 32px' }}>
           <div className="section-header" style={{ alignItems: 'center', marginBottom: '56px' }}>
             <div>
-              <div className="section-eyebrow" style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6' }}>
-                <Zap size={12} /> Just In
+              <div className="section-eyebrow" style={{ background: 'var(--accent)', color: 'white', borderColor: 'transparent' }}>
+                <Zap size={12} /> JUST IN
               </div>
-              <h2 className="section-title" style={{ fontSize: '42px' }}>New Arrivals</h2>
-              <p className="section-subtitle">Freshly arrived premium motorcycles from top brands</p>
+              <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>New Arrivals</h2>
+              <p className="section-subtitle" style={{ fontSize: '17px' }}>Freshly arrived premium motorcycles from top brands</p>
             </div>
             <Link href="/products" style={{ textDecoration: 'none' }}>
               <button className="btn-premium btn-secondary">Explore All <ChevronRight size={16} /></button>
@@ -368,10 +368,10 @@ export default function HomePage() {
             </div>
 
             <div className="reveal animate-slide-up">
-              <div className="section-eyebrow">
-                <Shield size={12} /> Heritage
+              <div className="section-eyebrow" style={{ background: 'var(--secondary)', color: 'white' }}>
+                <Shield size={12} /> HERITAGE
               </div>
-              <h2 className="section-title" style={{ fontSize: '56px', marginBottom: '32px', lineHeight: 1 }}>
+              <h2 className="section-title" style={{ fontSize: '58px', color: 'var(--secondary)', marginBottom: '32px', lineHeight: 0.95 }}>
                 Welcome to <br />
                 <span className="gradient-text">MotoShop</span> Premium
               </h2>

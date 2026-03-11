@@ -44,3 +44,4 @@ export const reportsApi = { getDashboard: () => api.get('/reports/dashboard') };
 export const inventoryApi = { getAll: () => api.get('/inventory'), update: (sp: number, qty: number) => api.put('/inventory', { ma_sanpham: sp, soluong_tonkho: qty }) };
 export const couponsApi = { getAll: () => api.get('/coupons'), create: (d: any) => api.post('/coupons', d), update: (id: number, d: any) => api.put(`/coupons/${id}`, d) };
 export const paymentsApi = { getAll: (p?: any) => api.get('/payments', { params: p }), updateStatus: (id: number, tt: string) => api.put(`/payments/${id}/status`, { trang_thai: tt }) };
+export const settingsApi = { get: () => api.get('/settings'), update: (d: any) => api.patch('/settings', d) };

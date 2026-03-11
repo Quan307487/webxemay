@@ -55,6 +55,11 @@ export class UsersService {
         return this.findOne(id);
     }
 
+    async updateAvatar(id: number, url: string) {
+        await this.repo.update(id, { hinh_anh: url });
+        return this.findOne(id);
+    }
+
     async remove(id: number) {
         const u = await this.findOne(id);
         if (u.quyen === 'admin') throw new ForbiddenException('Không thể xóa tài khoản quản trị viên');

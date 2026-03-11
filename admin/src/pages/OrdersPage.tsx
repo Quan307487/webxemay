@@ -3,9 +3,10 @@ import { createPortal } from 'react-dom';
 import { ordersApi } from '../lib/api';
 import toast from 'react-hot-toast';
 import {
-    Eye, Clock, Truck,
-    CheckCircle, RotateCcw, Search, X, MapPin, CreditCard, ShoppingBag, Sigma, User, Bike, ChevronDown
+    Clock, Truck,
+    CheckCircle, XCircle, RotateCcw, Search, X, CreditCard, Bike, ChevronDown, Printer, Settings
 } from 'lucide-react';
+import { settingsApi } from '../lib/api';
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: any }> = {
     pending: { label: 'Chờ xử lý', color: '#f59e0b', icon: Clock },
@@ -23,6 +24,15 @@ function OrdersPage() {
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [storeSettings, setStoreSettings] = useState<any>(null);
+
+    useEffect(() => {
+        settingsApi.get().then(res => setStoreSettings(res.data)).catch(() => { });
+    }, []);
+
+    const handlePrint = () => {
+        window.print();
+    };
 
     const load = (filterVal = filter, searchVal = search) => {
         setLoading(true);
@@ -206,8 +216,26 @@ function OrdersPage() {
                                                         <RotateCcw size={18} />
                                                     </button>
                                                 )}
-                                                <button onClick={() => viewDetails(o.ma_donhang)} className="action-icon-btn" title="Xem chi tiết">
-                                                    <Eye size={18} />
+                                                <button
+                                                    onClick={() => viewDetails(o.ma_donhang)}
+                                                    style={{
+                                                        width: '38px',
+                                                        height: '38px',
+                                                        background: '#3b82f6',
+                                                        borderRadius: '12px',
+                                                        border: 'none',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                    title="Xem chi tiết"
+                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                                >
+                                                    <img src="/realistic_eye.png" alt="view" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                                                 </button>
                                                 <div style={{ position: 'relative' }}>
                                                     <select
@@ -237,9 +265,18 @@ function OrdersPage() {
             {isModalOpen && selectedOrder && createPortal(
                 <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', animation: 'fadeIn 0.3s ease' }}>
                     <div style={{ position: 'relative', width: '100%', maxWidth: '900px', maxHeight: '90vh', background: 'var(--bg-main)', borderRadius: '24px', overflowY: 'auto', boxShadow: '0 32px 64px rgba(0,0,0,0.2)', border: '1px solid var(--border-subtle)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)', padding: '32px' }}>
-                        <button style={{ position: 'absolute', top: '16px', right: '16px', background: 'var(--bg-deep)', color: 'var(--text-primary)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setIsModalOpen(false)}>
-                            <X size={20} />
-                        </button>
+                        <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px' }}>
+                            <button
+                                onClick={handlePrint}
+                                style={{ background: 'var(--bg-deep)', color: 'var(--text-primary)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                title="In hóa đơn"
+                            >
+                                <Printer size={18} />
+                            </button>
+                            <button style={{ background: 'var(--bg-deep)', color: 'var(--text-primary)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setIsModalOpen(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
 
                         <div style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '24px', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -261,6 +298,112 @@ function OrdersPage() {
                             </div>
                         </div>
 
+                        <div style={{ padding: '0 20px', marginBottom: '40px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+                                {/* Background Line */}
+                                <div style={{ position: 'absolute', top: '24px', left: '40px', right: '40px', height: '2px', background: 'rgba(var(--primary-rgb), 0.05)', zIndex: 0 }} />
+
+                                {/* Progress Filling */}
+                                {(() => {
+                                    const steps = ['pending', 'confirmed', 'shipped', 'delivered'];
+                                    const currentIndex = steps.indexOf(selectedOrder.trang_thai);
+                                    const progressWidth = currentIndex === -1 ? 0 : (currentIndex / (steps.length - 1)) * 100;
+
+                                    return (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '24px',
+                                            left: '40px',
+                                            width: currentIndex === -1 ? '0' : `calc(${progressWidth}% - 80px)`,
+                                            height: '2px',
+                                            background: 'var(--primary)',
+                                            zIndex: 1,
+                                            transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                                            boxShadow: '0 0 10px rgba(var(--primary-rgb), 0.5)'
+                                        }} />
+                                    );
+                                })()}
+
+                                {/* Steps */}
+                                {['pending', 'confirmed', 'shipped', 'delivered'].map((step, idx) => {
+                                    const config = STATUS_LABELS[step];
+                                    const Icon = config.icon;
+                                    const steps = ['pending', 'confirmed', 'shipped', 'delivered'];
+                                    const currentIndex = steps.indexOf(selectedOrder.trang_thai);
+                                    const isCompleted = currentIndex >= idx;
+                                    const isActive = currentIndex === idx;
+
+                                    return (
+                                        <div key={step} style={{ zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                            <div style={{
+                                                width: '48px',
+                                                height: '48px',
+                                                borderRadius: '50%',
+                                                background: isCompleted ? 'var(--primary)' : 'var(--bg-deep)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: isCompleted ? 'white' : 'var(--text-muted)',
+                                                border: isActive ? '4px solid rgba(var(--primary-rgb), 0.2)' : '2px solid transparent',
+                                                transition: 'all 0.4s ease',
+                                                boxShadow: isCompleted ? '0 8px 16px rgba(var(--primary-rgb), 0.2)' : 'none',
+                                                transform: isActive ? 'scale(1.2)' : 'scale(1)',
+                                                position: 'relative'
+                                            }}>
+                                                <Icon size={20} />
+                                                {isActive && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        inset: '-4px',
+                                                        borderRadius: '50%',
+                                                        border: '2px solid var(--primary)',
+                                                        animation: 'pulse 2s infinite'
+                                                    }} />
+                                                )}
+                                            </div>
+                                            <span style={{
+                                                fontSize: '12px',
+                                                fontWeight: isCompleted ? 900 : 600,
+                                                color: isCompleted ? 'var(--text-primary)' : 'var(--text-muted)',
+                                                transition: 'all 0.4s ease'
+                                            }}>
+                                                {config.label}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Handling special states like Cancelled/Returned */}
+                            {['cancelled', 'returned'].includes(selectedOrder.trang_thai) && (
+                                <div style={{
+                                    marginTop: '24px',
+                                    padding: '12px 20px',
+                                    background: 'rgba(239, 68, 68, 0.05)',
+                                    borderRadius: '12px',
+                                    border: '1px solid rgba(239, 68, 68, 0.1)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    color: '#ef4444',
+                                    animation: 'fadeIn 0.5s ease'
+                                }}>
+                                    <XCircle size={18} />
+                                    <span style={{ fontSize: '14px', fontWeight: 800 }}>
+                                        {selectedOrder.trang_thai === 'cancelled' ? 'Đơn hàng này đã bị hủy' : 'Đơn hàng đã được trả về'}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        <style>{`
+                            @keyframes pulse {
+                                0% { transform: scale(1); opacity: 1; }
+                                50% { transform: scale(1.1); opacity: 0.5; }
+                                100% { transform: scale(1); opacity: 1; }
+                            }
+                        `}</style>
+
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px' }}>
                             <div className="premium-card" style={{ padding: '24px', background: 'var(--bg-deep)' }}>
                                 <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-muted)', marginBottom: '16px' }}>NGƯỜI NHẬN</p>
@@ -281,6 +424,13 @@ function OrdersPage() {
                                 <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>Đã bao gồm VAT & Phí vận chuyển</p>
                             </div>
                         </div>
+
+                        {selectedOrder.ghi_chu && (
+                            <div style={{ marginBottom: '32px', padding: '20px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '18px', border: '1px dashed rgba(59, 130, 246, 0.2)' }}>
+                                <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--primary)', marginBottom: '8px', textTransform: 'uppercase' }}>GHI CHÚ TỪ KHÁCH HÀNG</p>
+                                <p style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500, fontStyle: 'italic', margin: 0 }}>"{selectedOrder.ghi_chu}"</p>
+                            </div>
+                        )}
 
                         <div className="modern-table-container">
                             <table className="modern-table">
@@ -319,9 +469,103 @@ function OrdersPage() {
                 document.body
             )}
 
+            {/* Print Layout */}
+            {selectedOrder && (
+                <div id="print-area" className="print-only" style={{ padding: '40px', color: 'black', background: 'white' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '40px', borderBottom: '2px solid black', paddingBottom: '20px' }}>
+                        <div>
+                            <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold' }}>{storeSettings?.site_name || 'MotoShop'}</h1>
+                            <p style={{ margin: '4px 0' }}>{storeSettings?.address || 'TP. Đà Nẵng'}</p>
+                            <p style={{ margin: '4px 0' }}>Hotline: {storeSettings?.phone || '0339886769'}</p>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <h2 style={{ margin: 0, fontSize: '24px' }}>HÓA ĐƠN BÁN HÀNG</h2>
+                            <p style={{ margin: '4px 0', fontWeight: 'bold' }}>#{selectedOrder.donhang_code}</p>
+                            <p style={{ margin: '4px 0' }}>Ngày: {new Date(selectedOrder.ngay_dat).toLocaleDateString('vi-VN')}</p>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '40px' }}>
+                        <div>
+                            <h3 style={{ borderBottom: '1px solid #ccc', paddingBottom: '8px', marginBottom: '12px', fontSize: '16px' }}>THÔNG TIN KHÁCH HÀNG</h3>
+                            <p style={{ margin: '4px 0' }}><strong>Họ tên:</strong> {selectedOrder.ten_nguoi_nhan || selectedOrder.user?.hovaten}</p>
+                            <p style={{ margin: '4px 0' }}><strong>Số điện thoại:</strong> {selectedOrder.sdt_nguoi_nhan || selectedOrder.user?.so_dien_thoai}</p>
+                            <p style={{ margin: '4px 0' }}><strong>Địa chỉ:</strong> {selectedOrder.dia_chi_giao}</p>
+                        </div>
+                        <div>
+                            <h3 style={{ borderBottom: '1px solid #ccc', paddingBottom: '8px', marginBottom: '12px', fontSize: '16px' }}>THANH TOÁN</h3>
+                            <p style={{ margin: '4px 0' }}><strong>Phương thức:</strong> {selectedOrder.phuong_thuc_TT?.toUpperCase()}</p>
+                            <p style={{ margin: '4px 0' }}><strong>Trạng thái:</strong> {selectedOrder.trang_thai_TT === 'paid' ? 'Đã thanh toán' : 'Chờ thanh toán'}</p>
+                        </div>
+                    </div>
+
+                    <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '40px' }}>
+                        <thead>
+                            <tr style={{ background: '#f8f9fa' }}>
+                                <th style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'left' }}>Sản phẩm</th>
+                                <th style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'center', width: '80px' }}>SL</th>
+                                <th style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'right', width: '150px' }}>Đơn giá</th>
+                                <th style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'right', width: '150px' }}>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {selectedOrder.chitietdonhang?.map((item: any, i: number) => (
+                                <tr key={i}>
+                                    <td style={{ border: '1px solid #dee2e6', padding: '12px' }}>
+                                        <div style={{ fontWeight: 'bold' }}>{item.ten_sanpham}</div>
+                                        <div style={{ fontSize: '12px', color: '#666' }}>Màu: {item.mau_xe || 'Mặc định'}</div>
+                                    </td>
+                                    <td style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'center' }}>{item.so_luong}</td>
+                                    <td style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'right' }}>{item.don_gia.toLocaleString()}đ</td>
+                                    <td style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>{(item.so_luong * item.don_gia).toLocaleString()}đ</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colSpan={3} style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'right', fontWeight: 'bold' }}>TỔNG CỘNG</td>
+                                <td style={{ border: '1px solid #dee2e6', padding: '12px', textAlign: 'right', fontWeight: 'bold', fontSize: '18px', color: '#e63946' }}>{Number(selectedOrder.tong_tien).toLocaleString()}đ</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    {selectedOrder.ghi_chu && (
+                        <div style={{ marginBottom: '40px' }}>
+                            <h3 style={{ fontSize: '14px', margin: '0 0 8px 0' }}>Ghi chú:</h3>
+                            <p style={{ margin: 0, fontStyle: 'italic' }}>{selectedOrder.ghi_chu}</p>
+                        </div>
+                    )}
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '60px' }}>
+                        <div style={{ textAlign: 'center', width: '200px' }}>
+                            <p style={{ marginBottom: '80px' }}>Người mua hàng</p>
+                            <p>(Ký, họ tên)</p>
+                        </div>
+                        <div style={{ textAlign: 'center', width: '200px' }}>
+                            <p style={{ marginBottom: '80px' }}>Người lập hóa đơn</p>
+                            <p>(Ký, họ tên)</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <style>{`
                 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 .modern-table tr:hover td { background: rgba(var(--primary-rgb), 0.03) !important; }
+                
+                .print-only { display: none; }
+                @media print {
+                    body * { visibility: hidden; }
+                    #print-area, #print-area * { visibility: visible; }
+                    #print-area {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        display: block !important;
+                    }
+                    @page { margin: 1cm; }
+                }
             `}</style>
         </div>
     );

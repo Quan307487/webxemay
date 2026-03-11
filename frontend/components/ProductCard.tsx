@@ -79,14 +79,15 @@ export default function ProductCard({ product }: { product: Product }) {
     return (
         <Link href={`/products/${product.ma_sanpham}`} style={{ textDecoration: 'none' }}>
             <div
-                className="premium-card"
+                className="premium-card glass-shine"
                 style={{
                     padding: 0,
                     overflow: 'hidden',
-                    borderRadius: '32px',
-                    border: hover ? '1px solid var(--primary)' : '1px solid var(--border)',
-                    transform: hover ? 'translateY(-8px)' : 'none',
-                    transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)'
+                    borderRadius: '34px',
+                    border: hover ? '1.5px solid var(--primary)' : '1.5px solid var(--border)',
+                    transform: hover ? 'translateY(-10px)' : 'none',
+                    transition: 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+                    background: 'white'
                 }}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
@@ -157,19 +158,19 @@ export default function ProductCard({ product }: { product: Product }) {
                     </div>
 
                     <h3 style={{
-                        fontSize: '18px',
+                        fontSize: '19px',
                         fontWeight: 900,
                         color: 'var(--secondary)',
                         marginBottom: '12px',
-                        lineHeight: 1.3,
-                        height: '46px',
+                        lineHeight: 1.25,
+                        height: '48px',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
                         fontFamily: 'Outfit, sans-serif'
                     }}>
-                        {product.ten_sanpham}
+                        {product.ten_sanpham.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')}
                     </h3>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '13px', fontWeight: 700, marginBottom: '20px' }}>
@@ -179,7 +180,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     {/* Price & Action */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
                         <div>
-                            <div style={{ fontSize: '20px', fontWeight: 900, color: 'var(--secondary)', fontFamily: 'Outfit, sans-serif' }}>
+                            <div className="price-tag">
                                 {formatPrice(salePrice)}
                             </div>
                             {hasDiscount && (

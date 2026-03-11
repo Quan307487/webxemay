@@ -12,6 +12,7 @@ import InventoryPage from './pages/InventoryPage';
 import CouponsPage from './pages/CouponsPage';
 import PaymentsPage from './pages/PaymentsPage';
 import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
 import { Toaster } from 'react-hot-toast';
 
 
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="coupons" element={<CouponsPage />} />
           <Route path="payments" element={<PaymentsPage />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

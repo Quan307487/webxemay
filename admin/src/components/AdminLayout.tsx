@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Bike, Tag, Award, ShoppingBag, Users, Star, Package, Ticket, CreditCard, LogOut, Search } from 'lucide-react';
+import { LayoutDashboard, Bike, Tag, Award, ShoppingBag, Users, Star, Package, Ticket, CreditCard, LogOut, Search, User, Settings } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const navItems = [
@@ -13,6 +13,8 @@ const navItems = [
     { path: '/inventory', icon: Package, label: 'Tồn kho' },
     { path: '/coupons', icon: Ticket, label: 'Khuyến mãi' },
     { path: '/users', icon: Users, label: 'Người dùng' },
+    { path: '/settings', icon: Settings, label: 'Cài đặt' },
+    { path: '/profile', icon: User, label: 'Hồ sơ', hidden: true },
 ];
 
 function getInitials(name: string) {
@@ -83,7 +85,7 @@ export default function AdminLayout() {
                 </div>
 
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', overflowY: 'auto' }}>
-                    {navItems.map(({ path, icon: Icon, label }) => {
+                    {navItems.filter(i => !i.hidden).map(({ path, icon: Icon, label }) => {
                         const active = location.pathname === path;
                         return (
                             <Link
@@ -126,7 +128,7 @@ export default function AdminLayout() {
                                         width: '4px',
                                         background: 'var(--primary)',
                                         borderRadius: '0 4px 4px 0',
-                                        boxShadow: '0 0 10px var(--primary)'
+                                        boxShadow: '0 0 5px var(--primary)'
                                     }} />
                                 )}
                                 <Icon size={20} style={{ color: active ? 'var(--primary)' : 'inherit' }} />
@@ -210,7 +212,26 @@ export default function AdminLayout() {
                             />
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingLeft: '32px', borderLeft: '1.5px solid var(--border-light)' }}>
+                        <Link
+                            to="/profile"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '16px',
+                                padding: '6px 16px',
+                                paddingLeft: '32px',
+                                borderLeft: '1.5px solid var(--border-light)',
+                                textDecoration: 'none',
+                                transition: 'all 0.3s ease',
+                                borderRadius: '12px'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(0,0,0,0.02)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'transparent';
+                            }}
+                        >
                             <div style={{ textAlign: 'right' }}>
                                 <p style={{ fontSize: '15px', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>{displayName}</p>
                                 <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, margin: 0 }}>Administrator</p>
@@ -218,7 +239,9 @@ export default function AdminLayout() {
                             <div style={{
                                 width: '50px',
                                 height: '50px',
-                                background: 'linear-gradient(135deg, var(--primary), var(--primary-dark))',
+                                background: admin?.hinh_anh ? `url(${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${admin.hinh_anh})` : 'linear-gradient(135deg, var(--primary), var(--primary-dark))',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
                                 color: 'white',
                                 borderRadius: '16px',
                                 display: 'flex',
@@ -226,11 +249,12 @@ export default function AdminLayout() {
                                 justifyContent: 'center',
                                 fontWeight: 900,
                                 fontSize: '16px',
-                                boxShadow: '0 8px 16px rgba(var(--primary-rgb), 0.2)'
+                                boxShadow: '0 8px 16px rgba(var(--primary-rgb), 0.2)',
+                                overflow: 'hidden'
                             }}>
-                                {initials}
+                                {!admin?.hinh_anh && initials}
                             </div>
-                        </div>
+                        </Link>
                     </div>
                 </header>
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usersApi, ordersApi } from '../lib/api';
 import toast from 'react-hot-toast';
-import { Eye, X, Phone, Mail, MapPin, Calendar, Clock, Shield, User, ShoppingBag, Edit2, Trash2 } from 'lucide-react';
+import { X, Phone, Mail, MapPin, Calendar, Clock, Shield, User, ShoppingBag, Edit2, Trash2 } from 'lucide-react';
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string }> = {
     active: { label: 'Hoạt động', bg: '#10b98120', color: '#10b981' },
@@ -217,11 +217,24 @@ export default function UsersPage() {
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); viewDetails(u.ma_user); }}
-                                                    className="btn-icon-premium"
+                                                    style={{
+                                                        width: '38px',
+                                                        height: '38px',
+                                                        background: '#3b82f6',
+                                                        borderRadius: '12px',
+                                                        border: 'none',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                                                        transition: 'all 0.3s ease'
+                                                    }}
                                                     title="Xem chi tiết"
-                                                    style={{ width: '36px', height: '36px' }}
+                                                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                                                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                                                 >
-                                                    <Eye size={16} />
+                                                    <img src="/realistic_eye.png" alt="view" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                                                 </button>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); openEdit(u); }}

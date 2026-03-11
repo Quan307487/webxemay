@@ -43,6 +43,9 @@ api.interceptors.response.use(
 export const authApi = {
     login: (data: { email: string; password: string }) => api.post('/auth/login', data),
     register: (data: any) => api.post('/auth/register', data),
+    forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
+    resetPassword: (token: string, newPass: string) => api.post('/auth/reset-password', { token, newPass }),
+    directReset: (email: string, newPass: string) => api.post('/auth/direct-reset', { email, newPass }),
 };
 
 // Products
@@ -135,4 +138,7 @@ export const couponsApi = {
     getAll: () => api.get('/coupons'),
     create: (data: any) => api.post('/coupons', data),
     update: (id: number, data: any) => api.put(`/coupons/${id}`, data),
+};
+export const settingsApi = {
+    get: () => api.get('/settings'),
 };

@@ -1,9 +1,38 @@
 'use client';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { Bike, Phone, Mail, MapPin, Facebook, Youtube, Instagram, ArrowUpRight, MessageCircle } from 'lucide-react';
 
 export default function Footer() {
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const [settings, setSettings] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const { settingsApi } = await import('@/lib/api');
+                const res = await settingsApi.get();
+                setSettings(res.data);
+            } catch (err) {
+                console.error('Error fetching settings:', err);
+            }
+        };
+        fetchSettings();
+    }, []);
+
+    const socialLinks = [
+        { Icon: Facebook, href: settings?.facebook_url || 'https://www.facebook.com/share/1C6edfa7SN/', label: 'Facebook', color: '#1877F2' },
+        { Icon: Youtube, href: settings?.youtube_url || 'https://youtube.com/@quanbui2507?si=4WSTdar01MDoCAyE', label: 'Youtube', color: '#FF0000' },
+        { Icon: Instagram, href: settings?.instagram_url || 'https://www.instagram.com/direct/inbox/', label: 'Instagram', color: '#E1306C' },
+        { Icon: MessageCircle, href: settings?.zalo_url || 'https://zalo.me/0339886769', label: 'Zalo', color: '#0068ff' },
+    ];
+
+    const contactInfo = [
+        { Icon: Phone, text: settings?.phone || '0339886769', sub: 'Hỗ trợ khách hàng 24/7', color: '#4ade80' },
+        { Icon: Mail, text: settings?.email || 'buiminhquan12082003@gmail.com', sub: 'Hợp tác & Phản hồi', color: '#60a5fa' },
+        { Icon: MapPin, text: settings?.address || 'Thôn An Hòa, Xã Tam An, TP.Đà Nẵng', sub: 'Cửa hàng chính & Văn phòng', color: '#f87171' },
+    ];
 
     return (
         <footer className="site-footer" style={{
@@ -41,7 +70,7 @@ export default function Footer() {
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent'
                             }}>
-                                MotoShop<span style={{ color: 'var(--primary)', WebkitTextFillColor: 'var(--primary)' }}>.</span>
+                                {settings?.site_name || 'MotoShop'}<span style={{ color: 'var(--primary)', WebkitTextFillColor: 'var(--primary)' }}>.</span>
                             </span>
                         </div>
 
@@ -50,12 +79,7 @@ export default function Footer() {
                         </p>
 
                         <div style={{ display: 'flex', gap: '12px', marginBottom: '40px' }}>
-                            {[
-                                { Icon: Facebook, href: 'https://www.facebook.com/share/1C6edfa7SN/', label: 'Facebook', color: '#1877F2' },
-                                { Icon: Youtube, href: 'https://youtube.com/@quanbui2507?si=4WSTdar01MDoCAyE', label: 'Youtube', color: '#FF0000' },
-                                { Icon: Instagram, href: 'https://www.instagram.com/direct/inbox/', label: 'Instagram', color: '#E1306C' },
-                                { Icon: MessageCircle, href: 'https://zalo.me/0339886769', label: 'Zalo', color: '#0068ff' },
-                            ].map(({ Icon, href, label, color }) => (
+                            {socialLinks.map(({ Icon, href, label, color }) => (
                                 <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
                                     style={{
                                         width: '44px',
@@ -156,11 +180,7 @@ export default function Footer() {
                     <div style={{ gridColumn: 'span 1.5' }}>
                         <h4 style={{ fontWeight: 800, fontSize: '13px', color: 'white', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'Outfit' }}>Kết Nối</h4>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {[
-                                { Icon: Phone, text: '1900-8888', sub: 'Tổng đài hỗ trợ 24/7 (Miễn phí)', color: '#4ade80' },
-                                { Icon: Mail, text: 'vip@motoshop.vn', sub: 'Hợp tác & Phản hồi khách hàng', color: '#60a5fa' },
-                                { Icon: MapPin, text: 'Quận 1, TP. Hồ Chí Minh', sub: 'Flagship Store & Global Office', color: '#f87171' },
-                            ].map(({ Icon, text, sub, color }, i) => (
+                            {contactInfo.map(({ Icon, text, sub, color }, i) => (
                                 <div key={i} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                                     <div style={{
                                         width: '40px',
@@ -199,7 +219,7 @@ export default function Footer() {
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                         <p style={{ color: '#475569', fontSize: '13px', fontWeight: 500 }}>
-                            © 2026 MotoShop Vietnam. All rights reserved.
+                            {settings?.footer_text || '© 2026 MotoShop Vietnam. All rights reserved.'}
                         </p>
                         <div style={{ display: 'flex', gap: '20px' }}>
                             {['Chính sách', 'Bảo mật', 'Tuyển dụng'].map(l => (
