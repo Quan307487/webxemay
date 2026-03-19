@@ -51,6 +51,11 @@ export class ProductsService {
 
     async removeImage(ma_anh: number) { await this.imgRepo.delete(ma_anh); return { message: 'Đã xóa ảnh' }; }
 
+    async updateImage(ma_anh: number, dto: Partial<Hinhanh>) {
+        await this.imgRepo.update(ma_anh, dto as any);
+        return { message: 'Đã cập nhật ảnh' };
+    }
+
     async setMainImage(ma_sanpham: number, ma_anh: number) {
         await this.imgRepo.update({ ma_sanpham }, { is_main: 0 } as any);
         await this.imgRepo.update(ma_anh, { is_main: 1 } as any);

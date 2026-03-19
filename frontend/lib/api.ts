@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -7,34 +8,43 @@ export const api = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// Tự động gắn token vào header
+// Tự động gắn token vào header - Tối ưu hiệu suất
 api.interceptors.request.use((config) => {
     if (typeof window !== 'undefined') {
         const authData = localStorage.getItem('auth-storage');
         if (authData) {
             try {
-                const token = JSON.parse(authData).state?.token;
-                if (token) config.headers.Authorization = `Bearer ${token}`;
-            } catch (e) { console.error('Error parsing auth-storage', e); }
+                // Parse một lần và kiểm tra
+                const state = JSON.parse(authData)?.state;
+                if (state?.token) {
+                    config.headers.Authorization = `Bearer ${state.token}`;
+                }
+            } catch (e) { /* ignore parse error */ }
         }
     }
     return config;
 });
 
-// Xử lý lỗi global
+// Xử lý lỗi global & Tự động thông báo
 api.interceptors.response.use(
     (res) => res,
     (err) => {
-        if (err.response?.status === 401 && typeof window !== 'undefined') {
-            // Chỉ logout nếu token đã được gửi (token thực sự bị từ chối/hết hạn)
-            // Không logout nếu request không có token
+        if (typeof window === 'undefined') return Promise.reject(err);
+
+        const status = err.response?.status;
+        const message = err.response?.data?.message || 'Lỗi hệ thống, vui lòng thử lại';
+
+        if (status === 401) {
             const authData = localStorage.getItem('auth-storage');
-            const hasToken = authData && JSON.parse(authData)?.state?.token;
-            if (hasToken) {
+            if (authData && JSON.parse(authData)?.state?.token) {
                 localStorage.removeItem('auth-storage');
                 window.location.href = '/auth/login';
             }
+        } else if (err.config?.skipToast !== true) {
+            // Tự động hiển thị toast nếu không yêu cầu bỏ qua
+            toast.error(message);
         }
+
         return Promise.reject(err);
     }
 );
@@ -57,6 +67,7 @@ export const productsApi = {
     delete: (id: number) => api.delete(`/products/${id}`),
     uploadImage: (id: number, formData: FormData) => api.post(`/products/${id}/images`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
     deleteImage: (ma_anh: number) => api.delete(`/products/images/${ma_anh}`),
+    updateImage: (ma_anh: number, data: any) => api.put(`/products/images/${ma_anh}`, data),
 };
 
 // Categories

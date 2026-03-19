@@ -24,14 +24,14 @@ export class Sanpham {
     // Thông số kỹ thuật xe máy
     @Column({ type: 'year', nullable: true }) nam_san_xuat: number;
     @Column({ nullable: true }) mau_sac: string;
-    @Column({ type: 'enum', enum: ['xe_so', 'xe_ga', 'xe_con_tay', 'xe_dien', 'phan_khoi_lon', 'naked_bike'] }) kieu_xe: string;
+    @Column({ type: 'enum', enum: ['xe_so', 'xe_ga', 'xe_con_tay', 'xe_mo_to', 'xe_dien', 'phan_khoi_lon', 'naked_bike'] }) kieu_xe: string;
     @Column({ nullable: true }) dung_tich_dong_co: string;
     @Column({ nullable: true }) loai_dong_co: string;
     @Column({ type: 'enum', enum: ['xang', 'dien', 'hybrid'], default: 'xang' }) loai_nhien_lieu: string;
     @Column({ nullable: true }) muc_tieu_thu: string;
     @Column({ nullable: true }) cong_suat_toi_da: string;
     @Column({ nullable: true }) momen_xoan_toi_da: string;
-    @Column({ type: 'enum', enum: ['so_tay', 'so_tay_6', 'tu_dong', 'vo_cap', 'ban_tu_dong', 'khong_hop_so'], default: 'tu_dong' }) hop_so: string;
+    @Column({ type: 'enum', enum: ['so_tay', 'so_tay_6', 'con_tay', 'tu_dong', 'vo_cap', 'ban_tu_dong', 'khong_hop_so'], default: 'tu_dong' }) hop_so: string;
     @Column({ type: 'enum', enum: ['trong', 'dia', 'trong_truoc_dia_sau', 'dia_don_thuy_luc', 'brembo_kibs', 'abs'], default: 'trong' }) he_thong_phanhang: string;
     @Column({ type: 'enum', enum: ['de_chan', 'de_dien', 'ca_hai', 'nut_bam_app'], default: 'ca_hai' }) he_thong_khoi_dong: string;
     @Column({ type: 'decimal', precision: 6, scale: 1, nullable: true }) trong_luong_kho: number;

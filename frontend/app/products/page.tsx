@@ -67,6 +67,7 @@ function ProductsContent() {
         { value: 'xe_so', label: '🏍 Xe số' },
         { value: 'xe_ga', label: '🛵 Xe ga' },
         { value: 'xe_con_tay', label: '🏁 Côn tay' },
+        { value: 'xe_mo_to', label: '🏍 Xe mô tô' },
         { value: 'xe_dien', label: '⚡ Xe điện' },
         { value: 'phan_khoi_lon', label: '🔥 PKL' },
     ];

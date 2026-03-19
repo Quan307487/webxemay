@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ordersApi } from '../lib/api';
+import { ordersApi, settingsApi } from '../lib/api';
 import toast from 'react-hot-toast';
 import {
     Clock, Truck,
-    CheckCircle, XCircle, RotateCcw, Search, X, CreditCard, Bike, ChevronDown, Printer, Settings
+    CheckCircle, XCircle, RotateCcw, Search, X, CreditCard, Bike, ChevronDown, Printer
 } from 'lucide-react';
-import { settingsApi } from '../lib/api';
+import { PageHeader, Spinner } from '../components/ui';
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: any }> = {
     pending: { label: 'Chờ xử lý', color: '#f59e0b', icon: Clock },
@@ -86,41 +86,38 @@ function OrdersPage() {
 
     return (
         <div className="animate-slide-up" style={{ paddingBottom: '40px' }}>
-            {/* Header */}
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px', gap: '24px' }}>
-                <div>
-                    <h1 style={{ fontSize: '32px', fontWeight: 950, color: 'var(--text-primary)', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Quản lý Đơn hàng</h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: 600 }}>
-                        Theo dõi <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{orders.length}</span> đơn hàng và cập nhật tiến độ vận hành.
-                    </p>
-                </div>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                    <div style={{ position: 'relative', width: '280px' }}>
-                        <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                        <input
-                            className="input-premium"
-                            style={{ paddingLeft: '48px', height: '48px', width: '100%' }}
-                            placeholder="Mã đơn, khách hàng..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                        />
+            <PageHeader
+                title="Quản lý Đơn hàng"
+                description={<>Theo dõi <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{orders.length}</span> đơn hàng và cập nhật tiến độ vận hành.</>}
+                action={
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                        <div style={{ position: 'relative', width: '280px' }}>
+                            <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                            <input
+                                className="input-premium"
+                                style={{ paddingLeft: '48px', height: '48px', width: '100%' }}
+                                placeholder="Mã đơn, khách hàng..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                            />
+                        </div>
+                        <div style={{ position: 'relative' }}>
+                            <select
+                                className="input-premium"
+                                style={{ paddingRight: '40px', fontWeight: 700, height: '48px', appearance: 'none', minWidth: '180px' }}
+                                value={filter}
+                                onChange={e => setFilter(e.target.value)}
+                            >
+                                <option value="">Tất cả trạng thái</option>
+                                {Object.entries(STATUS_LABELS).map(([v, { label }]) => (
+                                    <option key={v} value={v}>{label}</option>
+                                ))}
+                            </select>
+                            <ChevronDown size={14} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+                        </div>
                     </div>
-                    <div style={{ position: 'relative' }}>
-                        <select
-                            className="input-premium"
-                            style={{ paddingRight: '40px', fontWeight: 700, height: '48px', appearance: 'none', minWidth: '180px' }}
-                            value={filter}
-                            onChange={e => setFilter(e.target.value)}
-                        >
-                            <option value="">Tất cả trạng thái</option>
-                            {Object.entries(STATUS_LABELS).map(([v, { label }]) => (
-                                <option key={v} value={v}>{label}</option>
-                            ))}
-                        </select>
-                        <ChevronDown size={14} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
-                    </div>
-                </div>
-            </header>
+                }
+            />
 
             <div className="modern-table-container">
                 <table className="modern-table">
@@ -139,7 +136,7 @@ function OrdersPage() {
                         {loading ? (
                             <tr>
                                 <td colSpan={7} style={{ padding: '100px', textAlign: 'center' }}>
-                                    <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid var(--bg-deep)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                                    <Spinner />
                                 </td>
                             </tr>
                         ) : orders.length === 0 ? (
@@ -550,7 +547,6 @@ function OrdersPage() {
             )}
 
             <style>{`
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 .modern-table tr:hover td { background: rgba(var(--primary-rgb), 0.03) !important; }
                 
                 .print-only { display: none; }

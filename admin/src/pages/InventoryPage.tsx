@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { inventoryApi } from '../lib/api';
 import toast from 'react-hot-toast';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, PackageSearch } from 'lucide-react';
+import { PageHeader, Spinner } from '../components/ui';
 
 export default function InventoryPage() {
     const [items, setItems] = useState<any[]>([]);
@@ -31,22 +32,17 @@ export default function InventoryPage() {
 
     return (
         <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            {/* Header */}
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
-                <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Kiểm soát tồn kho</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
-                        Quản lý <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> mẫu xe trong hệ thống và điều chỉnh lượng hàng.
-                    </p>
-                </div>
-            </header>
+            <PageHeader
+                title="Kiểm soát tồn kho"
+                description={<>Quản lý <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> mẫu xe trong hệ thống và điều chỉnh lượng hàng.</>}
+            />
 
             <div className="modern-table-container">
                 <table className="modern-table">
                     <thead>
                         <tr>
                             <th>Mã SP</th>
-                            <th>Xác nhận sản phẩm</th>
+                            <th>Sản phẩm</th>
                             <th>Dòng xe</th>
                             <th>Trạng thái tồn</th>
                             <th style={{ textAlign: 'center' }}>Điều chỉnh</th>
@@ -57,13 +53,16 @@ export default function InventoryPage() {
                         {loading ? (
                             <tr>
                                 <td colSpan={6} style={{ padding: '100px', textAlign: 'center' }}>
-                                    <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid rgba(230,57,70,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                                    <Spinner />
                                 </td>
                             </tr>
                         ) : items.length === 0 ? (
                             <tr>
-                                <td colSpan={6} style={{ padding: '100px', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 700 }}>
-                                    Hệ thống không tìm thấy dữ liệu tồn kho.
+                                <td colSpan={6} style={{ padding: '80px', textAlign: 'center' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', opacity: 0.5 }}>
+                                        <PackageSearch size={48} />
+                                        <p style={{ fontWeight: 700, fontStyle: 'italic' }}>Hệ thống không tìm thấy dữ liệu tồn kho.</p>
+                                    </div>
                                 </td>
                             </tr>
                         ) : (
@@ -145,7 +144,6 @@ export default function InventoryPage() {
             </div>
 
             <style>{`
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 .modern-table tr:hover td { background: rgba(59, 130, 246, 0.03) !important; }
             `}</style>
         </div>

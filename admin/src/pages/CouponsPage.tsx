@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { couponsApi } from '../lib/api';
 import toast from 'react-hot-toast';
-import { Plus, X, Calendar } from 'lucide-react';
+import { Plus, X, Calendar, Ticket } from 'lucide-react';
+import { PageHeader, SpinnerPage, EmptyState, StatusBadge } from '../components/ui';
 
 export default function CouponsPage() {
     const [items, setItems] = useState<any[]>([]);
@@ -41,21 +42,15 @@ export default function CouponsPage() {
 
     return (
         <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            {/* Header */}
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
-                <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Chương trình khuyến mãi</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
-                        Chiến dịch kích cầu hiệu quả với <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> mã giảm giá đang vận hành.
-                    </p>
-                </div>
-                <button
-                    onClick={() => setShowForm(!showForm)}
-                    className="btn-premium"
-                >
-                    <Plus size={18} /> Tạo mã mới
-                </button>
-            </header>
+            <PageHeader
+                title="Chương trình khuyến mãi"
+                description={<>Chiến dịch kích cầu hiệu quả với <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> mã giảm giá đang vận hành.</>}
+                action={
+                    <button onClick={() => setShowForm(!showForm)} className="btn-premium">
+                        <Plus size={18} /> Tạo mã mới
+                    </button>
+                }
+            />
 
             {showForm && (
                 <div className="premium-card glass-panel" style={{ marginBottom: '40px', animation: 'slideUp 0.4s ease-out', border: '1px solid rgba(var(--primary-rgb), 0.2)' }}>
@@ -70,7 +65,7 @@ export default function CouponsPage() {
                         {[
                             ['Mã Code Giảm Giá *', 'ma_giamgia', 'text', 'VD: SUMMER2026'],
                             ['Giá Trị Giảm *', 'giatrigiam', 'number', '10'],
-                            ['Đơn Tối Thiểu', 'don_toithieu', 'number', '0'],
+                            ['Đơn To tối thiểu', 'don_toithieu', 'number', '0'],
                             ['Tổng Lượt Sử Dụng', 'solandung', 'number', '100'],
                             ['Ngày Bắt Đầu *', 'ngay_batdau', 'datetime-local', ''],
                             ['Ngày Kết Thúc *', 'ngay_ketthuc', 'datetime-local', '']
@@ -110,13 +105,9 @@ export default function CouponsPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '24px' }}>
                 {loading ? (
-                    <div style={{ gridColumn: '1/-1', padding: '100px', textAlign: 'center' }}>
-                        <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid rgba(230,57,70,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                    </div>
+                    <SpinnerPage />
                 ) : items.length === 0 ? (
-                    <div className="premium-card glass-panel" style={{ gridColumn: '1/-1', padding: '80px', textAlign: 'center' }}>
-                        <p style={{ color: 'var(--text-muted)', fontWeight: 700, fontStyle: 'italic', fontSize: '16px' }}>Hệ thống chưa có mã khuyến mãi nào được tạo.</p>
-                    </div>
+                    <EmptyState message="Hệ thống chưa có mã khuyến mãi nào được tạo." icon={<Ticket size={48} />} />
                 ) : (
                     items.map((item: any) => (
                         <div key={item.ma_khuyenmai} className="premium-card glass-panel" style={{ padding: '32px', border: '1px solid var(--border-light)' }}>
@@ -131,19 +122,7 @@ export default function CouponsPage() {
                                 }}>
                                     <code style={{ fontSize: '18px', fontWeight: 900, letterSpacing: '2px', fontFamily: 'monospace' }}>{item.ma_giamgia}</code>
                                 </div>
-                                <button
-                                    onClick={() => toggleActive(item)}
-                                    className="status-pill"
-                                    style={{
-                                        background: item.is_active ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-                                        color: item.is_active ? '#10b981' : '#ef4444',
-                                        border: `1px solid ${item.is_active ? '#10b981' : '#ef4444'}25`,
-                                        padding: '8px 16px'
-                                    }}
-                                >
-                                    <div className="status-glow" style={{ color: item.is_active ? '#10b981' : '#ef4444' }} />
-                                    {item.is_active ? 'ACTIVE' : 'DISABLED'}
-                                </button>
+                                <StatusBadge active={!!item.is_active} onClick={() => toggleActive(item)} activeLabel="ACTIVE" inactiveLabel="DISABLED" />
                             </div>
 
                             <div style={{ marginBottom: '28px' }}>
@@ -179,7 +158,6 @@ export default function CouponsPage() {
             </div>
 
             <style>{`
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 .glass-panel:hover { border-color: rgba(var(--primary-rgb), 0.3) !important; transform: translateY(-4px); }
             `}</style>
         </div>

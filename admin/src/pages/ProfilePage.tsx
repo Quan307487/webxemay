@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Mail, Phone, Shield, Calendar, Eye, EyeOff, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../lib/api';
+import { PageHeader, Spinner } from '../components/ui';
 
 export default function ProfilePage() {
     const [admin, setAdmin] = useState<any>(null);
@@ -81,22 +82,17 @@ export default function ProfilePage() {
         }
     };
 
-    if (!admin) return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-muted)' }}>
-        <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid rgba(230,57,70,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-    </div>;
+    if (!admin) return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-muted)' }}><Spinner /></div>;
 
     const displayName = admin.hovaten || admin.ten_user || 'Admin';
     const initials = getInitials(displayName);
 
     return (
         <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            {/* Page Header */}
-            <header style={{ marginBottom: '40px' }}>
-                <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Thiết lập tài khoản</h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
-                    Quản lý thông tin định danh và bảo mật dành riêng cho <span style={{ color: 'var(--primary)', fontWeight: 800 }}>Quản trị viên</span>.
-                </p>
-            </header>
+            <PageHeader
+                title="Thiết lập tài khoản"
+                description={<>Quản lý thông tin định danh và bảo mật dành riêng cho <span style={{ color: 'var(--primary)', fontWeight: 800 }}>Quản trị viên</span>.</>}
+            />
 
             <form autoComplete="off" onSubmit={(e) => e.preventDefault()} style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '32px', alignItems: 'start' }}>
                 {/* Autofill Trap */}

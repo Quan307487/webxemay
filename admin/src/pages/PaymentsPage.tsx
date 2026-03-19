@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { paymentsApi } from '../lib/api';
+import { PageHeader, Spinner } from '../components/ui';
 
 const STATUS: Record<string, { label: string; color: string }> = {
     pending: { label: 'Đang chờ', color: '#eab308' },
@@ -27,39 +28,36 @@ export default function PaymentsPage() {
 
     return (
         <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            {/* Header */}
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
-                <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Lịch sử thanh toán</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
-                        Theo dõi và đối soát các giao dịch tài chính với <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> lệnh thanh toán.
-                    </p>
-                </div>
-                <div style={{ display: 'flex', background: 'var(--bg-deep)', padding: '6px', borderRadius: '16px', border: '1px solid var(--border-subtle)', backdropFilter: 'blur(10px)' }}>
-                    {['', 'pending', 'success', 'failed', 'refunded'].map(s => (
-                        <button
-                            key={s}
-                            onClick={() => setFilter(s)}
-                            style={{
-                                padding: '10px 20px',
-                                borderRadius: '12px',
-                                border: 'none',
-                                background: filter === s ? 'var(--primary)' : 'transparent',
-                                color: filter === s ? 'white' : 'var(--text-secondary)',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: 800,
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.5px',
-                                boxShadow: filter === s ? '0 4px 12px rgba(var(--primary-rgb), 0.3)' : 'none'
-                            }}
-                        >
-                            {s === '' ? 'Tất cả' : STATUS[s]?.label}
-                        </button>
-                    ))}
-                </div>
-            </header>
+            <PageHeader
+                title="Lịch sử thanh toán"
+                description={<>Theo dõi và đối soát các giao dịch tài chính với <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{items.length}</span> lệnh thanh toán.</>}
+                action={
+                    <div style={{ display: 'flex', background: 'var(--bg-deep)', padding: '6px', borderRadius: '16px', border: '1px solid var(--border-subtle)', backdropFilter: 'blur(10px)' }}>
+                        {['', 'pending', 'success', 'failed', 'refunded'].map(s => (
+                            <button
+                                key={s}
+                                onClick={() => setFilter(s)}
+                                style={{
+                                    padding: '10px 20px',
+                                    borderRadius: '12px',
+                                    border: 'none',
+                                    background: filter === s ? 'var(--primary)' : 'transparent',
+                                    color: filter === s ? 'white' : 'var(--text-secondary)',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                    fontWeight: 800,
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px',
+                                    boxShadow: filter === s ? '0 4px 12px rgba(var(--primary-rgb), 0.3)' : 'none'
+                                }}
+                            >
+                                {s === '' ? 'Tất cả' : STATUS[s]?.label}
+                            </button>
+                        ))}
+                    </div>
+                }
+            />
 
             <div className="modern-table-container">
                 <table className="modern-table">
@@ -77,7 +75,7 @@ export default function PaymentsPage() {
                         {loading ? (
                             <tr>
                                 <td colSpan={6} style={{ padding: '100px', textAlign: 'center' }}>
-                                    <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid rgba(230,57,70,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                                    <Spinner />
                                 </td>
                             </tr>
                         ) : items.length === 0 ? (
@@ -152,8 +150,7 @@ export default function PaymentsPage() {
             </div>
 
             <style>{`
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                .modern-table tr:hover td { background: rgba(59, 130, 246, 0.03) !important; }
+                .modern-table tr:hover td { background: rgba(var(--primary-rgb), 0.03) !important; }
             `}</style>
         </div>
     );

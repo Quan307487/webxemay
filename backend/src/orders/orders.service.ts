@@ -1,4 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import * as crypto from 'crypto';
+import * as querystring from 'node:querystring';
+import moment from 'moment';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Donhang } from './donhang.entity';
@@ -19,7 +22,7 @@ export class OrdersService {
         @InjectRepository(Thanhtoan) private ttRepo: Repository<Thanhtoan>,
     ) { }
 
-    async checkout(ma_user: number, dto: { dia_chi_giao: string; ten_nguoi_nhan: string; sdt_nguoi_nhan: string; phuong_thuc_TT: string; ghi_chu?: string; ma_giamgia?: string }) {
+    async checkout(ma_user: number, dto: { dia_chi_giao: string; ten_nguoi_nhan: string; sdt_nguoi_nhan: string; phuong_thuc_TT: string; ghi_chu?: string; ma_giamgia?: string }, ipAddr: string) {
         const cart = await this.cartRepo.findOne({ where: { ma_user }, relations: ['chitietgiohang', 'chitietgiohang.sanpham'] });
         if (!cart?.chitietgiohang?.length) throw new BadRequestException('Giỏ hàng trống');
         // Kiểm tra tồn kho
@@ -35,13 +38,153 @@ export class OrdersService {
         }
         await this.cartItemRepo.delete({ ma_gio: cart.ma_gio });
         await this.ttRepo.save(this.ttRepo.create({ ma_donhang: order.ma_donhang, thanh_tien: tong, PT_thanhtoan: dto.phuong_thuc_TT as any, ma_giamgia: dto.ma_giamgia }));
-        return this.findOne(order.ma_donhang);
+
+        const orderData = await this.findOne(order.ma_donhang);
+        const plainOrder = JSON.parse(JSON.stringify(orderData));
+
+        if (dto.phuong_thuc_TT === 'vnpay') {
+            const paymentUrl = this.createVnpayUrl(order.ma_donhang, tong, ipAddr);
+            return {
+                ...plainOrder,
+                paymentUrl
+            };
+        }
+        return plainOrder;
+    }
+
+    createVnpayUrl(orderId: number, amount: number, ipAddr: string) {
+        const tmnCode = (process.env.VNP_TMN_CODE || '').trim();
+        const secretKey = (process.env.VNP_HASH_SECRET || '').trim();
+        let vnpUrl = process.env.VNP_URL;
+        const returnUrl = process.env.VNP_RETURN_URL;
+
+        const date = new Date();
+        const createDate = moment(date).format('YYYYMMDDHHmmss');
+
+        let vnp_Params: any = {};
+        vnp_Params['vnp_Version'] = '2.1.0';
+        vnp_Params['vnp_Command'] = 'pay';
+        vnp_Params['vnp_TmnCode'] = tmnCode;
+        vnp_Params['vnp_Locale'] = 'vn';
+        vnp_Params['vnp_CurrCode'] = 'VND';
+        vnp_Params['vnp_TxnRef'] = orderId.toString();
+        vnp_Params['vnp_OrderInfo'] = 'Thanh_toan_don_hang_' + orderId;
+        vnp_Params['vnp_OrderType'] = 'other';
+        vnp_Params['vnp_Amount'] = Math.round(Number(amount)) * 100;
+        vnp_Params['vnp_ReturnUrl'] = returnUrl;
+        vnp_Params['vnp_IpAddr'] = ipAddr;
+        vnp_Params['vnp_CreateDate'] = createDate;
+
+        vnp_Params = this.sortObject(vnp_Params);
+
+        let signData = Object.keys(vnp_Params).map(key => `${key}=${vnp_Params[key]}`).join('&');
+        
+        const hmac = crypto.createHmac("sha512", secretKey);
+        const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+        
+        vnpUrl += '?' + signData + '&vnp_SecureHash=' + signed;
+
+        return vnpUrl;
+    }
+
+    private sortObject(obj: any) {
+        let sorted: any = {};
+        let keys = Object.keys(obj).sort();
+        for (let key of keys) {
+            sorted[key] = encodeURIComponent(obj[key]);
+        }
+        return sorted;
+    }
+
+    async vnpayReturn(vnp_Params: any) {
+        const secureHash = vnp_Params['vnp_SecureHash'];
+        delete vnp_Params['vnp_SecureHash'];
+        delete vnp_Params['vnp_SecureHashType'];
+
+        const sortedParams = this.sortObject(vnp_Params);
+        const secretKey = process.env.VNP_HASH_SECRET;
+        const signData = Object.keys(sortedParams)
+            .map(key => `${key}=${sortedParams[key]}`)
+            .join('&');
+        const hmac = crypto.createHmac("sha512", secretKey || '');
+        const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+
+        if (secureHash === signed) {
+            const orderId = parseInt(vnp_Params['vnp_TxnRef']);
+            const rspCode = vnp_Params['vnp_ResponseCode'];
+            if (rspCode === '00') {
+                // Success
+                await this.updatePaymentStatus(orderId, 'success', vnp_Params['vnp_TransactionNo']);
+                return { success: true, orderId };
+            } else {
+                await this.updatePaymentStatus(orderId, 'failed', vnp_Params['vnp_TransactionNo']);
+                return { success: false, orderId, code: rspCode };
+            }
+        } else {
+            return { success: false, message: 'Invalid signature' };
+        }
+    }
+
+    async vnpayIpn(vnp_Params: any) {
+        const secureHash = vnp_Params['vnp_SecureHash'];
+        delete vnp_Params['vnp_SecureHash'];
+        delete vnp_Params['vnp_SecureHashType'];
+
+        const sortedParams = this.sortObject(vnp_Params);
+        const secretKey = process.env.VNP_HASH_SECRET;
+        const signData = Object.keys(sortedParams)
+            .map(key => `${key}=${sortedParams[key]}`)
+            .join('&');
+        const hmac = crypto.createHmac("sha512", secretKey || '');
+        const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+
+        if (secureHash === signed) {
+            const orderId = parseInt(vnp_Params['vnp_TxnRef']);
+            const rspCode = vnp_Params['vnp_ResponseCode'];
+            
+            const order = await this.orderRepo.findOne({ where: { ma_donhang: orderId }, relations: ['thanhtoan'] });
+            if (!order) return { RspCode: '01', Message: 'Order not found' };
+
+            // Check amount if needed
+            // if (order.tong_tien * 100 !== parseInt(vnp_Params['vnp_Amount'])) return { RspCode: '04', Message: 'Invalid amount' };
+
+            if (order.trang_thai_TT !== 'pending') return { RspCode: '02', Message: 'Order already confirmed' };
+
+            if (rspCode === '00') {
+                await this.updatePaymentStatus(orderId, 'success', vnp_Params['vnp_TransactionNo']);
+            } else {
+                await this.updatePaymentStatus(orderId, 'failed', vnp_Params['vnp_TransactionNo']);
+            }
+            return { RspCode: '00', Message: 'Success' };
+        } else {
+            return { RspCode: '97', Message: 'Invalid checksum' };
+        }
+    }
+
+    async updatePaymentStatus(orderId: number, status: 'success' | 'failed', transactionNo?: string) {
+        const order = await this.orderRepo.findOne({ where: { ma_donhang: orderId }, relations: ['thanhtoan'] });
+        if (!order) return;
+
+        if (status === 'success') {
+            await this.orderRepo.update(orderId, { trang_thai_TT: 'paid', phuong_thuc_TT: 'vnpay' });
+            if (order.thanhtoan?.length) {
+                await this.ttRepo.update(order.thanhtoan[0].ma_thanhtoan, { trang_thai: 'success', ma_giao_dich: transactionNo });
+            }
+        } else {
+            // FAILED status - keep order but mark payment failed
+            if (order.thanhtoan?.length) {
+                await this.ttRepo.update(order.thanhtoan[0].ma_thanhtoan, { trang_thai: 'failed', ma_giao_dich: transactionNo });
+            }
+        }
     }
 
     findMyOrders(ma_user: number) { return this.orderRepo.find({ where: { ma_user }, relations: ['chitietdonhang'], order: { ngay_dat: 'DESC' } }); }
 
     async findMyOrder(ma_user: number, id: number) {
-        const o = await this.orderRepo.findOne({ where: { ma_donhang: id, ma_user }, relations: ['chitietdonhang', 'thanhtoan'] });
+        const o = await this.orderRepo.findOne({ 
+            where: { ma_donhang: id, ma_user }, 
+            relations: ['chitietdonhang', 'chitietdonhang.sanpham', 'chitietdonhang.sanpham.hinhanh', 'thanhtoan'] 
+        });
         if (!o) throw new NotFoundException('Không tìm thấy đơn hàng');
         return o;
     }

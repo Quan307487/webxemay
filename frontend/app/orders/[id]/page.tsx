@@ -49,6 +49,21 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
             });
     }, [ma_donhang, user, _hasHydrated]);
 
+    const getProductImage = (item: any) => {
+        const product = item.sanpham;
+        if (!product || !product.hinhanh || product.hinhanh.length === 0) return '/placeholder-bike.jpg';
+        
+        if (item.mau_xe) {
+            const colorImg = product.hinhanh.find((img: any) => 
+                img.mau_sac && img.mau_sac.toLowerCase().trim() === item.mau_xe.toLowerCase().trim()
+            );
+            if (colorImg) return `http://localhost:3001${colorImg.image_url}`;
+        }
+        
+        const mainImg = product.hinhanh.find((img: any) => img.is_main === 1) || product.hinhanh[0];
+        return `http://localhost:3001${mainImg.image_url}`;
+    };
+
     if (loading) return (
         <>
             <Navbar />
@@ -140,10 +155,14 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                     <h3 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '16px' }}>📦 Sản phẩm</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         {order.chitietdonhang?.map((item: any) => (
-                            <div key={item.ma_CTDH} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px' }}>
-                                <div>
+                            <div key={item.ma_CTDH} style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '10px' }}>
+                                <img src={getProductImage(item)} alt="" style={{ width: '80px', height: '64px', objectFit: 'cover', borderRadius: '8px' }} />
+                                <div style={{ flex: 1 }}>
                                     <p style={{ fontWeight: 600, fontSize: '15px', marginBottom: '3px' }}>{item.ten_sanpham}</p>
-                                    <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Số lượng: {item.so_luong} × {formatPrice(Number(item.don_gia))}</p>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        {item.mau_xe && <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Màu: {item.mau_xe}</span>}
+                                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>SL: {item.so_luong} × {formatPrice(Number(item.don_gia))}</span>
+                                    </div>
                                 </div>
                                 <p style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '15px', flexShrink: 0 }}>{formatPrice(Number(item.thanh_tien))}</p>
                             </div>

@@ -43,3 +43,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+
+# Uploads
+backend/uploads/

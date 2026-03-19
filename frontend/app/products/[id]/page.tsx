@@ -25,6 +25,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const [submittingReview, setSubmittingReview] = useState(false);
     const { user } = useAuthStore();
     const setCart = useCartStore(s => s.setCart);
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const { add: toast } = useToast();
 
     useEffect(() => {
@@ -58,9 +59,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
     const handleCart = async () => {
         if (!user) { window.location.href = '/auth/login'; return; }
+        if (product.mau_sac && !selectedColor) { toast('Vui lòng chọn màu sắc', 'warning'); return; }
         setAdding(true);
         try {
-            const r = await cartApi.addItem({ ma_sanpham: product.ma_sanpham, so_luong: qty });
+            const r = await cartApi.addItem({ ma_sanpham: product.ma_sanpham, so_luong: qty, mau_chon: selectedColor || undefined });
             setCart(r.data.chitietgiohang || []);
             toast(`✅ Đã thêm ${qty} xe vào giỏ hàng!`);
         } catch (e: any) { toast(e.response?.data?.message || 'Lỗi thêm vào giỏ', 'error'); }
@@ -89,10 +91,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     };
 
     const specs = [
-        ['Loại xe', ({ xe_so: 'Xe số', xe_ga: 'Xe ga', xe_con_tay: 'Côn tay', xe_dien: 'Xe điện', phan_khoi_lon: 'PKL' } as Record<string, string>)[product.kieu_xe] || product.kieu_xe],
+        ['Loại xe', ({ xe_so: 'Xe số', xe_ga: 'Xe ga', xe_con_tay: 'Côn tay', xe_mo_to: 'Xe mô tô', xe_dien: 'Xe điện', phan_khoi_lon: 'PKL' } as Record<string, string>)[product.kieu_xe] || product.kieu_xe],
         ['Dung tích động cơ', product.dung_tich_dong_co],
         ['Nhiên liệu', ({ xang: 'Xăng', dien: '⚡ Điện', hybrid: 'Hybrid' } as Record<string, string>)[product.loai_nhien_lieu]],
-        ['Hộp số', ({ so_tay: 'Số tay', tu_dong: 'Tự động', ban_tu_dong: 'Bán tự động', khong_hop_so: 'Không hộp số' } as Record<string, string>)[product.hop_so]],
+        ['Hộp số', ({ so_tay: 'Số tay (4 cấp)', so_tay_6: 'Số tay (6 cấp)', con_tay: 'Côn tay', tu_dong: 'Tự động', vo_cap: 'Vô cấp (CVT)', ban_tu_dong: 'Bán tự động', khong_hop_so: 'Không hộp số' } as Record<string, string>)[product.hop_so]],
         ['Công suất tối đa', product.cong_suat_toi_da],
         ['Mô men xoắn', product.momen_xoan_toi_da],
         ['Hệ thống phanh', ({ trong: 'Phanh trống', dia: 'Phanh đĩa', trong_truoc_dia_sau: 'Trống trước - Đĩa sau', abs: 'ABS' } as Record<string, string>)[product.he_thong_phanhang]],
@@ -139,8 +141,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                         {imgs.length > 1 && (
                             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                 {imgs.map((img: any, i: number) => (
-                                    <img key={img.ma_anh} src={`http://localhost:3001${img.image_url}`} alt="" onClick={() => setImgIdx(i)}
-                                        style={{ width: '72px', height: '60px', objectFit: 'cover', borderRadius: '8px', cursor: 'pointer', border: `2px solid ${i === imgIdx ? 'var(--primary)' : 'var(--border)'}`, opacity: i === imgIdx ? 1 : 0.6, transition: 'all 0.2s' }} />
+                                    <div key={img.ma_anh} style={{ position: 'relative' }}>
+                                        <img src={`http://localhost:3001${img.image_url}`} alt="" 
+                                            onClick={() => {
+                                                setImgIdx(i);
+                                                if (img.mau_sac) setSelectedColor(img.mau_sac);
+                                            }}
+                                            style={{ width: '72px', height: '60px', objectFit: 'cover', borderRadius: '8px', cursor: 'pointer', border: `2px solid ${i === imgIdx ? 'var(--primary)' : 'var(--border)'}`, opacity: i === imgIdx ? 1 : 0.6, transition: 'all 0.2s' }} />
+                                        {img.mau_sac && <span style={{ position: 'absolute', bottom: '4px', left: '4px', right: '4px', background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '8px', textAlign: 'center', borderRadius: '4px', padding: '2px', fontWeight: 700, pointerEvents: 'none' }}>{img.mau_sac}</span>}
+                                    </div>
                                 ))}
                             </div>
                         )}
@@ -163,6 +172,36 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                 </div>
                             )}
                         </div>
+
+                        {/* Color Selection */}
+                        {product.mau_sac && (
+                            <div style={{ marginBottom: '24px' }}>
+                                <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '12px' }}>Chọn màu sắc</p>
+                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                    {product.mau_sac.split(',').map((c: string) => {
+                                        const color = c.trim();
+                                        const isSelected = selectedColor === color;
+                                        return (
+                                            <button key={color} 
+                                                onClick={() => {
+                                                    setSelectedColor(color);
+                                                    // Tìm ảnh đầu tiên có màu này
+                                                    const firstImgIdx = imgs.findIndex((img: any) => img.mau_sac && img.mau_sac.toLowerCase().includes(color.toLowerCase()));
+                                                    if (firstImgIdx !== -1) setImgIdx(firstImgIdx);
+                                                }}
+                                                style={{ 
+                                                    padding: '10px 18px', borderRadius: '12px', border: `2px solid ${isSelected ? 'var(--primary)' : 'var(--border)'}`,
+                                                    background: isSelected ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-card)',
+                                                    color: isSelected ? 'var(--primary)' : 'var(--text)',
+                                                    fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
+                                                }}>
+                                                {color}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Stock */}
                         <div style={{ background: product.ton_kho > 0 ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${product.ton_kho > 0 ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, borderRadius: '10px', padding: '12px 16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -202,7 +241,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
                         {/* Quick specs */}
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '20px' }}>
-                            {[product.kieu_xe && ['🏍', (({ xe_so: 'Xe số', xe_ga: 'Xe ga', xe_con_tay: 'Côn tay', xe_dien: 'Xe điện', phan_khoi_lon: 'PKL' } as Record<string, string>)[product.kieu_xe])], product.dung_tich_dong_co && ['🔧', product.dung_tich_dong_co], product.xuat_xu && ['🌏', product.xuat_xu]].filter(Boolean).map((item: any, i) => (
+                            {[product.kieu_xe && ['🏍', (({ xe_so: 'Xe số', xe_ga: 'Xe ga', xe_con_tay: 'Côn tay', xe_mo_to: 'Xe mô tô', xe_dien: 'Xe điện', phan_khoi_lon: 'PKL' } as Record<string, string>)[product.kieu_xe])], product.dung_tich_dong_co && ['🔧', product.dung_tich_dong_co], product.xuat_xu && ['🌏', product.xuat_xu]].filter(Boolean).map((item: any, i) => (
                                 <span key={i} style={{ padding: '6px 12px', background: 'rgba(255,255,255,0.05)', borderRadius: '20px', fontSize: '12px', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>{item[0]} {item[1]}</span>
                             ))}
                         </div>

@@ -38,7 +38,7 @@ export default function WishlistPage() {
     const removeItem = async (id: number) => {
         try {
             await wishlistApi.remove(id);
-            setItems(prev => prev.filter(i => i.ma_wishlist !== id));
+            setItems(prev => prev.filter(i => i.ma_dsyeuthich !== id));
             toast('Đã xóa khỏi danh sách yêu thích', 'info');
         } catch { toast('Lỗi khi xóa', 'error'); }
     };
@@ -77,8 +77,8 @@ export default function WishlistPage() {
                             const hasDiscount = Number(p.gia_tri_giam) > 0;
                             const mainImg = p.hinhanh?.find((h: any) => h.is_main) || p.hinhanh?.[0];
                             return (
-                                <div key={item.ma_wishlist} className="product-card" style={{ position: 'relative' }}>
-                                    <button onClick={() => removeItem(item.ma_wishlist)} style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '6px 8px', cursor: 'pointer', color: '#ef4444', zIndex: 2, display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}>
+                                <div key={item.ma_dsyeuthich} className="product-card" style={{ position: 'relative' }}>
+                                    <button onClick={() => removeItem(item.ma_dsyeuthich)} style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '6px 8px', cursor: 'pointer', color: '#ef4444', zIndex: 2, display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}>
                                         <Trash2 size={13} />
                                     </button>
                                     <Link href={`/products/${p.ma_sanpham}`} style={{ textDecoration: 'none' }}>

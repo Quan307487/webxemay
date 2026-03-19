@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { Giohang } from './giohang.entity';
 import { Chitietgiohang } from './chitietgiohang.entity';
 import { Sanpham } from '../products/sanpham.entity';
@@ -24,7 +24,16 @@ export class CartService {
         if (!sp) throw new NotFoundException('Sản phẩm không tồn tại');
         if (sp.ton_kho < so_luong) throw new BadRequestException(`Chỉ còn ${sp.ton_kho} xe trong kho`);
         const cart = await this.getOrCreateCart(ma_user);
-        const exist = await this.itemRepo.findOne({ where: { ma_gio: cart.ma_gio, ma_sanpham } });
+        
+        // Tìm mục đã tồn tại khớp cả ID sản phẩm và màu sắc
+        const exist = await this.itemRepo.findOne({ 
+            where: { 
+                ma_gio: cart.ma_gio, 
+                ma_sanpham, 
+                mau_chon: (mau_chon || IsNull()) as any
+            } 
+        });
+
         if (exist) {
             const newQty = exist.so_luong + so_luong;
             if (sp.ton_kho < newQty) throw new BadRequestException(`Chỉ còn ${sp.ton_kho} xe trong kho`);

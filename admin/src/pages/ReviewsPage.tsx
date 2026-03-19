@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { reviewsApi } from '../lib/api';
 import toast from 'react-hot-toast';
-import { CheckCircle, XCircle, Trash2, Star, Calendar } from 'lucide-react';
+import { CheckCircle, XCircle, Trash2, Star, Calendar, MessageSquare } from 'lucide-react';
+import { PageHeader, SpinnerPage, EmptyState } from '../components/ui';
 
 export default function ReviewsPage() {
     const [reviews, setReviews] = useState<any[]>([]);
@@ -52,49 +53,42 @@ export default function ReviewsPage() {
 
     return (
         <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            {/* Header */}
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
-                <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Đánh giá dịch vụ</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
-                        Lắng nghe phản hồi từ khách hàng để tối ưu trải nghiệm và quản lý nội dung.
-                    </p>
-                </div>
-                <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', padding: '6px', borderRadius: '16px', border: '1px solid var(--border-light)', backdropFilter: 'blur(10px)' }}>
-                    {['pending', 'approved', 'rejected'].map(s => (
-                        <button
-                            key={s}
-                            onClick={() => setFilter(s)}
-                            style={{
-                                padding: '10px 24px',
-                                borderRadius: '12px',
-                                border: 'none',
-                                background: filter === s ? 'var(--primary)' : 'transparent',
-                                color: filter === s ? 'white' : 'var(--text-secondary)',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: 800,
-                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                textTransform: 'uppercase',
-                                letterSpacing: '1px',
-                                boxShadow: filter === s ? '0 4px 12px rgba(var(--primary-rgb), 0.3)' : 'none'
-                            }}
-                        >
-                            {s === 'pending' ? 'Chờ duyệt' : s === 'approved' ? 'Công khai' : 'Từ chối'}
-                        </button>
-                    ))}
-                </div>
-            </header>
+            <PageHeader
+                title="Đánh giá dịch vụ"
+                description="Lắng nghe phản hồi từ khách hàng để tối ưu trải nghiệm và quản lý nội dung."
+                action={
+                    <div style={{ display: 'flex', background: 'rgba(255,255,255,0.02)', padding: '6px', borderRadius: '16px', border: '1px solid var(--border-light)', backdropFilter: 'blur(10px)' }}>
+                        {['pending', 'approved', 'rejected'].map(s => (
+                            <button
+                                key={s}
+                                onClick={() => setFilter(s)}
+                                style={{
+                                    padding: '10px 24px',
+                                    borderRadius: '12px',
+                                    border: 'none',
+                                    background: filter === s ? 'var(--primary)' : 'transparent',
+                                    color: filter === s ? 'white' : 'var(--text-secondary)',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                    fontWeight: 800,
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px',
+                                    boxShadow: filter === s ? '0 4px 12px rgba(var(--primary-rgb), 0.3)' : 'none'
+                                }}
+                            >
+                                {s === 'pending' ? 'Chờ duyệt' : s === 'approved' ? 'Công khai' : 'Từ chối'}
+                            </button>
+                        ))}
+                    </div>
+                }
+            />
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
                 {loading ? (
-                    <div style={{ padding: '100px', textAlign: 'center' }}>
-                        <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid rgba(230,57,70,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                    </div>
+                    <SpinnerPage />
                 ) : reviews.length === 0 ? (
-                    <div className="premium-card glass-panel" style={{ padding: '80px', textAlign: 'center' }}>
-                        <p style={{ color: 'var(--text-muted)', fontWeight: 700, fontStyle: 'italic', fontSize: '16px' }}>Không có phản hồi nào trong danh sách này.</p>
-                    </div>
+                    <EmptyState message="Không có phản hồi nào trong danh sách này." icon={<MessageSquare size={48} />} />
                 ) : (
                     reviews.map((r: any) => (
                         <div key={r.ma_danhgia} className="premium-card glass-panel" style={{ padding: '32px', display: 'flex', gap: '32px', justifyContent: 'space-between', alignItems: 'flex-start', border: '1px solid var(--border-light)' }}>
@@ -178,7 +172,6 @@ export default function ReviewsPage() {
             </div>
 
             <style>{`
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 .glass-panel:hover { transform: translateY(-4px); border-color: rgba(var(--primary-rgb), 0.3) !important; }
                 .hover-amber:hover { background: #f59e0b !important; color: white !important; }
                 .hover-red:hover { background: #ef4444 !important; color: white !important; }

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -16,7 +17,18 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (res) => res,
     (err) => {
-        if (err.response?.status === 401) { localStorage.removeItem('admin_token'); window.location.href = '/login'; }
+        const status = err.response?.status;
+        const message = err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại';
+
+        if (status === 401) {
+            localStorage.removeItem('admin_token');
+            if (!window.location.pathname.includes('/login')) {
+                window.location.href = '/login';
+            }
+        } else if (err.config?.skipToast !== true) {
+            toast.error(message);
+        }
+        
         return Promise.reject(err);
     }
 );
@@ -28,6 +40,9 @@ export const productsApi = {
     update: (id: number, d: any) => api.put(`/products/${id}`, d),
     delete: (id: number) => api.delete(`/products/${id}`),
     uploadImage: (id: number, fd: FormData) => api.post(`/products/${id}/images`, fd, { headers: { 'Content-Type': 'multipart/form-data' } }),
+    deleteImage: (ma_anh: number) => api.delete(`/products/images/${ma_anh}`),
+    updateImage: (ma_anh: number, data: any) => api.put(`/products/images/${ma_anh}`, data),
+    setMain: (id: number, ma_anh: number) => api.put(`/products/${id}/images/${ma_anh}/main`),
 };
 export const categoriesApi = { getAll: () => api.get('/categories'), create: (d: any) => api.post('/categories', d), update: (id: number, d: any) => api.put(`/categories/${id}`, d), delete: (id: number) => api.delete(`/categories/${id}`) };
 export const brandsApi = { getAll: () => api.get('/brands'), create: (d: any) => api.post('/brands', d), update: (id: number, d: any) => api.put(`/brands/${id}`, d), delete: (id: number) => api.delete(`/brands/${id}`) };

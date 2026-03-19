@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { settingsApi } from '../lib/api';
-import { Save, Globe, Facebook, Youtube, Instagram, MessageCircle, Info, Loader2 } from 'lucide-react';
+import { Save, Globe, Facebook, Youtube, Instagram, MessageCircle, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { PageHeader, Spinner } from '../components/ui';
 
 export default function SettingsPage() {
     const [settings, setSettings] = useState<any>(null);
@@ -36,29 +37,25 @@ export default function SettingsPage() {
         }
     };
 
-    if (loading) return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-            <Loader2 className="animate-spin" size={40} color="var(--primary)" />
-        </div>
-    );
+    if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}><Spinner /></div>;
 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <div>
-                    <h2 style={{ fontSize: '28px', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '8px' }}>Cấu hình Hệ thống</h2>
-                    <p style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Quản lý thông tin chung, mạng xã hội và chân trang</p>
-                </div>
-                <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="btn-premium btn-primary"
-                    style={{ padding: '12px 32px', borderRadius: '16px' }}
-                >
-                    {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
-                    <span>Lưu thay đổi</span>
-                </button>
-            </div>
+            <PageHeader
+                title="Cấu hình Hệ thống"
+                description="Quản lý thông tin chung, mạng xã hội và chân trang"
+                action={
+                    <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="btn-premium btn-primary"
+                        style={{ padding: '0 32px', height: '44px', borderRadius: '12px', gap: '8px' }}
+                    >
+                        {saving ? <Spinner size={18} color="white" /> : <Save size={18} />}
+                        <span>Lưu thay đổi</span>
+                    </button>
+                }
+            />
 
             <form onSubmit={handleSave} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '32px' }}>
                 {/* General Info */}

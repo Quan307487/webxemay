@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { usersApi, ordersApi } from '../lib/api';
 import toast from 'react-hot-toast';
 import { X, Phone, Mail, MapPin, Calendar, Clock, Shield, User, ShoppingBag, Edit2, Trash2 } from 'lucide-react';
+import { PageHeader, Spinner } from '../components/ui';
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string }> = {
     active: { label: 'Hoạt động', bg: '#10b98120', color: '#10b981' },
@@ -79,28 +80,25 @@ export default function UsersPage() {
 
     return (
         <div style={{ animation: 'fadeIn 0.6s ease' }}>
-            {/* ... Existing header ... */}
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', gap: '24px' }}>
-                <div>
-                    <h1 style={{ fontSize: '36px', fontWeight: 900, color: 'white', letterSpacing: '-1.5px', marginBottom: '8px', fontFamily: 'Outfit, sans-serif' }}>Quản trị thành viên</h1>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '15px', fontWeight: 600 }}>
-                        Thiết lập quyền hạn và kiểm soát trạng thái của <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{users.length}</span> tài khoản.
-                    </p>
-                </div>
-                <div style={{ display: 'flex', gap: '12px', background: 'rgba(255,255,255,0.02)', padding: '6px', borderRadius: '16px', border: '1px solid var(--border-light)', backdropFilter: 'blur(10px)' }}>
-                    <input
-                        className="input-premium"
-                        style={{ width: '280px', height: '48px', fontSize: '14px', fontWeight: 700 }}
-                        placeholder="Tìm theo tên, email, SĐT..."
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && load(search)}
-                    />
-                    <button onClick={() => load(search)} className="btn-premium" style={{ height: '48px', padding: '0 24px' }}>
-                        Tìm kiếm
-                    </button>
-                </div>
-            </header>
+            <PageHeader
+                title="Quản trị thành viên"
+                description={<>Thiết lập quyền hạn và kiểm soát trạng thái của <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{users.length}</span> tài khoản.</>}
+                action={
+                    <div style={{ display: 'flex', gap: '12px', background: 'rgba(255,255,255,0.02)', padding: '6px', borderRadius: '16px', border: '1px solid var(--border-light)', backdropFilter: 'blur(10px)' }}>
+                        <input
+                            className="input-premium"
+                            style={{ width: '280px', height: '48px', fontSize: '14px', fontWeight: 700 }}
+                            placeholder="Tìm theo tên, email, SĐT..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && load(search)}
+                        />
+                        <button onClick={() => load(search)} className="btn-premium" style={{ height: '48px', padding: '0 24px' }}>
+                            Tìm kiếm
+                        </button>
+                    </div>
+                }
+            />
 
             <div className="modern-table-container">
                 <table className="modern-table">
@@ -118,7 +116,7 @@ export default function UsersPage() {
                         {loading ? (
                             <tr>
                                 <td colSpan={6} style={{ padding: '100px', textAlign: 'center' }}>
-                                    <div style={{ display: 'inline-block', width: '40px', height: '40px', border: '4px solid rgba(230,57,70,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                                    <Spinner />
                                 </td>
                             </tr>
                         ) : users.length === 0 ? (
@@ -280,7 +278,6 @@ export default function UsersPage() {
             )}
 
             <style>{`
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 .modern-table tr:hover td { background: rgba(59, 130, 246, 0.03) !important; }
             `}</style>
         </div>

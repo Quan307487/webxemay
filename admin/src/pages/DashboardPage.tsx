@@ -3,6 +3,7 @@ import { reportsApi, ordersApi } from '../lib/api';
 import { ShoppingBag, Users, Activity, Clock, CheckCircle, Truck, XCircle, RotateCcw, Wallet } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 import { Link } from 'react-router-dom';
+import { PageHeader, SpinnerPage, Badge } from '../components/ui';
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: any; bg: string }> = {
     pending: { label: 'Chờ XN', color: '#f59e0b', icon: Clock, bg: 'rgba(245, 158, 11, 0.1)' },
@@ -81,21 +82,15 @@ export default function DashboardPage() {
 
     const formatVN = (n: number) => n ? Number(n).toLocaleString('vi-VN') + ' ₫' : '0 ₫';
 
-    if (!data) return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '600px' }}>
-            <div style={{
-                width: '50px',
-                height: '50px',
-                border: '4px solid var(--bg-deep)',
-                borderTopColor: 'var(--primary)',
-                borderRadius: '50%',
-                animation: 'spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite'
-            }} />
-        </div>
-    );
+    if (!data) return <SpinnerPage />;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', paddingBottom: '40px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', paddingBottom: '40px' }}>
+            <PageHeader
+                title="Tổng quan hệ thống"
+                description={<>Chào mừng trở lại! Hôm nay hệ thống có <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{data.tong_don}</span> đơn hàng mới đang chờ xử lý.</>}
+            />
+
             {/* Top Bar Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
                 <StatCard icon={Wallet} label="Doanh thu thực" value={formatVN(data.doanh_thu_thang)} sub="Thu nhập ròng trong tháng" color="var(--primary)" trend="12.5%" />
@@ -242,10 +237,7 @@ export default function DashboardPage() {
                                             <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)' }}>{o.phuong_thuc_TT}</span>
                                         </td>
                                         <td style={{ textAlign: 'center' }}>
-                                            <div className="status-pill" style={{ color: s.color, background: s.bg }}>
-                                                <div className="status-glow" />
-                                                {s.label}
-                                            </div>
+                                            <Badge label={s.label} color={s.color} />
                                         </td>
                                         <td style={{ textAlign: 'right', color: 'var(--text-muted)', fontWeight: 600 }}>
                                             {new Date(o.ngay_dat).toLocaleDateString('vi-VN')}
@@ -334,7 +326,7 @@ export default function DashboardPage() {
             </div>
 
             <style>{`
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                .modern-table tr:hover td { background: rgba(var(--primary-rgb), 0.03) !important; }
             `}</style>
         </div>
     );

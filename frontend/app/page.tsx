@@ -45,6 +45,7 @@ export default function HomePage() {
     xe_so: { icon: '🏍', color: '#f59e0b', gradient: 'rgba(245,158,11,0.1)' },
     xe_ga: { icon: '🛵', color: '#3b82f6', gradient: 'rgba(59,130,246,0.1)' },
     xe_con_tay: { icon: '🏁', color: '#8b5cf6', gradient: 'rgba(139,92,246,0.1)' },
+    xe_mo_to: { icon: '🏍', color: '#e00000', gradient: 'rgba(224,0,0,0.1)' },
     xe_dien: { icon: '⚡', color: '#10b981', gradient: 'rgba(16,185,129,0.1)' },
     phan_khoi_lon: { icon: '🔥', color: '#ef4444', gradient: 'rgba(239,68,68,0.1)' },
   };
