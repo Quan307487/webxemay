@@ -1,7 +1,9 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
+export const ADMIN_UPDATED_EVENT = 'admin_user_updated';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+export const API_HOST = API_URL.replace('/api', '');
 
 export const api = axios.create({
     baseURL: API_URL,
@@ -56,7 +58,7 @@ export const usersApi = {
 };
 export const reviewsApi = { getAll: (p?: any) => api.get('/reviews', { params: p }), approve: (id: number) => api.put(`/reviews/${id}/approve`), reject: (id: number) => api.put(`/reviews/${id}/reject`), delete: (id: number) => api.delete(`/reviews/admin/${id}`) };
 export const reportsApi = { getDashboard: () => api.get('/reports/dashboard') };
-export const inventoryApi = { getAll: () => api.get('/inventory'), update: (sp: number, qty: number) => api.put('/inventory', { ma_sanpham: sp, soluong_tonkho: qty }) };
+export const inventoryApi = { getAll: () => api.get('/inventory'), update: (sp: number, qty: number) => api.put('/inventory', { ma_sanpham: sp, soluong_tonkho: qty }), deleteAll: () => api.delete('/inventory') };
 export const couponsApi = { getAll: () => api.get('/coupons'), create: (d: any) => api.post('/coupons', d), update: (id: number, d: any) => api.put(`/coupons/${id}`, d) };
 export const paymentsApi = { getAll: (p?: any) => api.get('/payments', { params: p }), updateStatus: (id: number, tt: string) => api.put(`/payments/${id}/status`, { trang_thai: tt }) };
 export const settingsApi = { get: () => api.get('/settings'), update: (d: any) => api.patch('/settings', d) };

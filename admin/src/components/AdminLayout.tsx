@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Bike, Tag, Award, ShoppingBag, Users, Star, Package, Ticket, CreditCard, LogOut, Search, User, Settings } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { API_HOST, ADMIN_UPDATED_EVENT, api } from '../lib/api';
 
 const navItems = [
     { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -30,10 +31,32 @@ export default function AdminLayout() {
     const [admin, setAdmin] = useState<any>(null);
 
     useEffect(() => {
-        try {
+        const loadAdmin = () => {
+            try {
+                const raw = localStorage.getItem('admin_user');
+                if (raw) setAdmin(JSON.parse(raw));
+            } catch { /* ignore */ }
+        };
+
+        loadAdmin(); // Initial load from localStorage
+
+        // Fetch fresh data from API so hinh_anh is always up-to-date
+        api.get('/users/me').then(res => {
+            const fresh = res.data;
             const raw = localStorage.getItem('admin_user');
-            if (raw) setAdmin(JSON.parse(raw));
-        } catch { /* ignore */ }
+            const existing = raw ? JSON.parse(raw) : {};
+            const merged = { ...existing, ...fresh };
+            localStorage.setItem('admin_user', JSON.stringify(merged));
+            setAdmin(merged);
+        }).catch(() => { /* fail silently */ });
+
+        window.addEventListener(ADMIN_UPDATED_EVENT, loadAdmin);
+        window.addEventListener('storage', loadAdmin);
+
+        return () => {
+            window.removeEventListener(ADMIN_UPDATED_EVENT, loadAdmin);
+            window.removeEventListener('storage', loadAdmin);
+        };
     }, []);
 
     const handleLogout = () => {
@@ -239,7 +262,7 @@ export default function AdminLayout() {
                             <div style={{
                                 width: '50px',
                                 height: '50px',
-                                background: admin?.hinh_anh ? `url(${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${admin.hinh_anh})` : 'linear-gradient(135deg, var(--primary), var(--primary-dark))',
+                                background: admin?.hinh_anh ? `url(${API_HOST}${admin.hinh_anh})` : 'linear-gradient(135deg, var(--primary), var(--primary-dark))',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 color: 'white',

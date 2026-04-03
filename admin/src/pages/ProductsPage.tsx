@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { productsApi, categoriesApi, brandsApi } from '../lib/api';
+import { productsApi, categoriesApi, brandsApi, API_HOST } from '../lib/api';
 import toast from 'react-hot-toast';
 import { Trash2, Search, Bike, Plus, Pencil, X, Save, Image, Box, Zap, DollarSign, Gauge, PackageSearch } from 'lucide-react';
 import { FormField, SelectField, PageHeader, Spinner, SpinnerPage, EmptyState } from '../components/ui';
 import Badge from '../components/ui/Badge';
 
-const API_HOST = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace('/api', '');
 
 const INITIAL_FORM = {
     ten_sanpham: '', sanpham_code: '',

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Mail, Phone, Shield, Calendar, Eye, EyeOff, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { api } from '../lib/api';
+import { api, API_HOST, ADMIN_UPDATED_EVENT } from '../lib/api';
 import { PageHeader, Spinner } from '../components/ui';
 
 export default function ProfilePage() {
@@ -15,6 +15,7 @@ export default function ProfilePage() {
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
+        // Load initial data from localStorage
         try {
             const raw = localStorage.getItem('admin_user');
             if (raw) {
@@ -23,6 +24,18 @@ export default function ProfilePage() {
                 setForm({ hovaten: data.hovaten || '', SDT: data.SDT || '', diachi: data.diachi || '' });
             }
         } catch { /* ignore */ }
+
+        // Fetch latest data from API to ensure hinh_anh and all fields are up-to-date
+        api.get('/users/me').then(res => {
+            const fresh = res.data;
+            const raw = localStorage.getItem('admin_user');
+            const existing = raw ? JSON.parse(raw) : {};
+            const merged = { ...existing, ...fresh };
+            localStorage.setItem('admin_user', JSON.stringify(merged));
+            setAdmin(merged);
+            setForm({ hovaten: merged.hovaten || '', SDT: merged.SDT || '', diachi: merged.diachi || '' });
+            window.dispatchEvent(new Event(ADMIN_UPDATED_EVENT));
+        }).catch(() => { /* ignore if fails */ });
     }, []);
 
     function getInitials(name: string) {
@@ -38,6 +51,7 @@ export default function ProfilePage() {
             const updated = { ...admin, ...res.data };
             localStorage.setItem('admin_user', JSON.stringify(updated));
             setAdmin(updated);
+            window.dispatchEvent(new Event(ADMIN_UPDATED_EVENT));
             setEditMode(false);
             toast.success('Cập nhật thông tin thành công!');
         } catch (e: any) {
@@ -74,6 +88,7 @@ export default function ProfilePage() {
             const updated = { ...admin, ...res.data };
             localStorage.setItem('admin_user', JSON.stringify(updated));
             setAdmin(updated);
+            window.dispatchEvent(new Event(ADMIN_UPDATED_EVENT));
             toast.success('Cập nhật ảnh đại diện thành công!', { id: loadToast });
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Lỗi khi tải ảnh lên', { id: loadToast });
@@ -103,7 +118,7 @@ export default function ProfilePage() {
                     <div style={{ position: 'relative', width: 'fit-content', margin: '0 auto 32px' }}>
                         <div style={{
                             width: '140px', height: '140px',
-                            background: admin.hinh_anh ? `url(${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${admin.hinh_anh})` : 'linear-gradient(135deg, var(--primary), #7f1d1d)',
+                            background: admin.hinh_anh ? `url(${API_HOST}${admin.hinh_anh})` : 'linear-gradient(135deg, var(--primary), #7f1d1d)',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',

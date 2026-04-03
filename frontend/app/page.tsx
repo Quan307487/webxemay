@@ -5,14 +5,15 @@ import ProductCard from '@/components/ProductCard';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
-import { Zap, Shield, Truck, HeadphonesIcon, Award, Star, ArrowRight, ChevronRight, Flame, Sparkles, Clock } from 'lucide-react';
+import { Zap, Shield, Truck, HeadphonesIcon, Award, Star, ArrowRight, ChevronRight, Flame, Sparkles, Clock, MapPin } from 'lucide-react';
 import { ProductsGridSkeleton } from '@/components/Skeleton';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
+import { Autoplay, Pagination, EffectFade, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 
 export default function HomePage() {
@@ -22,13 +23,13 @@ export default function HomePage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     Promise.all([
-      productsApi.getAll({ limit: 8, active: '1', sort: 'diem_danh_gia' }),
-      productsApi.getAll({ limit: 8, active: '1', sort: 'ngay_lap' }),
-      productsApi.getAll({ limit: 4, active: '1', has_discount: '1' }),
+      // Increase limits to show "all" or at least a large number in slider
+      productsApi.getAll({ limit: 20, active: '1', sort: 'diem_danh_gia' }),
+      productsApi.getAll({ limit: 20, active: '1', sort: 'ngay_lap' }),
+      productsApi.getAll({ limit: 20, active: '1', has_discount: '1' }),
       categoriesApi.getAll(true),
       brandsApi.getAll(true),
     ]).then(([feat, newP, disc, cats, brs]) => {
@@ -56,6 +57,15 @@ export default function HomePage() {
     { icon: <Award size={26} />, title: '100% chính hãng', desc: 'Tất cả xe đều có giấy tờ xuất xứ rõ ràng', color: '#f59e0b' },
     { icon: <HeadphonesIcon size={26} />, title: 'Hỗ trợ 24/7', desc: 'Tư vấn miễn phí, sẵn sàng giải đáp mọi thắc mắc', color: '#8b5cf6' },
   ];
+
+  // Swiper responsive breakpoints
+  const productSliderBreakpoints = {
+    320: { slidesPerView: 1.2, spaceBetween: 15 },
+    480: { slidesPerView: 2, spaceBetween: 20 },
+    768: { slidesPerView: 3, spaceBetween: 25 },
+    1024: { slidesPerView: 4, spaceBetween: 30 },
+    1400: { slidesPerView: 4.5, spaceBetween: 30 }
+  };
 
   return (
     <>
@@ -89,6 +99,18 @@ export default function HomePage() {
                 background: linear-gradient(90deg, #f8fafc 30%, rgba(248, 250, 252, 0) 70%, rgba(248, 250, 252, 0) 100%);
                 z-index: 1;
               }
+              .product-swiper {
+                padding: 20px 5px 60px !important;
+              }
+              .product-swiper .swiper-pagination-bullet {
+                background: var(--secondary);
+                opacity: 0.3;
+              }
+              .product-swiper .swiper-pagination-bullet-active {
+                background: var(--primary) !important;
+                opacity: 1;
+                width: 30px !important;
+              }
             `}</style>
 
             {/* Slide 1: Premium Speed */}
@@ -99,7 +121,7 @@ export default function HomePage() {
 
                 <div style={{ position: 'relative', marginLeft: '10%', maxWidth: '600px', zIndex: 10 }}>
                   <div className="reveal-in" style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'white', color: 'var(--primary)', border: '1.5px solid var(--border)', borderRadius: '14px', padding: '12px 24px', marginBottom: '32px', fontWeight: 900, fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', boxShadow: '0 8px 20px rgba(0,0,0,0.06)' }}>
-                    <Sparkles size={16} /> NEW COLLECTION 2025
+                    <Sparkles size={16} /> BỘ SƯU TẬP MỚI 2025
                   </div>
 
                   <h1 className="reveal-in" style={{ fontSize: 'clamp(44px, 6vw, 84px)', fontWeight: 900, lineHeight: 0.95, letterSpacing: '-3.5px', marginBottom: '36px', color: 'var(--secondary)', textShadow: '0 10px 40px rgba(0,0,0,0.08)' }}>
@@ -108,7 +130,7 @@ export default function HomePage() {
                   </h1>
 
                   <p style={{ fontSize: '18px', color: '#334155', marginBottom: '48px', lineHeight: 1.6, maxWidth: '480px' }}>
-                    Trải nghiệm hiệu năng thuần khiết trên những cung đường. Sportbike thế hệ mới dành riêng cho những tay lái thực thụ.
+                    Trải nghiệm hiệu năng thuần khiết trên những cung đường. Các dòng xe thế hệ mới dành riêng cho những tay lái thực thụ.
                   </p>
 
                   <div style={{ display: 'flex', gap: '16px' }}>
@@ -130,7 +152,7 @@ export default function HomePage() {
 
                 <div style={{ position: 'relative', marginLeft: '10%', maxWidth: '600px', zIndex: 10 }}>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', color: '#3b82f6', border: '1px solid var(--border)', borderRadius: '12px', padding: '10px 20px', marginBottom: '32px', fontWeight: 800, fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                    <Zap size={14} /> FUTURE MOBILITY
+                    <Zap size={14} /> DI CHUYỂN TƯƠNG LAI
                   </div>
 
                   <h1 style={{ fontSize: 'clamp(40px, 5vw, 76px)', fontWeight: 900, lineHeight: 1, letterSpacing: '-3px', marginBottom: '32px', color: '#0f172a', textShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
@@ -161,7 +183,7 @@ export default function HomePage() {
 
                 <div style={{ position: 'relative', marginLeft: '10%', maxWidth: '600px', zIndex: 10 }}>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', color: '#10b981', border: '1px solid var(--border)', borderRadius: '12px', padding: '10px 20px', marginBottom: '32px', fontWeight: 800, fontSize: '12px', letterSpacing: '1.5px', textTransform: 'uppercase', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                    <Flame size={14} /> ADVENTURE SPIRIT
+                    <Flame size={14} /> TINH THẦN PHIÊU LƯU
                   </div>
 
                   <h1 style={{ fontSize: 'clamp(40px, 5vw, 76px)', fontWeight: 900, lineHeight: 1, letterSpacing: '-3px', marginBottom: '32px', color: '#0f172a', textShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
@@ -170,7 +192,7 @@ export default function HomePage() {
                   </h1>
 
                   <p style={{ fontSize: '18px', color: '#334155', marginBottom: '48px', lineHeight: 1.6, maxWidth: '480px' }}>
-                    Không giới hạn khoảng cách. Những chiến mã Touring sẵn sàng cùng bạn chinh phục mọi chân trời mới.
+                    Không giới hạn khoảng cách. Những chiến mã sẵn sàng cùng bạn chinh phục mọi chân trời mới.
                   </p>
 
                 </div>
@@ -214,40 +236,119 @@ export default function HomePage() {
         {
           categories.length > 0 && (
             <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px 100px' }}>
-              <div className="section-header" style={{ alignItems: 'center', marginBottom: '56px' }}>
+              <div className="section-header" style={{ alignItems: 'flex-end', marginBottom: '56px' }}>
                 <div>
                   <div className="section-eyebrow" style={{ background: 'var(--secondary)', color: 'white', borderColor: 'rgba(255,255,255,0.1)' }}>
-                    <Flame size={12} /> CATEGORIES
+                    <Sparkles size={12} /> KHÁM PHÁ
                   </div>
-                  <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Browse by Type</h2>
-                  <p className="section-subtitle" style={{ fontSize: '17px' }}>Find the perfect ride for your lifestyle</p>
+                  <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Tìm theo loại xe</h2>
+                  <p className="section-subtitle" style={{ fontSize: '17px' }}>Tìm kiếm mẫu xe phù hợp với cá tính và nhu cầu của bạn</p>
                 </div>
                 <Link href="/products" style={{ textDecoration: 'none' }}>
-                  <button className="btn-premium btn-secondary" style={{ padding: '12px 24px', fontSize: '14px' }}>
-                    Explore All <ArrowRight size={16} />
+                  <button className="btn-premium btn-secondary" style={{ padding: '12px 24px', fontSize: '14px', borderRadius: '14px' }}>
+                    Tất cả danh mục <ArrowRight size={16} />
                   </button>
                 </Link>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
+              {/* Balanced Flex Layout for Categories */}
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '24px',
+                justifyContent: 'center',
+                margin: '0 auto'
+              }}>
                 {categories.map((cat: any) => {
                   const key = cat.ten_danhmuc?.toLowerCase().replace(/\s+/g, '_').replace('côn', 'con');
                   const cfg = catConfig[key] || catConfig['xe_so'];
                   return (
-                    <Link key={cat.ma_danhmuc} href={`/products?ma_danhmuc=${cat.ma_danhmuc}`} style={{ textDecoration: 'none' }}>
-                      <div className="cat-card" style={{
-                        background: 'var(--bg-card)',
-                        padding: '40px 24px',
-                        borderRadius: '32px',
-                        border: '1px solid var(--border)',
-                        textAlign: 'center',
-                        transition: 'all 0.4s ease'
+                    <Link key={cat.ma_danhmuc} href={`/products?ma_danhmuc=${cat.ma_danhmuc}`}
+                      style={{
+                        textDecoration: 'none',
+                        flex: '1 1 280px',
+                        maxWidth: '320px',
+                        minWidth: '240px'
                       }}>
-                        <div style={{ fontSize: '56px', marginBottom: '20px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.1))' }}>{cfg.icon}</div>
-                        <h4 style={{ fontWeight: 800, fontSize: '18px', color: 'var(--secondary)', marginBottom: '4px' }}>{cat.ten_danhmuc}</h4>
-                        {cat.so_san_pham > 0 && (
-                          <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>{cat.so_san_pham} products</p>
+                      <div className="cat-card group" style={{
+                        background: 'white',
+                        padding: '48px 32px',
+                        borderRadius: '38px',
+                        border: '1.5px solid var(--border)',
+                        textAlign: 'center',
+                        transition: 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: 'var(--shadow-sm)'
+                      }}>
+                        {/* Interactive Background Gradient */}
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: `radial-gradient(circle at center, ${cfg.gradient} 0%, transparent 70%)`,
+                          opacity: 0,
+                          transition: 'opacity 0.5s'
+                        }} className="cat-bg-hover" />
+
+                        <div className="cat-icon-container" style={{
+                          fontSize: '64px',
+                          marginBottom: '24px',
+                          transition: 'transform 0.5s',
+                          zIndex: 1,
+                          filter: 'drop-shadow(0 15px 15px rgba(0,0,0,0.08))'
+                        }}>
+                          {cfg.icon}
+                        </div>
+
+                        <h4 style={{
+                          fontWeight: 900,
+                          fontSize: '20px',
+                          color: 'var(--secondary)',
+                          marginBottom: '8px',
+                          zIndex: 1,
+                          fontFamily: 'Outfit, sans-serif'
+                        }}>{cat.ten_danhmuc}</h4>
+
+                        {cat.so_san_pham >= 0 && (
+                          <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            background: 'var(--bg-elevated)',
+                            padding: '6px 14px',
+                            borderRadius: '12px',
+                            fontSize: '13px',
+                            color: 'var(--text-muted)',
+                            fontWeight: 700,
+                            zIndex: 1,
+                            transition: 'all 0.3s'
+                          }} className="cat-count">
+                            <span style={{ color: cfg.color }}>●</span> {cat.so_san_pham} xe máy
+                          </div>
                         )}
+
+                        <style jsx>{`
+                          .cat-card:hover {
+                            transform: translateY(-12px);
+                            border-color: ${cfg.color};
+                            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.08);
+                          }
+                          .cat-card:hover .cat-bg-hover {
+                            opacity: 1;
+                          }
+                          .cat-card:hover .cat-icon-container {
+                            transform: scale(1.15) rotate(5deg);
+                          }
+                          .cat-card:hover .cat-count {
+                            background: ${cfg.color};
+                            color: white;
+                          }
+                        `}</style>
                       </div>
                     </Link>
                   );
@@ -258,30 +359,41 @@ export default function HomePage() {
         }
 
         {/* ═══════════════════════════════
-            FEATURED PRODUCTS (LIGHT GRID)
+            FEATURED PRODUCTS (SLIDER)
         ═══════════════════════════════ */}
         <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px 100px' }}>
           <div className="section-header" style={{ alignItems: 'center', marginBottom: '56px' }}>
             <div>
               <div className="section-eyebrow" style={{ background: 'var(--primary)', color: 'white', borderColor: 'transparent' }}>
-                <Star size={12} fill="currentColor" /> TOP RATED
+                <Star size={12} fill="currentColor" /> ĐÁNH GIÁ CAO
               </div>
-              <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Featured Collection</h2>
-              <p className="section-subtitle" style={{ fontSize: '17px' }}>Hand-picked premium rides for the ultimate experience</p>
+              <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Bộ sưu tập Nổi bật</h2>
+              <p className="section-subtitle" style={{ fontSize: '17px' }}>Những mẫu xe cao cấp được tuyển chọn cho trải nghiệm tuyệt vời nhất</p>
             </div>
             <Link href="/products?sort=diem_danh_gia" style={{ textDecoration: 'none' }}>
-              <button className="btn-premium btn-secondary">View Collection <ArrowRight size={16} /></button>
+              <button className="btn-premium btn-secondary">Xem bộ sưu tập <ArrowRight size={16} /></button>
             </Link>
           </div>
           {loading ? <ProductsGridSkeleton count={8} /> : (
-            <div className="products-grid">
-              {featured.map((p: any) => <ProductCard key={p.ma_sanpham} product={p} />)}
-            </div>
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              spaceBetween={30}
+              breakpoints={productSliderBreakpoints}
+              autoplay={{ delay: 3500, disableOnInteraction: false }}
+              pagination={{ clickable: true }}
+              className="product-swiper"
+            >
+              {featured.map((p: any) => (
+                <SwiperSlide key={p.ma_sanpham}>
+                  <ProductCard product={p} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           )}
         </section>
 
         {/* ═══════════════════════════════
-            SALE SECTION (ELEVATED)
+            SALE SECTION (SLIDER)
         ═══════════════════════════════ */}
         {
           (!loading && discounted.length > 0) && (
@@ -299,49 +411,71 @@ export default function HomePage() {
                 <div className="section-header" style={{ alignItems: 'flex-end', marginBottom: '56px' }}>
                   <div>
                     <div className="section-eyebrow" style={{ background: '#f59e0b', color: 'white', borderColor: 'transparent' }}>
-                      <Flame size={12} fill="currentColor" /> FLASH DEALS
+                      <Flame size={12} fill="currentColor" /> GIÁ SỐC TẬN GỐC
                     </div>
-                    <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Limited Offers</h2>
-                    <p className="section-subtitle" style={{ fontSize: '17px' }}>Exclusive discounts on premium models — act fast!</p>
+                    <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Ưu đãi giới hạn</h2>
+                    <p className="section-subtitle" style={{ fontSize: '17px' }}>Giảm giá độc quyền cho các phiên bản cao cấp - Hãy nhanh tay!</p>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                     <div style={{ padding: '12px 20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <Clock size={18} color="var(--primary)" />
-                      <span style={{ fontWeight: 800, fontSize: '14px', color: 'var(--secondary)' }}>Ends Today</span>
+                      <span style={{ fontWeight: 800, fontSize: '14px', color: 'var(--secondary)' }}>Kết thúc sớm</span>
                     </div>
                     <Link href="/products" style={{ textDecoration: 'none' }}>
-                      <button className="btn-premium btn-secondary">Explore All <ChevronRight size={16} /></button>
+                      <button className="btn-premium btn-secondary">Khám phá tất cả <ChevronRight size={16} /></button>
                     </Link>
                   </div>
                 </div>
-                <div className="products-grid">
-                  {discounted.map((p: any) => <ProductCard key={p.ma_sanpham} product={p} />)}
-                </div>
+                <Swiper
+                  modules={[Autoplay, Pagination]}
+                  spaceBetween={30}
+                  breakpoints={productSliderBreakpoints}
+                  autoplay={{ delay: 4000, disableOnInteraction: false }}
+                  pagination={{ clickable: true }}
+                  className="product-swiper"
+                >
+                  {discounted.map((p: any) => (
+                    <SwiperSlide key={p.ma_sanpham}>
+                      <ProductCard product={p} />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </div>
             </section>
           )
         }
 
         {/* ═══════════════════════════════
-            NEW ARRIVALS (CLEAN GRID)
+            NEW ARRIVALS (SLIDER)
         ═══════════════════════════════ */}
         <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '100px 32px' }}>
           <div className="section-header" style={{ alignItems: 'center', marginBottom: '56px' }}>
             <div>
               <div className="section-eyebrow" style={{ background: 'var(--accent)', color: 'white', borderColor: 'transparent' }}>
-                <Zap size={12} /> JUST IN
+                <Zap size={12} /> HÀNG MỚI VỀ
               </div>
-              <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>New Arrivals</h2>
-              <p className="section-subtitle" style={{ fontSize: '17px' }}>Freshly arrived premium motorcycles from top brands</p>
+              <h2 className="section-title" style={{ fontSize: '48px', color: 'var(--secondary)' }}>Sản phẩm mới</h2>
+              <p className="section-subtitle" style={{ fontSize: '17px' }}>Những mẫu xe máy vừa mới cập bến từ các thương hiệu hàng đầu</p>
             </div>
             <Link href="/products" style={{ textDecoration: 'none' }}>
-              <button className="btn-premium btn-secondary">Explore All <ChevronRight size={16} /></button>
+              <button className="btn-premium btn-secondary">Khám phá tất cả <ChevronRight size={16} /></button>
             </Link>
           </div>
           {loading ? <ProductsGridSkeleton count={8} /> : (
-            <div className="products-grid">
-              {newProducts.map((p: any) => <ProductCard key={p.ma_sanpham} product={p} />)}
-            </div>
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              spaceBetween={30}
+              breakpoints={productSliderBreakpoints}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              pagination={{ clickable: true }}
+              className="product-swiper"
+            >
+              {newProducts.map((p: any) => (
+                <SwiperSlide key={p.ma_sanpham}>
+                  <ProductCard product={p} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           )}
         </section>
 
@@ -356,17 +490,17 @@ export default function HomePage() {
 
               <div className="glass-panel animate-float" style={{ position: 'absolute', bottom: '40px', right: '-20px', padding: '32px', borderRadius: '32px', boxShadow: 'var(--shadow-premium)', zIndex: 2 }}>
                 <div style={{ color: 'var(--primary)', fontWeight: 900, fontSize: '44px', fontFamily: 'Outfit, sans-serif', lineHeight: 1 }}>10+</div>
-                <p style={{ color: 'var(--secondary)', fontSize: '15px', fontWeight: 800, marginTop: '8px' }}>Years Experience</p>
+                <p style={{ color: 'var(--secondary)', fontSize: '15px', fontWeight: 800, marginTop: '8px' }}>Năm Kinh Nghiệm</p>
                 <div style={{ width: '40px', height: '4px', background: 'var(--primary)', borderRadius: '2px', marginTop: '16px' }} />
               </div>
             </div>
 
             <div className="reveal animate-slide-up">
               <div className="section-eyebrow" style={{ background: 'var(--secondary)', color: 'white' }}>
-                <Shield size={12} /> HERITAGE
+                <Shield size={12} /> DI SẢN
               </div>
               <h2 className="section-title" style={{ fontSize: '58px', color: 'var(--secondary)', marginBottom: '32px', lineHeight: 0.95 }}>
-                Welcome to <br />
+                Chào mừng tới <br />
                 <span className="gradient-text">MotoShop</span> Premium
               </h2>
               <p style={{ fontSize: '19px', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '28px' }}>
@@ -382,7 +516,7 @@ export default function HomePage() {
                     <Zap size={24} />
                   </div>
                   <div>
-                    <h4 style={{ fontWeight: 800, color: 'var(--secondary)', marginBottom: '8px', fontSize: '18px' }}>Instant Service</h4>
+                    <h4 style={{ fontWeight: 800, color: 'var(--secondary)', marginBottom: '8px', fontSize: '18px' }}>Dịch vụ tức thì</h4>
                     <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.5 }}>Hỗ trợ trả góp & đăng ký biển số siêu tốc trong 24h.</p>
                   </div>
                 </div>
@@ -391,7 +525,7 @@ export default function HomePage() {
                     <Award size={24} />
                   </div>
                   <div>
-                    <h4 style={{ fontWeight: 800, color: 'var(--secondary)', marginBottom: '8px', fontSize: '18px' }}>Verified Quality</h4>
+                    <h4 style={{ fontWeight: 800, color: 'var(--secondary)', marginBottom: '8px', fontSize: '18px' }}>Chất lượng kiểm định</h4>
                     <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.5 }}>100% linh kiện & xe chính hãng, kiểm định 12 bước.</p>
                   </div>
                 </div>
@@ -409,9 +543,9 @@ export default function HomePage() {
               <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px' }}>
                 <div style={{ textAlign: 'center', marginBottom: '64px' }}>
                   <div className="section-eyebrow" style={{ display: 'inline-flex' }}>
-                    Trust Partners
+                    Đối tác Tin Cậy
                   </div>
-                  <h2 className="section-title" style={{ marginTop: '16px', fontSize: '36px' }}>Official Distribution</h2>
+                  <h2 className="section-title" style={{ marginTop: '16px', fontSize: '36px' }}>Phân phối Chính hãng</h2>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
                   {brands.map((brand: any) => (
@@ -436,15 +570,15 @@ export default function HomePage() {
         <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '120px 32px' }}>
           <div style={{ textAlign: 'center', marginBottom: '64px' }}>
             <div className="section-eyebrow" style={{ display: 'inline-flex' }}>
-              <Star size={12} fill="currentColor" /> Reviews
+              <Star size={12} fill="currentColor" /> Đánh giá
             </div>
-            <h2 className="section-title" style={{ marginTop: '16px', fontSize: '42px' }}>What our customers say</h2>
+            <h2 className="section-title" style={{ marginTop: '16px', fontSize: '42px' }}>Khách hàng nói gì về chúng tôi</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px' }}>
             {[
-              { name: 'Nguyễn Văn Minh', location: 'HCM City', text: 'Mua Honda Wave Alpha tại MotoShop, giá tốt hơn đại lý 2 triệu, giao hàng nhanh trong ngày. Nhân viên tư vấn nhiệt tình, am hiểu!', rating: 5, xe: 'Honda Wave Alpha', avatar: '🧑' },
-              { name: 'Trần Thị Lan', location: 'Ha Noi', text: 'Mua VinFast Feliz S cho chồng, thủ tục cực đơn giản và có hỗ trợ trả góp 0%. Dịch vụ xuất sắc, rất hài lòng!', rating: 5, xe: 'VinFast Feliz S', avatar: '👩' },
-              { name: 'Phạm Quốc Huy', location: 'Da Nang', text: 'Website giao diện đẹp, thông tin xe đầy đủ. Đặt hàng online từ Đà Nẵng, ship về tận nhà an toàn. Cực kỳ tiện lợi!', rating: 5, xe: 'Yamaha Exciter 155', avatar: '👦' },
+              { name: 'Nguyễn Văn Minh', location: 'TP. Hồ Chí Minh', text: 'Mua Honda Wave Alpha tại MotoShop, giá tốt hơn đại lý 2 triệu, giao hàng nhanh trong ngày. Nhân viên tư vấn nhiệt tình, am hiểu!', rating: 5, xe: 'Honda Wave Alpha', avatar: '🧑' },
+              { name: 'Trần Thị Lan', location: 'Hà Nội', text: 'Mua VinFast Feliz S cho chồng, thủ tục cực đơn giản và có hỗ trợ trả góp 0%. Dịch vụ xuất sắc, rất hài lòng!', rating: 5, xe: 'VinFast Feliz S', avatar: '👩' },
+              { name: 'Phạm Quốc Huy', location: 'Đà Nẵng', text: 'Website giao diện đẹp, thông tin xe đầy đủ. Đặt hàng online từ Đà Nẵng, ship về tận nhà an toàn. Cực kỳ tiện lợi!', rating: 5, xe: 'Yamaha Exciter 155', avatar: '👦' },
             ].map((t, i) => (
               <div key={i} className="premium-card" style={{ padding: '40px', animationDelay: `${i * 0.15}s`, display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', gap: '4px', marginBottom: '24px' }}>
@@ -486,11 +620,11 @@ export default function HomePage() {
 
               <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px 16px', marginBottom: '32px', color: 'white', fontWeight: 800, fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase' }}>
-                  Join the Community
+                  Tham gia Cộng đồng
                 </div>
                 <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 900, fontFamily: 'Outfit, sans-serif', letterSpacing: '-2px', marginBottom: '24px', lineHeight: 1, color: 'white' }}>
-                  Ready to Start Your <br />
-                  <span className="gradient-text">Next Adventure?</span>
+                  Sẵn sàng Bắt đầu <br />
+                  <span className="gradient-text">Hành trình Tiếp theo?</span>
                 </h2>
                 <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '20px', marginBottom: '56px', lineHeight: 1.6 }}>
                   Đăng ký ngay để nhận ưu đãi đặc quyền, cập nhật mẫu xe giới hạn và nhận tư vấn chuyên sâu từ đội ngũ kỹ thuật viên 24/7.
@@ -498,12 +632,12 @@ export default function HomePage() {
                 <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <Link href="/products">
                     <button className="btn-premium btn-primary" style={{ padding: '20px 44px', fontSize: '17px', borderRadius: '16px' }}>
-                      Explore Collection
+                      Khám phá Bộ sưu tập
                     </button>
                   </Link>
                   <Link href="/auth/register">
                     <button className="btn-premium" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '20px 44px', fontSize: '17px', borderRadius: '16px' }}>
-                      Create Account
+                      Tạo tài khoản ngay
                     </button>
                   </Link>
                 </div>

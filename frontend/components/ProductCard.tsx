@@ -60,9 +60,9 @@ export default function ProductCard({ product }: { product: Product }) {
         try {
             const res = await cartApi.addItem({ ma_sanpham: product.ma_sanpham, so_luong: 1 });
             setCart(res.data.chitietgiohang || []);
-            toast(`Added "${product.ten_sanpham}" to cart!`);
+            toast(`Đã thêm "${product.ten_sanpham}" vào giỏ hàng!`);
         } catch (err: any) {
-            toast(err.response?.data?.message || 'Error adding to cart', 'error');
+            toast(err.response?.data?.message || 'Lỗi khi thêm vào giỏ hàng', 'error');
         } finally { setAdding(false); }
     };
 
@@ -72,8 +72,8 @@ export default function ProductCard({ product }: { product: Product }) {
         try {
             await wishlistApi.toggle(product.ma_sanpham);
             setWishlisted(w => !w);
-            toast(wishlisted ? 'Removed from favorites' : '❤️ Added to favorites', wishlisted ? 'info' : 'success');
-        } catch { toast('Error updating wishlist', 'error'); }
+            toast(wishlisted ? 'Đã xóa khỏi danh sách yêu thích' : '❤️ Đã thêm vào danh sách yêu thích', wishlisted ? 'info' : 'success');
+        } catch { toast('Lỗi khi cập nhật danh sách yêu thích', 'error'); }
     };
 
     return (
@@ -117,7 +117,7 @@ export default function ProductCard({ product }: { product: Product }) {
                         )}
                         {product.ton_kho === 0 && (
                             <div style={{ background: '#0f172a', color: 'white', padding: '6px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 900 }}>
-                                Out of Stock
+                                Hết hàng
                             </div>
                         )}
                     </div>
@@ -137,7 +137,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     {product.loai_nhien_lieu === 'dien' && (
                         <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid #ecfdf5' }}>
                             <Zap size={14} color="#10b981" />
-                            <span style={{ fontSize: '11px', color: '#047857', fontWeight: 900 }}>ECO POWERTRAIN</span>
+                            <span style={{ fontSize: '11px', color: '#047857', fontWeight: 900 }}>ĐỘNG CƠ ĐIỆN ECO</span>
                         </div>
                     )}
                 </div>
@@ -174,7 +174,7 @@ export default function ProductCard({ product }: { product: Product }) {
                     </h3>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '13px', fontWeight: 700, marginBottom: '20px' }}>
-                        <ShieldCheck size={14} /> Official Warranty included
+                        <ShieldCheck size={14} /> Có bảo hành chính hãng
                     </div>
 
                     {/* Price & Action */}

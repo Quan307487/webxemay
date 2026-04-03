@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sanpham } from './sanpham.entity';
 import { Hinhanh } from './hinhanh.entity';
+import { Tonkho } from '../inventory/tonkho.entity';
 
 @Injectable()
 export class ProductsService {
     constructor(
         @InjectRepository(Sanpham) private repo: Repository<Sanpham>,
         @InjectRepository(Hinhanh) private imgRepo: Repository<Hinhanh>,
+        @InjectRepository(Tonkho) private tonkhoRepo: Repository<Tonkho>,
     ) { }
 
     findAll(query: any = {}) {
@@ -38,7 +40,16 @@ export class ProductsService {
         return item;
     }
 
-    create(dto: Partial<Sanpham>) { return this.repo.save(this.repo.create(dto)); }
+    async create(dto: Partial<Sanpham>) {
+        const sanpham = await this.repo.save(this.repo.create(dto));
+        // Tự động tạo bản ghi tồn kho với số lượng ban đầu từ ton_kho của sản phẩm
+        const initialQty = (dto as any).ton_kho || 0;
+        await this.tonkhoRepo.save(this.tonkhoRepo.create({
+            ma_sanpham: sanpham.ma_sanpham,
+            soluong_tonkho: initialQty
+        }));
+        return sanpham;
+    }
 
     async update(id: number, dto: Partial<Sanpham>) { await this.repo.update(id, dto); return this.findOne(id); }
 

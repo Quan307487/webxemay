@@ -194,7 +194,7 @@ export default function Footer() {
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                         <p style={{ color: '#475569', fontSize: '13px', fontWeight: 500 }}>
-                            {settings?.footer_text || '© 2026 MotoShop Vietnam. All rights reserved.'}
+                            {settings?.footer_text || '© 2026 MotoShop Việt Nam. Bảo lưu mọi quyền.'}
                         </p>
                         <div style={{ display: 'flex', gap: '20px' }}>
                             {['Chính sách', 'Bảo mật', 'Tuyển dụng'].map(l => (

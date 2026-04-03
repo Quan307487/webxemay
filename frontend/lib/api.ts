@@ -37,8 +37,14 @@ api.interceptors.response.use(
         if (status === 401) {
             const authData = localStorage.getItem('auth-storage');
             if (authData && JSON.parse(authData)?.state?.token) {
-                localStorage.removeItem('auth-storage');
-                window.location.href = '/auth/login';
+                // Kiểm tra nếu là lỗi tài khoản bị khóa/vô hiệu hóa
+                if (message.includes('ACCOUNT_BANNED') || message.includes('ACCOUNT_INACTIVE')) {
+                    const { useAuthStore } = require('./store');
+                    useAuthStore.getState().setAccountStatusError(message.split(': ')[1] || message);
+                } else {
+                    localStorage.removeItem('auth-storage');
+                    window.location.href = '/auth/login';
+                }
             }
         } else if (err.config?.skipToast !== true) {
             // Tự động hiển thị toast nếu không yêu cầu bỏ qua

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ToastProvider } from "@/components/Toast";
+import AccountStatusModal from "@/components/AccountStatusModal";
 
 export const metadata: Metadata = {
   title: "MotoShop – Xe Máy Chính Hãng",
@@ -22,6 +23,7 @@ export default function RootLayout({
       </head>
       <body>
         <ToastProvider>
+          <AccountStatusModal />
           {children}
         </ToastProvider>
       </body>

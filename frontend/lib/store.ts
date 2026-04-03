@@ -14,8 +14,10 @@ interface AuthState {
     token: string | null;
     user: User | null;
     _hasHydrated: boolean;
+    accountStatusError: string | null;
     setAuth: (token: string, user: User) => void;
     logout: () => void;
+    setAccountStatusError: (msg: string | null) => void;
     isLoggedIn: () => boolean;
     isAdmin: () => boolean;
     setHasHydrated: (state: boolean) => void;
@@ -27,8 +29,10 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             user: null,
             _hasHydrated: false,
-            setAuth: (token, user) => set({ token, user }),
-            logout: () => set({ token: null, user: null }),
+            accountStatusError: null,
+            setAuth: (token, user) => set({ token, user, accountStatusError: null }),
+            logout: () => set({ token: null, user: null, accountStatusError: null }),
+            setAccountStatusError: (msg) => set({ accountStatusError: msg }),
             isLoggedIn: () => !!get().token,
             isAdmin: () => get().user?.quyen === 'admin',
             setHasHydrated: (state) => set({ _hasHydrated: state }),
