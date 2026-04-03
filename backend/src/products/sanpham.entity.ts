@@ -32,7 +32,7 @@ export class Sanpham {
     @Column({ nullable: true }) cong_suat_toi_da: string;
     @Column({ nullable: true }) momen_xoan_toi_da: string;
     @Column({ type: 'enum', enum: ['so_tay', 'so_tay_6', 'con_tay', 'tu_dong', 'vo_cap', 'ban_tu_dong', 'khong_hop_so'], default: 'tu_dong' }) hop_so: string;
-    @Column({ type: 'enum', enum: ['trong', 'dia', 'trong_truoc_dia_sau', 'dia_don_thuy_luc', 'brembo_kibs', 'abs'], default: 'trong' }) he_thong_phanhang: string;
+    @Column({ type: 'enum', enum: ['trong', 'dia', 'trong_truoc_dia_sau', 'dia_don_thuy_luc', 'brembo_kibs', 'abs', 'abs_truoc_dia_sau', 'trong_truoc_trong_sau', 'abs_3_kenh_asr'], default: 'trong' }) he_thong_phanhang: string;
     @Column({ type: 'enum', enum: ['de_chan', 'de_dien', 'ca_hai', 'nut_bam_app'], default: 'ca_hai' }) he_thong_khoi_dong: string;
     @Column({ type: 'decimal', precision: 6, scale: 1, nullable: true }) trong_luong_kho: number;
     @Column({ nullable: true }) kich_thuoc: string;

@@ -61,17 +61,13 @@ export default function Footer() {
                             }}>
                                 <Bike size={24} color="white" />
                             </div>
-                            <span style={{
+                            <span className="brand-shimmer" style={{
                                 fontWeight: 900,
                                 fontSize: '28px',
                                 fontFamily: 'Outfit, sans-serif',
-                                letterSpacing: '-1px',
-                                background: 'linear-gradient(135deg, #fff 0%, #94a3b8 100%)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent'
+                                letterSpacing: '-1px'
                             }}>
-                                {settings?.site_name || 'MotoShop'}<span style={{ color: 'var(--primary)', WebkitTextFillColor: 'var(--primary)' }}>.</span>
-                            </span>
+                                {settings?.site_name || 'MotoShop'}</span><span style={{ color: 'var(--primary)', WebkitTextFillColor: 'var(--primary)', fontWeight: 900, fontSize: '28px', fontFamily: 'Outfit, sans-serif', letterSpacing: '-1px' }}>.</span>
                         </div>
 
                         <p style={{ color: '#94a3b8', fontSize: '15px', lineHeight: 1.8, marginBottom: '32px', maxWidth: '380px' }}>
@@ -131,7 +127,7 @@ export default function Footer() {
                     </div>
 
                     {/* Quick Navigation */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', gridColumn: 'span 2' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '40px', gridColumn: 'span 1' }}>
                         <div>
                             <h4 style={{ fontWeight: 800, fontSize: '13px', color: 'white', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'Outfit' }}>Sản Phẩm</h4>
                             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -147,27 +143,6 @@ export default function Footer() {
                                             onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'white'; el.style.paddingLeft = '10px'; el.style.fontSize = '14.5px'; }}
                                             onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = '#94a3b8'; el.style.paddingLeft = '0'; el.style.fontSize = '14px'; }}>
                                             <span style={{ color: 'var(--primary)', marginRight: '8px', opacity: 0, transition: 'all 0.3s' }}>—</span>
-                                            {label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h4 style={{ fontWeight: 800, fontSize: '13px', color: 'white', marginBottom: '32px', textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: 'Outfit' }}>Trải Nghiệm</h4>
-                            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                                {[
-                                    ['Đăng Ký Lái Thử', '/test-ride'],
-                                    ['Hệ Thống Showroom', '/stores'],
-                                    ['Ưu Đãi Đặc Quyền', '/offers'],
-                                    ['Bảo Dưỡng Định Kỳ', '/service'],
-                                    ['Cộng Đồng Rider', '/community'],
-                                ].map(([label, href]) => (
-                                    <li key={label}>
-                                        <Link href={href} style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px', transition: 'all 0.3s', fontWeight: 500 }}
-                                            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--primary)'; }}
-                                            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = '#94a3b8'; }}>
                                             {label}
                                         </Link>
                                     </li>

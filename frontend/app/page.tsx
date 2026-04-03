@@ -173,13 +173,6 @@ export default function HomePage() {
                     Không giới hạn khoảng cách. Những chiến mã Touring sẵn sàng cùng bạn chinh phục mọi chân trời mới.
                   </p>
 
-                  <div style={{ display: 'flex', gap: '16px' }}>
-                    <Link href="/products?type=phan_khoi_lon">
-                      <button className="btn-premium" style={{ background: '#10b981', color: 'white', padding: '20px 48px', fontSize: '15px', borderRadius: '16px', boxShadow: '0 15px 30px rgba(16, 185, 129, 0.25)' }}>
-                        Trải Nghiệm <ArrowRight size={20} />
-                      </button>
-                    </Link>
-                  </div>
                 </div>
               </div>
             </SwiperSlide>

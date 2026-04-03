@@ -232,11 +232,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                     <Heart size={20} fill={inWishlist ? 'var(--primary)' : 'none'} />
                                 </button>
                             </div>
-                            <button className="btn-secondary" style={{ width: '100%', padding: '16px', fontSize: '15px', borderRadius: '14px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', fontWeight: 800, color: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                                onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--secondary)'; el.style.color = 'white'; }}
-                                onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--bg-elevated)'; el.style.color = 'var(--secondary)'; }}>
-                                🏍 Đăng ký lái thử ngay
-                            </button>
                         </div>
 
                         {/* Quick specs */}

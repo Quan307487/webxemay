@@ -17,6 +17,7 @@ import { InventoryModule } from './inventory/inventory.module';
 import { ReportsModule } from './reports/reports.module';
 import { SettingsModule } from './settings/settings.module';
 import { MailModule } from './mail/mail.module';
+import { VnpayPublicController } from './ping.controller';
 
 @Module({
   imports: [
@@ -52,5 +53,6 @@ import { MailModule } from './mail/mail.module';
     ReportsModule,
     SettingsModule,
   ],
+  controllers: [VnpayPublicController],
 })
 export class AppModule { }

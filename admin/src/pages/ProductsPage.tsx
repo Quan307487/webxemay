@@ -484,7 +484,7 @@ function TabSpecs({ form, f, setForm, activeTab }: any) {
                     {[['tu_dong','Tự động'],['vo_cap','Vô cấp (CVT)'],['so_tay','Số tay (4 cấp)'],['so_tay_6','Số tay (6 cấp)'],['con_tay','Côn tay'],['ban_tu_dong','Bán tự động'],['khong_hop_so','Không hộp số']].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
                 </SelectField>
                 <SelectField label="Hệ thống phanh" value={form.he_thong_phanhang} onChange={v => setForm((p: any) => ({ ...p, he_thong_phanhang: v }))}>
-                    {[['trong','Phanh trống cả 2 bánh'],['dia','Phanh đĩa cả 2 bánh'],['trong_truoc_dia_sau','Đĩa trước - Trống sau'],['dia_don_thuy_luc','Phanh đĩa đơn thuỷ lực'],['abs','Phanh ABS'],['brembo_kibs','Đĩa đôi 330mm (Brembo M50) - KIBS']].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
+                    {[['trong','Phanh trống cả 2 bánh'],['dia','Phanh đĩa cả 2 bánh'],['trong_truoc_dia_sau','Đĩa trước - Trống sau'],['abs_truoc_dia_sau','Phanh đĩa trước (có ABS) - Phanh đĩa sau'],['trong_truoc_trong_sau','Phanh tang trống (Đùm) trước - Phanh tang trống sau'],['abs_3_kenh_asr','3 đĩa (2 trước - 1 sau) ABS 3 kênh & Kiểm soát lực kéo ASR'],['dia_don_thuy_luc','Phanh đĩa đơn thuỷ lực'],['abs','Phanh ABS'],['brembo_kibs','Đĩa đôi 330mm (Brembo M50) - KIBS']].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
                 </SelectField>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px' }}>

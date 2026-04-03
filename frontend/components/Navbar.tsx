@@ -88,14 +88,13 @@ export default function Navbar() {
                         }}>
                             <Bike size={26} color="white" />
                         </div>
-                        <span style={{
+                        <span className="brand-shimmer" style={{
                             fontWeight: 900,
                             fontSize: '28px',
                             letterSpacing: '-1.8px',
                             fontFamily: 'Outfit, sans-serif',
-                            color: 'var(--secondary)',
                             transition: 'all 0.3s'
-                        }}>MotoShop<span className="gradient-text gradient-move" style={{ background: 'linear-gradient(to right, var(--primary), #3b82f6, var(--primary))', backgroundSize: '200% auto' }}>.</span></span>
+                        }}>MotoShop</span><span className="gradient-text gradient-move" style={{ fontWeight: 900, fontSize: '28px', letterSpacing: '-1.8px', fontFamily: 'Outfit, sans-serif', background: 'linear-gradient(to right, var(--primary), #3b82f6, var(--primary))', backgroundSize: '200% auto' }}>.</span>
                     </Link>
 
                     {/* Search (Desktop) */}

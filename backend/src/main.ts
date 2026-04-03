@@ -8,6 +8,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // Logging middleware
+  app.use((req: any, res: any, next: any) => {
+    console.log(`[REQUEST] ${req.method} ${req.url}`);
+    next();
+  });
+
   // Increase payload limit for large images
   const express = require('express');
   app.use(express.json({ limit: '50mb' }));

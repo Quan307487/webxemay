@@ -1,12 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { ordersApi } from '@/lib/api';
+import { api } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { CheckCircle, XCircle, Loader2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { Suspense } from 'react';
 
 function VNPayReturnContent() {
     const searchParams = useSearchParams();
@@ -16,24 +15,32 @@ function VNPayReturnContent() {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        const params: any = {};
-        searchParams.forEach((value, key) => {
-            params[key] = value;
-        });
+        const query = searchParams.toString();
+        // Gọi qua Route Handler (Next.js API route) để né CORS triệt để
+        const verifyUrl = `/api/verify-vnpay?${query}`;
 
-        ordersApi.api.get('/orders/vnpay-return', { params })
-            .then(r => {
-                setOrderId(r.data.orderId);
-                if (r.data.success) {
+        console.log('--- Client Fetching via Proxy ---', verifyUrl);
+        
+        fetch(verifyUrl, {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'
+        })
+            .then(async res => {
+                const data = await res.json();
+                console.log('VNPay Verify Result:', data);
+                setOrderId(data.orderId);
+                if (data.success) {
                     setStatus('success');
                 } else {
                     setStatus('error');
-                    setMessage(r.data.message || 'Thanh toán không thành công');
+                    setMessage(data.message || 'Thanh toán không thành công');
                 }
             })
             .catch(err => {
+                console.error('VNPay Verify Error:', err);
                 setStatus('error');
-                setMessage('Lỗi xác thực thanh toán');
+                setMessage('Lỗi xác thực thanh toán: ' + err.message);
             });
     }, [searchParams]);
 

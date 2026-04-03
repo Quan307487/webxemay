@@ -741,6 +741,39 @@ select.input-field option {
   }
 }
 
+@keyframes brand-glow {
+  0%, 100% { 
+    text-shadow: 0 0 15px rgba(var(--primary-rgb), 0.2); 
+    filter: drop-shadow(0 0 2px rgba(var(--primary-rgb), 0.1));
+  }
+  50% { 
+    text-shadow: 0 0 25px rgba(var(--primary-rgb), 0.6);
+    filter: drop-shadow(0 0 5px rgba(var(--primary-rgb), 0.3));
+  }
+}
+
+@keyframes brand-shimmer {
+  0% { background-position: -150% center; }
+  100% { background-position: 150% center; }
+}
+
+.brand-shimmer {
+  background: linear-gradient(
+    to right, 
+    var(--secondary) 20%, 
+    #ff8a9b 40%, 
+    #ffffff 50%, 
+    #ff8a9b 60%, 
+    var(--secondary) 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: brand-shimmer 3s linear infinite, brand-glow 4s ease-in-out infinite;
+  display: inline-block;
+}
+
 /* ============================
    PRODUCTS GRID
    ============================ */
