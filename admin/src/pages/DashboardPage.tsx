@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { reportsApi, ordersApi } from '../lib/api';
+import { reportsApi, ordersApi, API_HOST } from '../lib/api';
 import { ShoppingBag, Users, Activity, Clock, CheckCircle, Truck, XCircle, RotateCcw, Wallet } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 import { Link } from 'react-router-dom';
@@ -19,22 +19,24 @@ function StatCard({ icon: Icon, label, value, sub, color, trend }: any) {
         <div className="premium-card animate-slide-up" style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '16px',
-            padding: '24px',
+            gap: '12px',
+            padding: '22px',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            minWidth: 0,
         }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{
                     background: `${color}15`,
-                    padding: '12px',
-                    borderRadius: '16px',
+                    padding: '10px',
+                    borderRadius: '14px',
                     color: color,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    flexShrink: 0,
                 }}>
-                    <Icon size={24} />
+                    <Icon size={22} />
                 </div>
                 {trend && (
                     <div style={{
@@ -43,16 +45,17 @@ function StatCard({ icon: Icon, label, value, sub, color, trend }: any) {
                         color: 'var(--success)',
                         background: 'rgba(16, 185, 129, 0.1)',
                         padding: '4px 10px',
-                        borderRadius: '50px'
+                        borderRadius: '50px',
+                        flexShrink: 0,
                     }}>
                         ↑ {trend}
                     </div>
                 )}
             </div>
-            <div>
-                <p style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</p>
-                <p style={{ fontSize: '28px', fontWeight: 950, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif' }}>{value}</p>
-                {sub && <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px', fontWeight: 600 }}>{sub}</p>}
+            <div style={{ minWidth: 0 }}>
+                <p style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 800, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</p>
+                <p style={{ fontSize: 'clamp(16px, 1.8vw, 22px)', fontWeight: 950, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif', lineHeight: 1.2 }}>{value}</p>
+                {sub && <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '6px', fontWeight: 600 }}>{sub}</p>}
             </div>
             <div style={{
                 position: 'absolute',
@@ -93,7 +96,7 @@ export default function DashboardPage() {
 
             {/* Top Bar Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
-                <StatCard icon={Wallet} label="Doanh thu thực" value={formatVN(data.doanh_thu_thang)} sub="Thu nhập ròng trong tháng" color="var(--primary)" trend="12.5%" />
+                <StatCard icon={Wallet} label="Doanh thu thực" value={formatVN(data.doanh_thu_thang)} sub="Tổng từ các đơn đã giao thành công" color="var(--primary)" trend="12.5%" />
                 <StatCard icon={ShoppingBag} label="Đơn hàng mới" value={data.tong_don} sub={`${data.don_da_huy} đơn đã hủy/trả`} color="var(--accent)" trend="8.2%" />
                 <StatCard icon={Users} label="Khách hàng mới" value={data.tong_khach || 0} sub="Tài khoản đăng ký mới" color="#8b5cf6" trend="5.1%" />
                 <StatCard icon={Activity} label="Tồn kho" value={data.tong_san_pham} sub={`${data.sp_het_hang} sản phẩm hết hàng`} color="#f97316" />
@@ -258,7 +261,7 @@ export default function DashboardPage() {
                                     <div style={{ position: 'relative' }}>
                                         <div style={{ width: '50px', height: '50px', borderRadius: '16px', background: 'var(--bg-deep)', overflow: 'hidden' }}>
                                             <img
-                                                src={item.image_url ? `http://localhost:3001${item.image_url}` : 'https://via.placeholder.com/50'}
+                                                src={item.image_url ? `${API_HOST}${item.image_url}` : 'https://via.placeholder.com/50'}
                                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                 alt=""
                                             />

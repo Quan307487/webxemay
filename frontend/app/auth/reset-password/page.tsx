@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api';
 import { Bike, Lock, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
+import { useToast } from '@/components/Toast';
 
 export default function ResetPasswordPage() {
     const router = useRouter();
@@ -14,6 +15,7 @@ export default function ResetPasswordPage() {
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
     const [showPw, setShowPw] = useState(false);
+    const { add: addToast } = useToast();
 
     useEffect(() => {
         if (!token) {
@@ -25,18 +27,23 @@ export default function ResetPasswordPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (form.password !== form.confirmPassword) {
+            const msg = 'Mật khẩu xác nhận không khớp.';
             setStatus('error');
-            setMessage('Mật khẩu xác nhận không khớp.');
+            setMessage(msg);
+            addToast(msg, 'error');
             return;
         }
 
         setStatus('loading');
         try {
-            await authApi.resetPassword({ token: token!, newPass: form.password });
+            await authApi.resetPassword(token!, form.password);
             setStatus('success');
+            addToast('Mật khẩu của bạn đã được cập nhật!', 'success');
         } catch (err: any) {
+            const errorMsg = err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại sau.';
             setStatus('error');
-            setMessage(err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại sau.');
+            setMessage(errorMsg);
+            addToast(errorMsg, 'error');
         }
     };
 

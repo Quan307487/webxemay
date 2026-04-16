@@ -4,458 +4,547 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
-import { Bike, ArrowLeft, User, Mail, Lock } from 'lucide-react';
+import { Bike, User, Mail, Lock, Phone, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { useToast } from '@/components/Toast';
+import Image from 'next/image';
 
 export default function AuthPage({ initialMode = 'login' }: { initialMode?: 'login' | 'register' }) {
     const router = useRouter();
     const { setAuth } = useAuthStore();
-    const [mode, setMode] = useState<'login' | 'register'>(initialMode);
+    const { add: addToast } = useToast();
+    const [isSignUpMode, setIsSignUpMode] = useState(initialMode === 'register');
     const [form, setForm] = useState({ email: '', password: '', ten_user: '', hovaten: '', SDT: '' });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPwd, setShowPwd] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-        setLoading(true);
+        setError(''); setSuccess(''); setLoading(true);
         try {
-            if (mode === 'login') {
+            if (!isSignUpMode) {
                 const res = await authApi.login({ email: form.email, password: form.password });
                 if (res.data.user.quyen === 'admin') {
-                    window.location.href = 'http://localhost:5173';
+                    // localStorage không chia sẻ giữa các origin khác port
+                    // → truyền token qua URL query param để admin app lưu lại
+                    addToast('Đăng nhập admin thành công! Đang chuyển hướng... 🛡️', 'success');
+                    setSuccess('Đang chuyển hướng đến trang quản trị...');
+                    const params = new URLSearchParams({
+                        admin_token: res.data.access_token,
+                        admin_user: JSON.stringify(res.data.user),
+                    });
+                    setTimeout(() => {
+                        window.location.href = `http://localhost:5173/?${params.toString()}`;
+                    }, 1000);
                 } else {
                     setAuth(res.data.access_token, res.data.user);
-                    router.push('/');
+                    addToast('Đăng nhập thành công! Chào mừng trở lại 👋', 'success');
+                    setSuccess('Đăng nhập thành công! Đang chuyển hướng...');
+                    setTimeout(() => { router.push('/'); }, 800);
                 }
             } else {
                 const res = await authApi.register(form);
                 setAuth(res.data.access_token, res.data.user);
-                router.push('/');
+                addToast('Đăng ký tài khoản thành công! 🎉', 'success');
+                setSuccess('Đăng ký thành công! Đang về trang chủ...');
+                setTimeout(() => { router.push('/'); }, 800);
             }
         } catch (err: any) {
-            setError(err.response?.data?.message || (mode === 'login' ? 'Đăng nhập thất bại' : 'Đăng ký thất bại'));
-        } finally {
-            setLoading(false);
-        }
+            const errorMsg = err.response?.data?.message || (!isSignUpMode ? 'Đăng nhập thất bại' : 'Đăng ký thất bại');
+            setError(errorMsg);
+            addToast(errorMsg, 'error');
+        } finally { setLoading(false); }
     };
 
-    const switchMode = (newMode: 'login' | 'register') => {
-        if (newMode !== mode) {
-            setMode(newMode);
-            setError('');
-            setForm({ email: '', password: '', ten_user: '', hovaten: '', SDT: '' });
-        }
+    const toggle = () => {
+        setIsSignUpMode(p => !p);
+        setError(''); setSuccess('');
+        setForm({ email: '', password: '', ten_user: '', hovaten: '', SDT: '' });
+        setShowPwd(false);
     };
-
-    const isLogin = mode === 'login';
 
     return (
         <>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap');
+                *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-                * { box-sizing: border-box; }
-
-                .auth-root {
+                .auth-wrap {
+                    font-family: 'Inter', sans-serif;
+                    position: relative;
+                    width: 100%;
                     min-height: 100vh;
-                    background: #0a0a0b;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 24px;
-                    font-family: 'Inter', sans-serif;
-                }
-
-                /* ─── MAIN CARD ─── */
-                .auth-card {
-                    position: relative;
-                    width: 100%;
-                    max-width: 900px;
-                    height: 580px;
-                    border-radius: 28px;
+                    background: white;
                     overflow: hidden;
-                    display: flex;
-                    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-                    border: 1px solid rgba(255,255,255,0.06);
-                    background: #111115;
                 }
 
-                /* ─── FORM HALVES ─── */
-                .form-half {
-                    width: 50%;
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 48px 40px;
-                    transition: opacity 0.4s ease 0.15s;
-                    position: relative;
-                }
-                .form-half.register-half { border-right: 1px solid rgba(255,255,255,0.04); }
-                .form-half.active   { opacity: 1; pointer-events: all; }
-                .form-half.inactive { opacity: 0; pointer-events: none; }
-
-                .form-box { width: 100%; max-width: 300px; }
-
-                .form-title {
-                    font-size: 2rem;
-                    font-weight: 900;
-                    color: #fff;
-                    letter-spacing: -0.04em;
-                    margin: 0 0 4px;
-                    line-height: 1.1;
-                }
-
-                .form-subtitle {
-                    font-size: 0.65rem;
-                    color: rgba(255,255,255,0.28);
-                    font-weight: 600;
-                    margin: 0 0 26px;
-                    text-transform: uppercase;
-                    letter-spacing: 0.1em;
-                }
-
-                .field-group { display: flex; flex-direction: column; gap: 14px; }
-
-                .field-label {
-                    font-size: 0.62rem;
-                    font-weight: 700;
-                    color: rgba(255,255,255,0.22);
-                    text-transform: uppercase;
-                    letter-spacing: 0.16em;
-                    margin-bottom: 6px;
-                }
-
-                .field-wrap { position: relative; }
-
-                .field-icon {
+                /* ============================================================
+                   THE GIANT ROLLING CIRCLE (::before pseudo-element technique)
+                   - Width/Height huge so it covers half the screen visually
+                   - Positioned on the LEFT during sign-in, moves RIGHT on sign-up
+                ============================================================ */
+                .auth-wrap::before {
+                    content: '';
                     position: absolute;
-                    left: 14px;
-                    top: 50%;
+                    width: 2000px;
+                    height: 2000px;
+                    border-radius: 50%;
+                    background: linear-gradient(145deg, #f43f5e 0%, #e11d48 50%, #9f1239 100%);
+                    top: -10%;
+                    right: 48%;
+                    z-index: 6;
                     transform: translateY(-50%);
-                    color: rgba(255,255,255,0.18);
-                    pointer-events: none;
-                    display: flex;
-                    align-items: center;
+                    transition: all 1.8s cubic-bezier(0.65, 0, 0.35, 1);
+                }
+                /* Sign-up mode: circle rolls to the right */
+                .auth-wrap.signup-mode::before {
+                    transform: translateY(-50%) translateX(100%);
+                    right: 52%;
                 }
 
-                .field-input {
+                /* ============================================================
+                   FORM CONTAINER - slides left/right with the circle
+                ============================================================ */
+                .forms-container {
+                    position: absolute;
                     width: 100%;
-                    padding: 12px 14px 12px 40px;
-                    background: rgba(255,255,255,0.04);
-                    border: 1px solid rgba(255,255,255,0.08);
-                    border-radius: 12px;
-                    color: #fff;
-                    font-size: 0.85rem;
-                    font-family: 'Inter', sans-serif;
-                    outline: none;
-                    transition: border-color 0.2s, background 0.2s;
-                }
-                .field-input::placeholder { color: rgba(255,255,255,0.14); }
-                .field-input:focus {
-                    border-color: rgba(224,0,0,0.5);
-                    background: rgba(224,0,0,0.04);
-                }
-
-                .forgot-btn {
-                    background: none; border: none; cursor: pointer;
-                    font-size: 0.63rem; font-weight: 800;
-                    color: #e00000; text-transform: uppercase; letter-spacing: 0.14em;
-                    padding: 0; align-self: flex-end; transition: color 0.2s;
-                    font-family: 'Inter', sans-serif;
-                }
-                .forgot-btn:hover { color: #fff; }
-
-                .submit-btn {
-                    width: 100%; padding: 14px; margin-top: 6px;
-                    background: #e00000; border: none; border-radius: 12px;
-                    color: #fff; font-size: 0.88rem; font-weight: 800;
-                    letter-spacing: 0.03em; cursor: pointer;
-                    font-family: 'Inter', sans-serif;
-                    transition: background 0.2s, transform 0.15s;
-                }
-                .submit-btn:hover:not(:disabled) { background: #ff1a1a; }
-                .submit-btn:active:not(:disabled) { transform: scale(0.98); }
-                .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-                .social-wrap { margin-top: 26px; text-align: center; }
-                .social-label {
-                    font-size: 0.58rem; color: rgba(255,255,255,0.1);
-                    font-weight: 700; text-transform: uppercase; letter-spacing: 0.32em; margin-bottom: 14px;
-                }
-                .social-row { display: flex; justify-content: center; gap: 12px; }
-                .social-btn {
-                    width: 42px; height: 42px; border-radius: 12px;
-                    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-                    color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
-                    cursor: pointer; transition: all 0.3s;
-                }
-                .social-btn:hover {
-                    color: #fff; border-color: rgba(224,0,0,0.4); background: rgba(224,0,0,0.05);
-                }
-
-                .error-box {
-                    background: rgba(224,0,0,0.08); border: 1px solid rgba(224,0,0,0.2);
-                    border-radius: 10px; color: #ff6b6b; font-size: 0.75rem; font-weight: 500;
-                    padding: 10px 14px; margin-bottom: 16px;
-                }
-
-                /* ─── SLIDING OVERLAY PANEL ─── */
-                .overlay {
-                    position: absolute;
-                    top: 0;
-                    bottom: 0;
-                    width: 50%;
-                    z-index: 10;
-                    border-radius: 28px;
-                    overflow: hidden;
-                    transition: left 0.65s cubic-bezier(0.65, 0, 0.35, 1);
-                }
-                /* Login mode: panel on LEFT */
-                .overlay.is-login { left: 0; }
-                /* Register mode: panel on RIGHT */
-                .overlay.is-register { left: 50%; }
-
-                .overlay-bg-login {
-                    position: absolute;
-                    inset: 0;
-                    background: linear-gradient(140deg, #e80000 0%, #b50000 55%, #7a0000 100%);
-                    transition: opacity 0.3s ease;
-                }
-                .overlay-bg-register {
-                    position: absolute;
-                    inset: 0;
-                    background: linear-gradient(140deg, #1a1a2e 0%, #16213e 55%, #0f3460 100%);
-                    transition: opacity 0.3s ease;
-                }
-
-                .overlay-circle-1 {
-                    position: absolute; top: -80px; right: -80px;
-                    width: 260px; height: 260px; border-radius: 50%;
-                    background: rgba(255,255,255,0.06);
-                }
-                .overlay-circle-2 {
-                    position: absolute; bottom: -60px; left: -60px;
-                    width: 180px; height: 180px; border-radius: 50%;
-                    background: rgba(0,0,0,0.14);
-                }
-
-                .overlay-inner {
-                    position: relative;
                     height: 100%;
+                    top: 0; left: 0;
+                }
+                .signin-signup {
+                    position: absolute;
+                    top: 50%;
+                    left: 75%;
+                    transform: translate(-50%, -50%);
+                    width: 50%;
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    z-index: 5;
+                    transition: left 0.8s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.3s;
+                }
+                .auth-wrap.signup-mode .signin-signup {
+                    left: 25%;
+                }
+
+                /* Individual form panels stack in same grid cell */
+                .sign-in-form,
+                .sign-up-form {
+                    grid-column: 1;
+                    grid-row: 1;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    padding: 44px 36px;
+                    padding: 0 40px;
+                    transition: opacity 0.15s ease 0.7s;
+                }
+                .sign-in-form { z-index: 2; opacity: 1; }
+                .sign-up-form { z-index: 1; opacity: 0; }
+                .auth-wrap.signup-mode .sign-in-form { opacity: 0; z-index: 1; }
+                .auth-wrap.signup-mode .sign-up-form { opacity: 1; z-index: 2; }
+
+                .form-title {
+                    font-family: 'Outfit', sans-serif;
+                    font-size: 2.2rem;
+                    font-weight: 900;
+                    color: #0f172a;
+                    letter-spacing: -0.04em;
+                    margin-bottom: 8px;
                     text-align: center;
-                    color: #fff;
-                    z-index: 2;
+                }
+                .form-subtitle {
+                    font-size: 0.8rem;
+                    color: #94a3b8;
+                    font-weight: 600;
+                    margin-bottom: 28px;
+                    text-align: center;
+                    letter-spacing: 0.02em;
                 }
 
-                .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
-                .brand-logo-icon {
-                    width: 38px; height: 38px; border-radius: 12px;
-                    display: flex; align-items: center; justify-content: center;
-                    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.1);
+                .input-field {
+                    position: relative;
+                    margin-bottom: 14px;
+                    width: 100%;
                 }
-                .brand-logo-icon.dark {
-                    background: rgba(224,0,0,0.15); border-color: rgba(224,0,0,0.25);
+                .input-field label {
+                    display: block;
+                    font-size: 0.65rem;
+                    font-weight: 800;
+                    color: #64748b;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    margin-bottom: 6px;
                 }
-                .brand-name { font-size: 1.35rem; font-weight: 900; letter-spacing: -0.02em; }
-
-                .brand-heading {
-                    font-size: 2.3rem; font-weight: 900;
-                    line-height: 1.1; letter-spacing: -0.04em;
-                    margin: 0 0 12px;
+                .input-field .icon {
+                    position: absolute;
+                    left: 14px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: #cbd5e1;
+                    display: flex;
+                    align-items: center;
+                    pointer-events: none;
+                    margin-top: 10px;
                 }
-
-                .brand-desc {
-                    font-size: 0.78rem; color: rgba(255,255,255,0.6);
-                    line-height: 1.65; max-width: 190px; margin: 0 0 34px;
-                }
-
-                .brand-switch-btn {
-                    padding: 10px 30px;
-                    border: 2px solid rgba(255,255,255,0.55);
-                    border-radius: 40px; background: transparent; color: #fff;
-                    font-size: 0.68rem; font-weight: 900; letter-spacing: 0.2em;
-                    text-transform: uppercase; cursor: pointer;
-                    font-family: 'Inter', sans-serif; transition: all 0.25s;
-                }
-                .brand-switch-btn:hover { background: #fff; color: #e00000; }
-                .brand-switch-btn.filled {
-                    background: #e00000; border-color: #e00000;
-                }
-                .brand-switch-btn.filled:hover { background: #ff1a1a; border-color: #ff1a1a; }
-
-                /* Back link */
-                .back-link {
-                    position: fixed; bottom: 28px; left: 28px;
-                    display: flex; align-items: center; gap: 8px;
-                    color: rgba(255,255,255,0.2); font-size: 0.68rem; font-weight: 700;
-                    text-transform: uppercase; letter-spacing: 0.15em; text-decoration: none;
+                .input-field .eye-btn {
+                    position: absolute;
+                    right: 12px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: #cbd5e1;
+                    display: flex;
+                    align-items: center;
+                    padding: 0;
+                    margin-top: 10px;
                     transition: color 0.2s;
                 }
-                .back-link:hover { color: rgba(255,255,255,0.6); }
-                .back-link svg { transition: transform 0.2s; }
-                .back-link:hover svg { transform: translateX(-3px); }
+                .input-field .eye-btn:hover { color: #94a3b8; }
+                .input-field input {
+                    width: 100%;
+                    padding: 12px 42px;
+                    border: 1.5px solid #e2e8f0;
+                    border-radius: 12px;
+                    font-size: 0.88rem;
+                    color: #0f172a;
+                    background: #f8fafc;
+                    outline: none;
+                    font-family: 'Inter', sans-serif;
+                    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+                }
+                .input-field input::placeholder { color: #cbd5e1; }
+                .input-field input:focus {
+                    border-color: #f43f5e;
+                    background: white;
+                    box-shadow: 0 0 0 4px rgba(244,63,94,0.08);
+                }
+
+                .forgot-link {
+                    align-self: flex-end;
+                    font-size: 0.7rem;
+                    font-weight: 800;
+                    color: #f43f5e;
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                    text-decoration: none;
+                    margin-bottom: 6px;
+                    transition: color 0.2s;
+                }
+                .forgot-link:hover { color: #e11d48; }
+
+                .submit-btn {
+                    width: 100%;
+                    padding: 14px;
+                    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-size: 0.92rem;
+                    font-weight: 800;
+                    cursor: pointer;
+                    font-family: 'Inter', sans-serif;
+                    transition: all 0.25s;
+                    box-shadow: 0 6px 18px rgba(244,63,94,0.28);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    margin-top: 4px;
+                }
+                .submit-btn:hover:not(:disabled) {
+                    background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+                    box-shadow: 0 8px 24px rgba(244,63,94,0.38);
+                    transform: translateY(-1px);
+                }
+                .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+                .alert-box {
+                    width: 100%;
+                    padding: 10px 14px;
+                    border-radius: 10px;
+                    font-size: 0.78rem;
+                    font-weight: 600;
+                    margin-bottom: 14px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                .alert-error  { background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48; }
+                .alert-success{ background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
+
+                /* ============================================================
+                   PANELS - Left and Right info sections with images
+                ============================================================ */
+                .panels-container {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    top: 0; left: 0;
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .panel {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    z-index: 6;
+                    padding: 40px;
+                    gap: 30px;
+                }
+                .panel.right-panel {
+                    align-items: center;
+                    padding: 40px;
+                }
+
+                .panel-content {
+                    color: white;
+                    transition: transform 0.9s ease-in-out 0.4s, opacity 0.5s ease 0.4s;
+                }
+                .panel.left-panel .panel-content {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                .auth-wrap.signup-mode .panel.left-panel .panel-content {
+                    transform: translateX(-800px);
+                    opacity: 0;
+                }
+                .panel.right-panel .panel-content {
+                    transform: translateX(800px);
+                    opacity: 0;
+                }
+                .auth-wrap.signup-mode .panel.right-panel .panel-content {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+
+                .panel-img {
+                    width: 100%;
+                    max-width: 300px;
+                    transition: transform 1.1s ease-in-out 0.4s, opacity 0.5s ease 0.4s;
+                    filter: drop-shadow(0 12px 24px rgba(0,0,0,0.2));
+                }
+                .panel.left-panel .panel-img {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                .auth-wrap.signup-mode .panel.left-panel .panel-img {
+                    transform: translateX(-800px);
+                    opacity: 0;
+                }
+                .panel.right-panel .panel-img {
+                    transform: translateX(800px);
+                    opacity: 0;
+                }
+                .auth-wrap.signup-mode .panel.right-panel .panel-img {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+
+                .panel h3 {
+                    font-family: 'Outfit', sans-serif;
+                    font-size: 2.8rem;
+                    font-weight: 900;
+                    color: white;
+                    margin-bottom: 20px;
+                    line-height: 1.1;
+                    letter-spacing: -0.04em;
+                }
+                .panel p {
+                    font-size: 1.1rem;
+                    color: rgba(255,255,255,0.85);
+                    line-height: 1.6;
+                    margin-bottom: 40px;
+                    max-width: 380px;
+                }
+                .panel-btn {
+                    padding: 16px 48px;
+                    border: 2px solid rgba(255,255,255,0.8);
+                    border-radius: 50px;
+                    background: transparent;
+                    color: white;
+                    font-size: 0.85rem;
+                    font-weight: 900;
+                    letter-spacing: 0.16em;
+                    text-transform: uppercase;
+                    cursor: pointer;
+                    font-family: 'Inter', sans-serif;
+                    transition: all 0.25s;
+                }
+                .panel-btn:hover {
+                    background: rgba(255,255,255,0.18);
+                    border-color: white;
+                    transform: translateY(-2px);
+                }
+
+                /* Logo brand */
+                .brand {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-bottom: 36px;
+                    color: white;
+                    text-decoration: none;
+                }
+                .brand-icon {
+                    width: 40px; height: 40px;
+                    border-radius: 14px;
+                    background: rgba(255,255,255,0.2);
+                    border: 1px solid rgba(255,255,255,0.2);
+                    display: flex; align-items: center; justify-content: center;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                }
+                .brand-name {
+                    font-family: 'Outfit', sans-serif;
+                    font-size: 1.4rem;
+                    font-weight: 900;
+                    letter-spacing: -0.02em;
+                }
 
                 /* Spinner */
                 @keyframes spin { to { transform: rotate(360deg); } }
                 .spinner {
-                    width: 16px; height: 16px; display: inline-block;
-                    border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
-                    border-radius: 50%; animation: spin 0.7s linear infinite;
-                    vertical-align: middle;
+                    width: 18px; height: 18px; border-radius: 50%;
+                    border: 2.5px solid rgba(255,255,255,0.3);
+                    border-top-color: white;
+                    animation: spin 0.7s linear infinite;
                 }
+
+                /* Back home link */
+                .back-home {
+                    position: fixed;
+                    bottom: 24px; left: 24px;
+                    display: flex; align-items: center; gap: 8px;
+                    font-size: 0.7rem; font-weight: 700;
+                    text-transform: uppercase; letter-spacing: 0.12em;
+                    color: rgba(255,255,255,0.5);
+                    text-decoration: none;
+                    transition: color 0.2s;
+                    z-index: 20;
+                }
+                .back-home:hover { color: white; }
+                .back-home svg { transition: transform 0.2s; }
+                .back-home:hover svg { transform: translateX(-3px); }
             `}</style>
 
-            <div className="auth-root">
-                <div className="auth-card">
+            <div className={`auth-wrap${isSignUpMode ? ' signup-mode' : ''}`}>
 
-                    {/* ── FORMS CONTAINER ── */}
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex' }}>
+                {/* ── FORMS CONTAINER ──*/}
+                <div className="forms-container">
+                    <div className="signin-signup">
+                        {/* Sign In Form */}
+                        <form className="sign-in-form" onSubmit={handleSubmit}>
+                            <h2 className="form-title">Đăng nhập</h2>
+                            <p className="form-subtitle">Chào mừng biker trở lại! 👋</p>
 
-                        {/* Left Half: REGISTER form */}
-                        <div className={`form-half register-half ${!isLogin ? 'active' : 'inactive'}`}>
-                            <div className="form-box">
-                                <h2 className="form-title">Tạo tài khoản</h2>
-                                <p className="form-subtitle">Bắt đầu hành trình tốc độ của bạn</p>
-                                {error && !isLogin && <div className="error-box">{error}</div>}
-                                <form onSubmit={handleSubmit}>
-                                    <div className="field-group">
-                                        <div>
-                                            <div className="field-label">Tên hiển thị</div>
-                                            <div className="field-wrap">
-                                                <span className="field-icon"><User size={15} /></span>
-                                                <input className="field-input" type="text" placeholder="John Doe"
-                                                    value={form.ten_user} onChange={e => setForm({ ...form, ten_user: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="field-label">Email</div>
-                                            <div className="field-wrap">
-                                                <span className="field-icon"><Mail size={15} /></span>
-                                                <input className="field-input" type="email" placeholder="email@example.com"
-                                                    value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="field-label">Mật khẩu</div>
-                                            <div className="field-wrap">
-                                                <span className="field-icon"><Lock size={15} /></span>
-                                                <input className="field-input" type="password" placeholder="Tối thiểu 6 ký tự"
-                                                    value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <button type="submit" className="submit-btn" disabled={loading}>
-                                            {loading ? <span className="spinner" /> : 'Đăng ký'}
-                                        </button>
-                                    </div>
-                                </form>
+                            {error && !isSignUpMode && <div className="alert-box alert-error"><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e11d48', flexShrink: 0, display: 'inline-block' }} />{error}</div>}
+                            {success && !isSignUpMode && <div className="alert-box alert-success"><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a', flexShrink: 0, display: 'inline-block' }} />{success}</div>}
+
+                            <div className="input-field" style={{ width: '100%', maxWidth: '340px' }}>
+                                <label>Email</label>
+                                <span className="icon"><Mail size={15} /></span>
+                                <input type="email" placeholder="email@example.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
                             </div>
-                        </div>
 
-                        {/* Right Half: LOGIN form */}
-                        <div className={`form-half login-half ${isLogin ? 'active' : 'inactive'}`}>
-                            <div className="form-box">
-                                <h2 className="form-title">Đăng nhập</h2>
-                                <p className="form-subtitle">Chào mừng biker trở lại</p>
-                                {error && isLogin && <div className="error-box">{error}</div>}
-                                <form onSubmit={handleSubmit}>
-                                    <div className="field-group">
-                                        <div>
-                                            <div className="field-label">Email</div>
-                                            <div className="field-wrap">
-                                                <span className="field-icon"><Mail size={15} /></span>
-                                                <input className="field-input" type="email" placeholder="email@example.com"
-                                                    value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="field-label">Mật khẩu</div>
-                                            <div className="field-wrap">
-                                                <span className="field-icon"><Lock size={15} /></span>
-                                                <input className="field-input" type="password" placeholder="••••••••"
-                                                    value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
-                                            </div>
-                                        </div>
-                                        <button type="button" className="forgot-btn"
-                                            onClick={() => router.push('/auth/forgot-password')}>
-                                            Quên mật khẩu?
-                                        </button>
-                                        <button type="submit" className="submit-btn" disabled={loading}>
-                                            {loading ? <span className="spinner" /> : 'Vào cửa hàng'}
-                                        </button>
-                                    </div>
-                                </form>
-
-                                <div className="social-wrap">
-                                    <p className="social-label">Đăng nhập nhanh</p>
-                                    <div className="social-row">
-                                        <button className="social-btn"><Mail size={16} /></button>
-                                        <button className="social-btn"><User size={16} /></button>
-                                        <button className="social-btn">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.63 4.36 2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.02-.99a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* ── SLIDING OVERLAY PANEL ── */}
-                    <div className={`overlay ${isLogin ? 'is-login' : 'is-register'}`}>
-                        {/* Login brand content (red) */}
-                        <div style={{ position: 'absolute', inset: 0, opacity: isLogin ? 1 : 0, transition: 'opacity 0.3s ease', pointerEvents: isLogin ? 'all' : 'none' }}>
-                            <div className="overlay-bg-login" />
-                            <div className="overlay-circle-1" />
-                            <div className="overlay-circle-2" />
-                            <div className="overlay-inner">
-                                <div className="brand-logo">
-                                    <div className="brand-logo-icon">
-                                        <Bike size={19} color="white" />
-                                    </div>
-                                    <span className="brand-name brand-shimmer">MotoShop</span>
-                                </div>
-                                <h1 className="brand-heading">Chào bạn<br />mới đến!</h1>
-                                <p className="brand-desc">Tạo tài khoản để khám phá thế giới xe phân khối lớn.</p>
-                                <button className="brand-switch-btn" onClick={() => switchMode('register')}>
-                                    Đăng ký ngay
+                            <div className="input-field" style={{ width: '100%', maxWidth: '340px' }}>
+                                <label>Mật khẩu</label>
+                                <span className="icon"><Lock size={15} /></span>
+                                <input type={showPwd ? 'text' : 'password'} placeholder="••••••••" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required style={{ paddingRight: '42px' }} />
+                                <button type="button" className="eye-btn" onClick={() => setShowPwd(!showPwd)} style={{ top: 'calc(50% + 10px)' }}>
+                                    {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
-                        </div>
 
-                        {/* Register brand content (dark navy) */}
-                        <div style={{ position: 'absolute', inset: 0, opacity: !isLogin ? 1 : 0, transition: 'opacity 0.3s ease', pointerEvents: !isLogin ? 'all' : 'none' }}>
-                            <div className="overlay-bg-register" />
-                            <div className="overlay-circle-1" style={{ background: 'rgba(255,255,255,0.03)' }} />
-                            <div className="overlay-circle-2" style={{ background: 'rgba(224,0,0,0.05)' }} />
-                            <div className="overlay-inner">
-                                <div className="brand-logo">
-                                    <div className="brand-logo-icon dark">
-                                        <Bike size={19} color="#e00000" />
-                                    </div>
-                                    <span className="brand-name">MotoShop</span>
-                                </div>
-                                <h1 className="brand-heading">Chào mừng<br />trở lại!</h1>
-                                <p className="brand-desc">Đăng nhập để tiếp tục niềm đam mê tốc độ của bạn.</p>
-                                <button className="brand-switch-btn filled" onClick={() => switchMode('login')}>
-                                    Đăng nhập
+                            <Link href="/auth/forgot-password" className="forgot-link" style={{ display: 'block', textAlign: 'right', width: '100%', maxWidth: '340px', marginBottom: '16px' }}>
+                                Quên mật khẩu?
+                            </Link>
+
+                            <button type="submit" className="submit-btn" disabled={loading} style={{ maxWidth: '340px', width: '100%' }}>
+                                {loading ? <span className="spinner" /> : 'Vào cửa hàng →'}
+                            </button>
+                        </form>
+
+                        {/* Sign Up Form */}
+                        <form className="sign-up-form" onSubmit={handleSubmit}>
+                            <h2 className="form-title">Tạo tài khoản</h2>
+                            <p className="form-subtitle">Bắt đầu hành trình tốc độ của bạn 🏍</p>
+
+                            {error && isSignUpMode && <div className="alert-box alert-error"><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#e11d48', flexShrink: 0, display: 'inline-block' }} />{error}</div>}
+                            {success && isSignUpMode && <div className="alert-box alert-success"><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a', flexShrink: 0, display: 'inline-block' }} />{success}</div>}
+
+                            <div className="input-field" style={{ width: '100%', maxWidth: '340px' }}>
+                                <label>Tên hiển thị</label>
+                                <span className="icon"><User size={15} /></span>
+                                <input type="text" placeholder="Nguyễn Văn A" value={form.ten_user} onChange={e => setForm({ ...form, ten_user: e.target.value })} required />
+                            </div>
+
+                            <div className="input-field" style={{ width: '100%', maxWidth: '340px' }}>
+                                <label>Email</label>
+                                <span className="icon"><Mail size={15} /></span>
+                                <input type="email" placeholder="email@example.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
+                            </div>
+
+                            <div className="input-field" style={{ width: '100%', maxWidth: '340px' }}>
+                                <label>Số điện thoại</label>
+                                <span className="icon"><Phone size={15} /></span>
+                                <input type="tel" placeholder="0xxxxxxxxx" value={form.SDT} onChange={e => setForm({ ...form, SDT: e.target.value })} />
+                            </div>
+
+                            <div className="input-field" style={{ width: '100%', maxWidth: '340px' }}>
+                                <label>Mật khẩu</label>
+                                <span className="icon"><Lock size={15} /></span>
+                                <input type={showPwd ? 'text' : 'password'} placeholder="Tối thiểu 6 ký tự" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required style={{ paddingRight: '42px' }} />
+                                <button type="button" className="eye-btn" onClick={() => setShowPwd(!showPwd)} style={{ top: 'calc(50% + 10px)' }}>
+                                    {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
                             </div>
-                        </div>
-                    </div>
 
+                            <button type="submit" className="submit-btn" disabled={loading} style={{ maxWidth: '340px', width: '100%' }}>
+                                {loading ? <span className="spinner" /> : 'Tạo tài khoản'}
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
-                {/* Back link */}
-                <Link href="/" className="back-link">
+                {/* ── PANELS (Info + Image + Switch Button) ── */}
+                <div className="panels-container">
+                    {/* Left Panel: shown during Sign In, asks to Sign Up */}
+                    <div className="panel left-panel" style={{ pointerEvents: isSignUpMode ? 'none' : 'auto' }}>
+                        <div className="panel-content">
+                            <Link href="/" className="brand">
+                                <div className="brand-icon"><Bike size={22} color="white" /></div>
+                                <span className="brand-name">MotoShop</span>
+                            </Link>
+                            <h3>Chưa có<br />tài khoản?</h3>
+                            <p>Đăng ký miễn phí để khám phá hàng trăm mẫu xe và nhận ưu đãi độc quyền.</p>
+                            <button className="panel-btn" onClick={toggle}>Đăng ký ngay</button>
+                        </div>
+                    </div>
+
+                    {/* Right Panel: shown during Sign Up, asks to Sign In */}
+                    <div className="panel right-panel" style={{ pointerEvents: isSignUpMode ? 'auto' : 'none' }}>
+                        <div className="panel-content" style={{ transform: isSignUpMode ? 'translateX(0)' : 'translateX(800px)', opacity: isSignUpMode ? 1 : 0 }}>
+                            <Link href="/" className="brand">
+                                <div className="brand-icon" style={{ background: 'rgba(244,63,94,0.2)', borderColor: 'rgba(244,63,94,0.35)' }}>
+                                    <Bike size={22} color="#f43f5e" />
+                                </div>
+                                <span className="brand-name">MotoShop</span>
+                            </Link>
+                            <h3>Đã có<br />tài khoản?</h3>
+                            <p>Đăng nhập để tiếp tục niềm đam mê tốc độ và theo dõi đơn hàng của bạn.</p>
+                            <button className="panel-btn" onClick={toggle}>Đăng nhập</button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Back home link */}
+                <Link href="/" className="back-home">
                     <ArrowLeft size={13} />
-                    Trang chủ
+                    Về trang chủ
                 </Link>
             </div>
         </>

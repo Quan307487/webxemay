@@ -59,11 +59,10 @@ export class MailService {
                 throw error;
             }
         } else {
-            console.log('-------------------------------------------');
-            console.log(`To: ${email}`);
-            console.log(`Subject: ${subject}`);
-            console.log(`Reset Link: ${resetLink}`);
-            console.log('-------------------------------------------');
+            this.logger.debug(`[DEV MODE] Email not sent (SMTP not configured)`);
+            this.logger.debug(`To: ${email} | Subject: ${subject}`);
+            this.logger.debug(`Reset Link: ${resetLink}`);
+
         }
     }
 }

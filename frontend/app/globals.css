@@ -113,8 +113,17 @@ body {
 .glass-card:hover {
   border-color: rgba(var(--primary-rgb), 0.4);
   transform: translateY(-6px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), 0 0 20px rgba(var(--primary-rgb), 0.1);
-  background: rgba(13, 21, 38, 0.75);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05), 0 0 20px rgba(var(--primary-rgb), 0.1);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
 /* ============================
@@ -725,7 +734,7 @@ select.input-field option {
    SKELETON
    ============================ */
 .skeleton {
-  background: linear-gradient(90deg, rgba(17, 27, 48, 0.8) 25%, rgba(30, 42, 64, 0.5) 50%, rgba(17, 27, 48, 0.8) 75%);
+  background: linear-gradient(90deg, #e8edf2 25%, #f4f7fa 50%, #e8edf2 75%);
   background-size: 200% 100%;
   animation: shimmer 1.8s ease infinite;
   border-radius: 12px;
@@ -779,16 +788,37 @@ select.input-field option {
    ============================ */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 24px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 16px;
   }
 }
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+/* Staggered entrance animation for product cards */
+.products-grid > *:nth-child(1)  { animation: fadeInUp 0.4s 0.05s both; }
+.products-grid > *:nth-child(2)  { animation: fadeInUp 0.4s 0.10s both; }
+.products-grid > *:nth-child(3)  { animation: fadeInUp 0.4s 0.15s both; }
+.products-grid > *:nth-child(4)  { animation: fadeInUp 0.4s 0.20s both; }
+.products-grid > *:nth-child(5)  { animation: fadeInUp 0.4s 0.25s both; }
+.products-grid > *:nth-child(6)  { animation: fadeInUp 0.4s 0.30s both; }
+.products-grid > *:nth-child(7)  { animation: fadeInUp 0.4s 0.35s both; }
+.products-grid > *:nth-child(8)  { animation: fadeInUp 0.4s 0.40s both; }
+.products-grid > *:nth-child(9)  { animation: fadeInUp 0.4s 0.45s both; }
+.products-grid > *:nth-child(10) { animation: fadeInUp 0.4s 0.50s both; }
+.products-grid > *:nth-child(11) { animation: fadeInUp 0.4s 0.55s both; }
+.products-grid > *:nth-child(12) { animation: fadeInUp 0.4s 0.60s both; }
 
 /* ============================
    ANIMATIONS
@@ -947,6 +977,10 @@ select.input-field option {
 
 .animate-fadeInUp {
   animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .animate-float {

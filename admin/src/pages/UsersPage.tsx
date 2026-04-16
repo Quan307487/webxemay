@@ -100,7 +100,7 @@ export default function UsersPage() {
                 }
             />
 
-            <div className="modern-table-container">
+            <div className="modern-table-container" style={{ overflowX: 'auto' }}>
                 <table className="modern-table">
                     <thead>
                         <tr>
@@ -137,19 +137,20 @@ export default function UsersPage() {
                                                     background: 'rgba(255,255,255,0.03)',
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                     fontSize: '18px', fontWeight: 900, color: 'white',
-                                                    border: '1px solid var(--border-light)'
+                                                    border: '1px solid var(--border-light)',
+                                                    flexShrink: 0,
                                                 }}>
                                                     {(u.ten_user || 'U').charAt(0).toUpperCase()}
                                                 </div>
-                                                <div>
-                                                    <div style={{ fontSize: '15px', fontWeight: 800, color: 'white' }}>{u.ten_user}</div>
-                                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700 }}>ID: #{u.ma_user}</div>
+                                                <div style={{ minWidth: 0 }}>
+                                                    <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{u.ten_user}</div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, whiteSpace: 'nowrap' }}>ID: #{u.ma_user}</div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <div style={{ fontSize: '14px', color: 'white', fontWeight: 700 }}>{u.hovaten || '—'}</div>
-                                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 600, marginTop: '2px' }}>{u.email}</div>
+                                            <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 700, whiteSpace: 'nowrap' }}>{u.hovaten || u.ten_user}</div>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>{u.email}</div>
                                             {u.SDT && <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600 }}>{u.SDT}</div>}
                                         </td>
                                         <td>

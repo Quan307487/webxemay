@@ -14,6 +14,8 @@ const STATUS: Record<string, { label: string; color: string; emoji: string }> = 
     shipped: { label: 'Đang giao', color: '#a855f7', emoji: '🚚' },
     delivered: { label: 'Đã giao', color: '#22c55e', emoji: '📦' },
     cancelled: { label: 'Đã hủy', color: '#ef4444', emoji: '❌' },
+    returned: { label: 'Đã trả hàng', color: '#f97316', emoji: '🔄' },
+    refunded: { label: 'Đã hoàn tiền', color: '#ec4899', emoji: '💰' },
 };
 
 export default function MyOrdersPage() {

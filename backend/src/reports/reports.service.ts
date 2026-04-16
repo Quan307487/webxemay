@@ -15,7 +15,7 @@ export class ReportsService {
     const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
     const monthStart = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
 
-    const [doanhThuThang] = await this.orderRepo.query(`SELECT COALESCE(SUM(tong_tien), 0) as total FROM donhang WHERE trang_thai NOT IN ('cancelled', 'returned') AND ngay_dat >= ?`, [monthStart]);
+    const [doanhThuThang] = await this.orderRepo.query(`SELECT COALESCE(SUM(tong_tien), 0) as total FROM donhang WHERE trang_thai = 'delivered'`);
     const [tongHoanTien] = await this.orderRepo.query(`SELECT COALESCE(SUM(tong_tien), 0) as total FROM donhang WHERE trang_thai = 'returned'`);
     const [tongDon] = await this.orderRepo.query(`SELECT COUNT(*) as total FROM donhang`);
     const [donDaHuy] = await this.orderRepo.query(`SELECT COUNT(*) as total FROM donhang WHERE trang_thai = 'cancelled'`);
@@ -42,7 +42,7 @@ export class ReportsService {
     const rawRevenue = await this.orderRepo.query(`
       SELECT 
         DATE_FORMAT(ngay_dat, '%d/%m') as thang,
-        SUM(CASE WHEN trang_thai NOT IN ('cancelled', 'returned') THEN tong_tien ELSE 0 END) as thuc_thu,
+        SUM(CASE WHEN trang_thai = 'delivered' THEN tong_tien ELSE 0 END) as thuc_thu,
         SUM(CASE WHEN trang_thai = 'returned' THEN tong_tien ELSE 0 END) as refund
       FROM donhang 
       WHERE ngay_dat >= DATE_SUB(NOW(), INTERVAL 7 DAY)

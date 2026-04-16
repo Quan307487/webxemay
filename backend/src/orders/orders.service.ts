@@ -244,4 +244,18 @@ export class OrdersService {
         await this.orderRepo.update(id, updateData);
         return this.findOne(id);
     }
+
+    async confirmPayment(id: number) {
+        const order = await this.findOne(id);
+        if (order.trang_thai_TT === 'paid') {
+            throw new BadRequestException('Đơn hàng này đã được xác nhận thanh toán');
+        }
+        await this.orderRepo.update(id, { trang_thai_TT: 'paid' });
+        if (order.thanhtoan?.length) {
+            for (const tt of order.thanhtoan) {
+                await this.ttRepo.update(tt.ma_thanhtoan, { trang_thai: 'success' });
+            }
+        }
+        return this.findOne(id);
+    }
 }

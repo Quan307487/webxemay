@@ -1,7 +1,16 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useAuthStore } from './store';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+export const API_BASE = API_URL.replace('/api', '');
+
+/** Trả về URL đầy đủ cho ảnh từ backend. Nếu path undefined/null thì trả về ảnh placeholder. */
+export function getImageUrl(path?: string | null): string {
+    if (!path) return '/placeholder-bike.jpg';
+    if (path.startsWith('http')) return path;
+    return `${API_BASE}${path}`;
+}
 
 export const api = axios.create({
     baseURL: API_URL,
@@ -39,7 +48,6 @@ api.interceptors.response.use(
             if (authData && JSON.parse(authData)?.state?.token) {
                 // Kiểm tra nếu là lỗi tài khoản bị khóa/vô hiệu hóa
                 if (message.includes('ACCOUNT_BANNED') || message.includes('ACCOUNT_INACTIVE')) {
-                    const { useAuthStore } = require('./store');
                     useAuthStore.getState().setAccountStatusError(message.split(': ')[1] || message);
                 } else {
                     localStorage.removeItem('auth-storage');

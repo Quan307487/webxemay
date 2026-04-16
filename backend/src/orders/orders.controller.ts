@@ -37,13 +37,12 @@ export class OrdersController {
     @UseGuards(AuthGuard('jwt'), RolesGuard) @Roles('admin')
     @Put(':id/status') updateStatus(@Param('id', ParseIntPipe) id: number, @Body('trang_thai') tt: string) { return this.svc.updateStatus(id, tt); }
 
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'), RolesGuard) @Roles('admin')
+    @Put(':id/confirm-payment') confirmPayment(@Param('id', ParseIntPipe) id: number) { return this.svc.confirmPayment(id); }
+
     @Get('vnpay-return')
     async vnpayReturn(@Query() query: any) {
-        console.log('!!! VNPay Controller Reached !!!');
-        console.log('==============================================');
-        console.log('VNPay Return Request:', new Date().toISOString());
-        console.log('Query Params:', JSON.stringify(query, null, 2));
-        console.log('==============================================');
         return this.svc.vnpayReturn(query);
     }
 

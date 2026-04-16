@@ -17,12 +17,14 @@ export default function PageHeader({ title, description, action }: PageHeaderPro
         }}>
             <div>
                 <h1 style={{
-                    fontSize: '36px',
+                    fontSize: 'clamp(22px, 2.5vw, 34px)',
                     fontWeight: 900,
                     color: 'var(--text-primary)',
-                    letterSpacing: '-1.5px',
+                    letterSpacing: '-1px',
                     marginBottom: '8px',
                     fontFamily: 'Outfit, sans-serif',
+                    lineHeight: 1.1,
+                    whiteSpace: 'nowrap',
                 }}>
                     {title}
                 </h1>

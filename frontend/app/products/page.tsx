@@ -77,35 +77,38 @@ function ProductsContent() {
     return (
         <>
             <Navbar />
-            <main style={{ paddingTop: '80px', minHeight: '100vh', background: 'var(--bg)' }}>
-                {/* --- PREMIUM HERO BANNER --- */}
-                <div style={{ position: 'relative', height: '320px', overflow: 'hidden', display: 'flex', alignItems: 'center', marginBottom: '40px' }}>
-                    {/* Background with cinematic image */}
+            <main style={{ paddingTop: '80px', minHeight: '100vh', background: '#f8fafc' }}>
+                {/* --- PREMIUM HERO BANNER (REIMAGINED BRIGHT) --- */}
+                <div style={{ position: 'relative', height: '400px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '40px', background: '#e2e8f0' }}>
+                    {/* Background with lighter cinematic image */}
                     <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
                         <img
                             src="/products_banner_cinematic.png"
                             alt="Bikes Banner"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.35) contrast(1.1)' }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.7) contrast(1.1) saturate(1.2)' }}
                         />
-                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(6,11,24,0.4), var(--bg))' }} />
-                        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, transparent, rgba(6,11,24,0.8))' }} />
+                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), #f8fafc)' }} />
                     </div>
 
-                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', width: '100%', padding: '0 24px' }}>
-                        {/* Breadcrumb */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
-                            <Link href="/" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Trang chủ</Link>
-                            <ChevronRight size={12} />
-                            <span style={{ color: 'white', fontWeight: 600 }}>Cửa hàng xe máy</span>
-                        </div>
-
-                        <div className="animate-fadeInLeft">
-                            <h1 style={{ fontSize: '42px', fontWeight: 900, marginBottom: '12px', fontFamily: 'Outfit, sans-serif', letterSpacing: '-1.5px', color: 'white', lineHeight: 1 }}>
+                    <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', width: '100%', padding: '0 24px', textAlign: 'center' }}>
+                        <div className="animate-fadeInUp">
+                            <h1 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 900, marginBottom: '20px', fontFamily: 'Outfit, sans-serif', letterSpacing: '-2px', color: '#0f172a', lineHeight: 1 }}>
                                 Khám phá <span className="gradient-text">Bộ sưu tập Xe máy</span>
                             </h1>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '16px', maxWidth: '600px', lineHeight: 1.6 }}>
+                            <p style={{ color: '#475569', fontSize: '18px', maxWidth: '700px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
                                 Từ những dòng xe số bền bỉ đến các siêu phẩm phân khối lớn – Tìm kiếm người bạn đồng hành hoàn hảo cho mọi hành trình tại MotoShop.
                             </p>
+                        </div>
+                    </div>
+
+                    {/* Breadcrumb at bottom-left of banner */}
+                    <div style={{ position: 'absolute', bottom: '24px', left: '0', width: '100%', zIndex: 2 }}>
+                        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 24px' }}>
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 18px', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)', borderRadius: '12px', fontSize: '14px', color: '#64748b', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid rgba(255,255,255,0.5)' }}>
+                                <Link href="/" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 600 }}>Trang chủ</Link>
+                                <ChevronRight size={14} />
+                                <span style={{ color: '#0f172a', fontWeight: 800 }}>Cửa hàng xe máy</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -114,12 +117,12 @@ function ProductsContent() {
                     {/* Filter Toggle & Stats Row */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ background: 'rgba(var(--primary-rgb), 0.1)', padding: '10px', borderRadius: '12px', color: 'var(--primary)' }}>
+                            <div style={{ background: 'white', padding: '10px', borderRadius: '12px', color: 'var(--primary)', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                                 <SlidersHorizontal size={20} />
                             </div>
                             <div>
-                                <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'white' }}>Bộ lọc tìm kiếm</h2>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Hiển thị <strong>{total}</strong> mẫu xe đang có sẵn</p>
+                                <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Bộ lọc tìm kiếm</h2>
+                                <p style={{ color: '#64748b', fontSize: '14px' }}>Hiển thị <strong>{total}</strong> mẫu xe đang có sẵn</p>
                             </div>
                         </div>
 
@@ -127,96 +130,99 @@ function ProductsContent() {
                             className={`btn-secondary ${showFilters ? 'btn-active' : ''}`}
                             onClick={() => setShowFilters(!showFilters)}
                             style={{
-                                padding: '10px 20px',
+                                padding: '12px 24px',
                                 gap: '10px',
-                                borderRadius: '14px',
-                                border: showFilters ? '1px solid var(--primary)' : '1px solid var(--border)',
-                                background: showFilters ? 'rgba(var(--primary-rgb), 0.1)' : 'rgba(255,255,255,0.03)'
+                                borderRadius: '16px',
+                                border: showFilters ? '1px solid var(--primary)' : '1px solid #e2e8f0',
+                                background: showFilters ? 'rgba(var(--primary-rgb), 0.05)' : 'white',
+                                color: '#0f172a',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                                fontWeight: 700
                             }}
                         >
                             {showFilters ? 'Thu gọn bộ lọc' : 'Mở rộng bộ lọc'}
                         </button>
                     </div>
 
-                    {/* --- REIMAGINED GLASS FILTERS --- */}
+                    {/* --- BRIGHTER FILTERS --- */}
                     {showFilters && (
-                        <div className="glass-card animate-fadeIn" style={{ padding: '24px', marginBottom: '40px', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(13,21,38,0.4)', backdropFilter: 'blur(20px)' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '20px', alignItems: 'flex-end' }}>
+                        <div className="animate-fadeIn" style={{ padding: '32px', marginBottom: '40px', borderRadius: '24px', border: '2px solid #cbd5e1', background: '#f1f5f9', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '24px', alignItems: 'flex-end' }}>
                                 {/* Search */}
                                 <div style={{ gridColumn: 'span 2' }}>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Từ khóa</label>
+                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Từ khóa</label>
                                     <div style={{ position: 'relative' }}>
                                         <input className="input-field" placeholder="Tên xe, nhãn hiệu..." value={filters.search}
                                             onChange={e => { setFilters({ ...filters, search: e.target.value }); setPage(1); }}
-                                            style={{ paddingLeft: '40px', background: 'rgba(255,255,255,0.02)' }}
+                                            style={{ paddingLeft: '44px', background: 'white', color: '#0f172a', borderColor: '#e2e8f0', height: '52px', fontSize: '15px' }}
                                         />
-                                        <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                                        <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                                     </div>
                                 </div>
 
                                 {/* Category */}
                                 <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Danh mục</label>
-                                    <select className="input-field" value={filters.ma_danhmuc} onChange={e => { setFilters({ ...filters, ma_danhmuc: e.target.value }); setPage(1); }} style={{ background: 'rgba(255,255,255,0.02)' }}>
-                                        <option value="">Tất cả</option>
+                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Danh mục</label>
+                                    <select className="input-field" value={filters.ma_danhmuc} onChange={e => { setFilters({ ...filters, ma_danhmuc: e.target.value }); setPage(1); }} style={{ background: 'white', color: '#0f172a', borderColor: '#e2e8f0', height: '52px', cursor: 'pointer' }}>
+                                        <option value="">Tất cả danh mục</option>
                                         {categories.map((c: any) => <option key={c.ma_danhmuc} value={c.ma_danhmuc}>{c.ten_danhmuc}</option>)}
                                     </select>
                                 </div>
 
                                 {/* Brand */}
                                 <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Thương hiệu</label>
-                                    <select className="input-field" value={filters.ma_thuonghieu} onChange={e => { setFilters({ ...filters, ma_thuonghieu: e.target.value }); setPage(1); }} style={{ background: 'rgba(255,255,255,0.02)' }}>
-                                        <option value="">Tất cả</option>
+                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Thương hiệu</label>
+                                    <select className="input-field" value={filters.ma_thuonghieu} onChange={e => { setFilters({ ...filters, ma_thuonghieu: e.target.value }); setPage(1); }} style={{ background: 'white', color: '#0f172a', borderColor: '#e2e8f0', height: '52px', cursor: 'pointer' }}>
+                                        <option value="">Tất cả thương hiệu</option>
                                         {brands.map((b: any) => <option key={b.ma_thuonghieu} value={b.ma_thuonghieu}>{b.ten_thuonghieu}</option>)}
                                     </select>
                                 </div>
 
                                 {/* Type */}
                                 <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Loại xe</label>
-                                    <select className="input-field" value={filters.kieu_xe} onChange={e => { setFilters({ ...filters, kieu_xe: e.target.value }); setPage(1); }} style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Loại xe</label>
+                                    <select className="input-field" value={filters.kieu_xe} onChange={e => { setFilters({ ...filters, kieu_xe: e.target.value }); setPage(1); }} style={{ background: 'white', color: '#0f172a', borderColor: '#e2e8f0', height: '52px', cursor: 'pointer' }}>
                                         {kieuxeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                                     </select>
                                 </div>
 
                                 {/* Fuel */}
                                 <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Nhiên liệu</label>
-                                    <select className="input-field" value={filters.loai_nhien_lieu} onChange={e => { setFilters({ ...filters, loai_nhien_lieu: e.target.value }); setPage(1); }} style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Nhiên liệu</label>
+                                    <select className="input-field" value={filters.loai_nhien_lieu} onChange={e => { setFilters({ ...filters, loai_nhien_lieu: e.target.value }); setPage(1); }} style={{ background: 'white', color: '#0f172a', borderColor: '#e2e8f0', height: '52px', cursor: 'pointer' }}>
                                         <option value="">Tất cả</option>
-                                        <option value="xang">Xăng</option>
-                                        <option value="dien">Điện ⚡</option>
-                                        <option value="hybrid">Hybrid</option>
+                                        <option value="xang">Máy xăng</option>
+                                        <option value="dien">Xe điện ⚡</option>
+                                        <option value="hybrid">Động cơ Hybrid</option>
                                     </select>
                                 </div>
 
                                 {/* Price Min */}
                                 <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Giá từ (triệu)</label>
+                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Giá từ (triệu)</label>
                                     <input className="input-field" type="number" min="0" placeholder="VD: 20" value={filters.gia_min ? Number(filters.gia_min) / 1000000 : ''}
                                         onChange={e => { setFilters({ ...filters, gia_min: e.target.value ? String(Number(e.target.value) * 1000000) : '' }); setPage(1); }}
-                                        style={{ background: 'rgba(255,255,255,0.02)' }}
+                                        style={{ background: 'white', color: '#0f172a', borderColor: '#e2e8f0', height: '52px' }}
                                     />
                                 </div>
 
                                 {/* Price Max */}
                                 <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Giá đến (triệu)</label>
+                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Giá đến (triệu)</label>
                                     <input className="input-field" type="number" min="0" placeholder="VD: 100" value={filters.gia_max ? Number(filters.gia_max) / 1000000 : ''}
                                         onChange={e => { setFilters({ ...filters, gia_max: e.target.value ? String(Number(e.target.value) * 1000000) : '' }); setPage(1); }}
-                                        style={{ background: 'rgba(255,255,255,0.02)' }}
+                                        style={{ background: 'white', color: '#0f172a', borderColor: '#e2e8f0', height: '52px' }}
                                     />
                                 </div>
 
                                 {/* Sorting */}
                                 <div>
-                                    <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sắp xếp</label>
-                                    <select className="input-field" value={filters.sort} onChange={e => { setFilters({ ...filters, sort: e.target.value }); setPage(1); }} style={{ background: 'rgba(255,255,255,0.02)' }}>
-                                        <option value="ngay_lap">Mới nhất</option>
-                                        <option value="gia">Giá tăng dần</option>
-                                        <option value="gia_desc">Giá giảm dần</option>
-                                        <option value="diem_danh_gia">Đánh giá cao</option>
+                                    <label style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Sắp xếp theo</label>
+                                    <select className="input-field" value={filters.sort} onChange={e => { setFilters({ ...filters, sort: e.target.value }); setPage(1); }} style={{ background: 'white', color: '#0f172a', borderColor: '#e2e8f0', height: '52px', cursor: 'pointer' }}>
+                                        <option value="ngay_lap">Sản phẩm mới nhất</option>
+                                        <option value="gia">Giá: Thấp đến Cao</option>
+                                        <option value="gia_desc">Giá: Cao đến Thấp</option>
+                                        <option value="diem_danh_gia">Đánh giá tốt nhất</option>
                                     </select>
                                 </div>
 
@@ -225,7 +231,7 @@ function ProductsContent() {
                                     <button
                                         className="btn-ghost"
                                         onClick={() => { setFilters({ search: '', ma_danhmuc: '', ma_thuonghieu: '', kieu_xe: '', loai_nhien_lieu: '', gia_min: '', gia_max: '', sort: 'ngay_lap' }); setPage(1); }}
-                                        style={{ width: '100%', padding: '12px', color: 'var(--text-muted)', border: '1px dashed var(--border)', borderRadius: '14px', fontSize: '14px' }}
+                                        style={{ width: '100%', height: '52px', color: '#f43f5e', border: '1.5px dashed rgba(244,63,94,0.3)', borderRadius: '16px', fontSize: '14px', fontWeight: 700, background: 'rgba(244,63,94,0.02)' }}
                                     >
                                         Đặt lại bộ lọc
                                     </button>

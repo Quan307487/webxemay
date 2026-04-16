@@ -4,6 +4,7 @@ export const ADMIN_UPDATED_EVENT = 'admin_user_updated';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 export const API_HOST = API_URL.replace('/api', '');
+export const API_BASE = API_HOST; // alias for image URL construction
 
 export const api = axios.create({
     baseURL: API_URL,
@@ -24,9 +25,8 @@ api.interceptors.response.use(
 
         if (status === 401) {
             localStorage.removeItem('admin_token');
-            if (!window.location.pathname.includes('/login')) {
-                window.location.href = '/login';
-            }
+            localStorage.removeItem('admin_user');
+            window.location.href = 'http://localhost:3000/auth/login';
         } else if (err.config?.skipToast !== true) {
             toast.error(message);
         }
@@ -48,7 +48,7 @@ export const productsApi = {
 };
 export const categoriesApi = { getAll: () => api.get('/categories'), create: (d: any) => api.post('/categories', d), update: (id: number, d: any) => api.put(`/categories/${id}`, d), delete: (id: number) => api.delete(`/categories/${id}`) };
 export const brandsApi = { getAll: () => api.get('/brands'), create: (d: any) => api.post('/brands', d), update: (id: number, d: any) => api.put(`/brands/${id}`, d), delete: (id: number) => api.delete(`/brands/${id}`) };
-export const ordersApi = { getAll: (p?: any) => api.get('/orders', { params: p }), getOne: (id: number) => api.get(`/orders/${id}`), updateStatus: (id: number, tt: string) => api.put(`/orders/${id}/status`, { trang_thai: tt }) };
+export const ordersApi = { getAll: (p?: any) => api.get('/orders', { params: p }), getOne: (id: number) => api.get(`/orders/${id}`), updateStatus: (id: number, tt: string) => api.put(`/orders/${id}/status`, { trang_thai: tt }), confirmPayment: (id: number) => api.put(`/orders/${id}/confirm-payment`) };
 export const usersApi = {
     getAll: (p?: any) => api.get('/users', { params: p }),
     getOne: (id: number) => api.get(`/users/${id}`),

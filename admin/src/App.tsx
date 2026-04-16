@@ -1,6 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AdminLayout from './components/AdminLayout';
-import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProductsPage from './pages/ProductsPage';
 import CategoriesPage from './pages/CategoriesPage';
@@ -16,9 +15,28 @@ import SettingsPage from './pages/SettingsPage';
 import { Toaster } from 'react-hot-toast';
 
 
+// Nhận token từ URL param (do user login page gửi sang qua redirect)
+function extractTokenFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('admin_token');
+  const user = params.get('admin_user');
+  if (token && user) {
+    localStorage.setItem('admin_token', token);
+    localStorage.setItem('admin_user', user);
+    // Xóa params khỏi URL để URL sạch hơn
+    window.history.replaceState({}, '', '/');
+  }
+}
+extractTokenFromUrl();
+
+// Redirect to shared user login page if not authenticated
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('admin_token');
-  return token ? <>{children}</> : <Navigate to="/login" />;
+  if (!token) {
+    window.location.href = 'http://localhost:3000/auth/login';
+    return null;
+  }
+  return <>{children}</>;
 }
 
 export default function App() {
@@ -26,7 +44,6 @@ export default function App() {
     <BrowserRouter>
       <Toaster position="top-right" toastOptions={{ style: { background: '#1e293b', color: '#f1f5f9', border: '1px solid #334155' } }} />
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
           <Route index element={<DashboardPage />} />
           <Route path="products" element={<ProductsPage />} />

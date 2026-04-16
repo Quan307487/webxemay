@@ -31,7 +31,7 @@ export default function Footer() {
     const contactInfo = [
         { Icon: Phone, text: settings?.phone || '0339886769', sub: 'Hỗ trợ khách hàng 24/7', color: '#4ade80' },
         { Icon: Mail, text: settings?.email || 'buiminhquan12082003@gmail.com', sub: 'Hợp tác & Phản hồi', color: '#60a5fa' },
-        { Icon: MapPin, text: settings?.address || 'Thôn An Hòa, Xã Tam An, TP.Đà Nẵng', sub: 'Cửa hàng chính & Văn phòng', color: '#f87171' },
+        { Icon: MapPin, text: settings?.address || 'Thôn An Hòa, Xã Tây Hồ, TP.Đà Nẵng', sub: 'Cửa hàng chính & Văn phòng', color: '#f87171' },
     ];
 
     return (

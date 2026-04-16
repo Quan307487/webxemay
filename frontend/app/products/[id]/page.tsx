@@ -1,6 +1,6 @@
 'use client';
 import { use, useState, useEffect } from 'react';
-import { productsApi, reviewsApi, cartApi, wishlistApi } from '@/lib/api';
+import { productsApi, reviewsApi, cartApi, wishlistApi, getImageUrl } from '@/lib/api';
 import { useAuthStore, useCartStore } from '@/lib/store';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -125,7 +125,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     {/* Images */}
                     <div>
                         <div style={{ background: 'var(--bg-card)', borderRadius: '16px', overflow: 'hidden', marginBottom: '12px', position: 'relative', aspectRatio: '4/3' }}>
-                            <img src={mainImg ? `http://localhost:3001${mainImg}` : '/placeholder-bike.jpg'} alt={product.ten_sanpham} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />
+                            <img src={getImageUrl(mainImg)} alt={product.ten_sanpham} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }} />
                             {imgs.length > 1 && (
                                 <>
                                     <button onClick={() => setImgIdx(Math.max(0, imgIdx - 1))} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}><ChevronLeft size={18} /></button>
@@ -142,7 +142,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                 {imgs.map((img: any, i: number) => (
                                     <div key={img.ma_anh} style={{ position: 'relative' }}>
-                                        <img src={`http://localhost:3001${img.image_url}`} alt="" 
+                                        <img src={getImageUrl(img.image_url)} alt="" 
                                             onClick={() => {
                                                 setImgIdx(i);
                                                 if (img.mau_sac) setSelectedColor(img.mau_sac);

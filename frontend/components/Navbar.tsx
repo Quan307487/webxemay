@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { useAuthStore, useCartStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
-import { productsApi } from '@/lib/api';
+import { productsApi, getImageUrl } from '@/lib/api';
+import { useToast } from '@/components/Toast';
 
 export default function Navbar() {
+    const { add: toast } = useToast();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [userDropdown, setUserDropdown] = useState(false);
     const [search, setSearch] = useState('');
@@ -54,7 +56,12 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    const handleLogout = () => { logout(); setUserDropdown(false); router.push('/'); };
+    const handleLogout = () => { 
+        logout(); 
+        setUserDropdown(false); 
+        toast('Đăng xuất thành công!', 'success');
+        router.push('/'); 
+    };
 
     return (
         <>
@@ -74,7 +81,7 @@ export default function Navbar() {
                     zIndex: 1000
                 }}>
                 {/* --- TOP TIER --- */}
-                <div className="flex items-center justify-between w-full px-6 md:px-16 py-5">
+                <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto px-8 md:px-16 lg:px-24 xl:px-32 py-5">
 
                     {/* Logo */}
                     <Link href="/" className="group" style={{ textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -139,7 +146,7 @@ export default function Navbar() {
                                                 <Link key={p.ma_sanpham} href={`/products/${p.ma_sanpham}`} onClick={() => setShowResults(false)}
                                                     style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 16px', borderRadius: '14px', textDecoration: 'none', color: 'var(--text-secondary)', transition: 'all 0.2s' }}
                                                     className="nav-item-hover">
-                                                    <img src={p.hinhanh?.[0]?.image_url ? `http://localhost:3001${p.hinhanh[0].image_url}` : '/placeholder-bike.jpg'} alt="" style={{ width: '56px', height: '42px', objectFit: 'cover', borderRadius: '8px', background: 'var(--bg-card)' }} />
+                                                    <img src={getImageUrl(p.hinhanh?.[0]?.image_url)} alt="" style={{ width: '56px', height: '42px', objectFit: 'cover', borderRadius: '8px', background: 'var(--bg-card)' }} />
                                                     <div style={{ flex: 1 }}>
                                                         <p style={{ fontWeight: 800, fontSize: '14px', color: 'var(--secondary)', marginBottom: '2px' }}>{p.ten_sanpham}</p>
                                                         <p style={{ fontSize: '12px', color: 'var(--primary)', fontWeight: 700 }}>{Number(p.gia).toLocaleString('vi-VN')}đ</p>
@@ -229,16 +236,13 @@ export default function Navbar() {
                         )}
 
                         {/* Mobile hamburger */}
-                        <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden"
+                        <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden flex items-center justify-center"
                             style={{
                                 background: 'white',
                                 border: '1px solid var(--border)',
                                 borderRadius: '16px',
                                 width: '48px',
                                 height: '48px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
                                 cursor: 'pointer',
                                 color: 'var(--secondary)',
                                 transition: 'all 0.2s'
@@ -254,8 +258,8 @@ export default function Navbar() {
                     <div className="flex items-center gap-14">
                         <Link href="/products" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>SẢN PHẨM</Link>
                         <Link href="/#khuyen-mai" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>ƯU ĐÃI</Link>
-                        <Link href="/#gioi-thieu" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>GIỚI THIỆU</Link>
-                        <Link href="/#lien-he" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>LIÊN HỆ</Link>
+                        <Link href="/about" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>GIỚI THIỆU</Link>
+                        <Link href="/contact" className="nav-link" style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2.5px', color: 'var(--secondary)' }}>LIÊN HỆ</Link>
                     </div>
                 </div>
             </nav>
@@ -281,8 +285,8 @@ export default function Navbar() {
                         {[
                             ['SẢN PHẨM', '/products'],
                             ['ƯU ĐÃI', '/#khuyen-mai'],
-                            ['GIỚI THIỆU', '/#gioi-thieu'],
-                            ['LIÊN HỆ', '/#lien-he'],
+                            ['GIỚI THIỆU', '/about'],
+                            ['LIÊN HỆ', '/contact'],
                             ['❤️ Yêu thích', '/wishlist'],
                             ['🛒 Giỏ hàng', '/cart'],
                             ['📦 Đơn hàng', '/orders'],

@@ -26,7 +26,10 @@ export class ProductsService {
         if (query.gia_min) qb.andWhere('sp.gia >= :gmin', { gmin: query.gia_min });
         if (query.gia_max) qb.andWhere('sp.gia <= :gmax', { gmax: query.gia_max });
         if (query.search) qb.andWhere('sp.ten_sanpham LIKE :s', { s: `%${query.search}%` });
-        const sort = query.sort || 'ngay_lap';
+        if (query.has_discount === '1') qb.andWhere('sp.gia_tri_giam > 0');
+        // Whitelist sort columns to prevent SQL injection
+        const allowedSorts = ['ngay_lap', 'gia', 'diem_danh_gia', 'ten_sanpham'];
+        const sort = allowedSorts.includes(query.sort) ? query.sort : 'ngay_lap';
         const dir = query.dir === 'ASC' ? 'ASC' : 'DESC';
         qb.orderBy(`sp.${sort}`, dir);
         if (query.limit) qb.limit(Number(query.limit));

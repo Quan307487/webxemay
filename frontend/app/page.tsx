@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { productsApi, categoriesApi, brandsApi } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
 import Navbar from '@/components/Navbar';
@@ -10,10 +10,9 @@ import { ProductsGridSkeleton } from '@/components/Skeleton';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, EffectFade, Navigation } from 'swiper/modules';
+import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 
 export default function HomePage() {
@@ -598,51 +597,6 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════
-            CTA SECTION (PREMIUM PANEL)
-        ═══════════════════════════════ */}
-        <section id="lien-he" style={{ padding: '0 32px 120px' }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-            <div className="glass-panel" style={{
-              background: 'var(--secondary)',
-              borderRadius: '48px',
-              padding: '100px 48px',
-              textAlign: 'center',
-              position: 'relative',
-              overflow: 'hidden',
-              boxShadow: '0 40px 100px -20px rgba(15, 23, 42, 0.4)'
-            }}>
-              <div style={{ position: 'absolute', top: '-100px', left: '-100px', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(230,57,70,0.2) 0%, transparent 70%)', pointerEvents: 'none', mixBlendMode: 'plus-lighter' }} />
-              <div style={{ position: 'absolute', bottom: '-100px', right: '-100px', width: '600px', height: '600px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)', pointerEvents: 'none', mixBlendMode: 'plus-lighter' }} />
-
-              <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px 16px', marginBottom: '32px', color: 'white', fontWeight: 800, fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase' }}>
-                  Tham gia Cộng đồng
-                </div>
-                <h2 style={{ fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 900, fontFamily: 'Outfit, sans-serif', letterSpacing: '-2px', marginBottom: '24px', lineHeight: 1, color: 'white' }}>
-                  Sẵn sàng Bắt đầu <br />
-                  <span className="gradient-text">Hành trình Tiếp theo?</span>
-                </h2>
-                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '20px', marginBottom: '56px', lineHeight: 1.6 }}>
-                  Đăng ký ngay để nhận ưu đãi đặc quyền, cập nhật mẫu xe giới hạn và nhận tư vấn chuyên sâu từ đội ngũ kỹ thuật viên 24/7.
-                </p>
-                <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <Link href="/products">
-                    <button className="btn-premium btn-primary" style={{ padding: '20px 44px', fontSize: '17px', borderRadius: '16px' }}>
-                      Khám phá Bộ sưu tập
-                    </button>
-                  </Link>
-                  <Link href="/auth/register">
-                    <button className="btn-premium" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '20px 44px', fontSize: '17px', borderRadius: '16px' }}>
-                      Tạo tài khoản ngay
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 

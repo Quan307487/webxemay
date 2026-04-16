@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { Heart, ShoppingCart, Star, Zap, ShieldCheck } from 'lucide-react';
-import { wishlistApi, cartApi } from '@/lib/api';
+import { Heart, ShoppingCart, Star, Zap, BadgeCheck, Eye } from 'lucide-react';
+import { wishlistApi, cartApi, getImageUrl } from '@/lib/api';
 import { useAuthStore, useCartStore } from '@/lib/store';
 import { useToast } from '@/components/Toast';
 import { useState } from 'react';
@@ -29,11 +29,12 @@ function calcPrice(p: Product) {
 function formatPrice(n: number) { return n.toLocaleString('vi-VN') + 'đ'; }
 
 const kieuxeConfig: Record<string, { label: string; color: string; bg: string }> = {
-    xe_so: { label: 'Xe số', color: '#b45309', bg: '#fffbeb' },
-    xe_ga: { label: 'Xe ga', color: '#1d4ed8', bg: '#eff6ff' },
-    xe_con_tay: { label: 'Côn tay', color: '#7e22ce', bg: '#faf5ff' },
-    xe_dien: { label: '⚡ Điện', color: '#047857', bg: '#ecfdf5' },
-    phan_khoi_lon: { label: '🔥 PKL', color: '#be123c', bg: '#fff1f2' },
+    xe_so:         { label: 'Xe số',   color: '#b45309', bg: '#fffbeb' },
+    xe_ga:         { label: 'Xe ga',   color: '#1d4ed8', bg: '#eff6ff' },
+    xe_con_tay:    { label: 'Côn tay', color: '#7e22ce', bg: '#faf5ff' },
+    xe_dien:       { label: '⚡ Điện', color: '#047857', bg: '#ecfdf5' },
+    phan_khoi_lon: { label: '🔥 PKL',  color: '#be123c', bg: '#fff1f2' },
+    xe_mo_to:      { label: 'Mô tô',   color: '#0369a1', bg: '#f0f9ff' },
 };
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -41,21 +42,22 @@ export default function ProductCard({ product }: { product: Product }) {
     const salePrice = calcPrice(product);
     const hasDiscount = Number(product.gia_tri_giam) > 0;
     const discountPercent = product.kieu_giam_gia === 'percentage'
-        ? product.gia_tri_giam
+        ? Number(product.gia_tri_giam)
         : Math.round((Number(product.gia_tri_giam) / Number(product.gia)) * 100);
+    const outOfStock = product.ton_kho === 0;
 
     const { user } = useAuthStore();
     const setCart = useCartStore(s => s.setCart);
     const { add: toast } = useToast();
     const [adding, setAdding] = useState(false);
     const [wishlisted, setWishlisted] = useState(false);
-    const [hover, setHover] = useState(false);
 
     const kxCfg = kieuxeConfig[product.kieu_xe] || { label: product.kieu_xe, color: '#475569', bg: '#f1f5f9' };
 
     const handleAddCart = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (!user) { window.location.href = '/auth/login'; return; }
+        if (outOfStock) return;
         setAdding(true);
         try {
             const res = await cartApi.addItem({ ma_sanpham: product.ma_sanpham, so_luong: 1 });
@@ -72,148 +74,358 @@ export default function ProductCard({ product }: { product: Product }) {
         try {
             await wishlistApi.toggle(product.ma_sanpham);
             setWishlisted(w => !w);
-            toast(wishlisted ? 'Đã xóa khỏi danh sách yêu thích' : '❤️ Đã thêm vào danh sách yêu thích', wishlisted ? 'info' : 'success');
-        } catch { toast('Lỗi khi cập nhật danh sách yêu thích', 'error'); }
+            toast(wishlisted ? 'Đã xóa khỏi danh sách yêu thích' : '❤️ Đã thêm vào yêu thích', wishlisted ? 'info' : 'success');
+        } catch { toast('Lỗi khi cập nhật yêu thích', 'error'); }
     };
 
     return (
-        <Link href={`/products/${product.ma_sanpham}`} style={{ textDecoration: 'none' }}>
-            <div
-                className="premium-card glass-shine"
-                style={{
-                    padding: 0,
-                    overflow: 'hidden',
-                    borderRadius: '34px',
-                    border: hover ? '1.5px solid var(--primary)' : '1.5px solid var(--border)',
-                    transform: hover ? 'translateY(-10px)' : 'none',
-                    transition: 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
-                    background: 'white'
-                }}
-                onMouseEnter={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}
-            >
-                {/* Image Section */}
-                <div style={{ position: 'relative', paddingTop: '75%', background: 'var(--bg-elevated)', overflow: 'hidden' }}>
+        <Link href={`/products/${product.ma_sanpham}`} style={{ textDecoration: 'none', display: 'block' }}>
+            <div className="pc-root">
+                {/* ── Image ── */}
+                <div className="pc-img-wrap">
                     <img
-                        src={mainImg ? `http://localhost:3001${mainImg.image_url}` : '/placeholder-bike.jpg'}
+                        src={getImageUrl(mainImg?.image_url)}
                         alt={product.ten_sanpham}
-                        style={{
-                            position: 'absolute',
-                            inset: 0,
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            transform: hover ? 'scale(1.1)' : 'scale(1)',
-                            transition: 'transform 0.8s'
-                        }}
+                        className="pc-img"
                     />
-
-                    {/* Top Badges */}
-                    <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 2 }}>
-                        {hasDiscount && (
-                            <div style={{ background: 'var(--primary)', color: 'white', padding: '6px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 900, boxShadow: '0 4px 12px rgba(var(--primary-rgb), 0.3)' }}>
-                                -{discountPercent}%
-                            </div>
-                        )}
-                        {product.ton_kho === 0 && (
-                            <div style={{ background: '#0f172a', color: 'white', padding: '6px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 900 }}>
-                                Hết hàng
-                            </div>
-                        )}
+                    {/* Hover overlay — "Xem chi tiết" */}
+                    <div className="pc-overlay">
+                        <div className="pc-overlay-btn">
+                            <Eye size={16} /> Xem chi tiết
+                        </div>
                     </div>
 
-                    {/* Category Pin */}
-                    <div style={{ position: 'absolute', top: '16px', right: '16px', background: kxCfg.bg, color: kxCfg.color, padding: '6px 14px', borderRadius: '12px', fontSize: '12px', fontWeight: 900, border: `1px solid ${kxCfg.color}20`, zIndex: 2 }}>
+                    {/* Discount badge */}
+                    {hasDiscount && (
+                        <div className="pc-badge-discount">-{discountPercent}%</div>
+                    )}
+                    {outOfStock && (
+                        <div className="pc-badge-oos">Hết hàng</div>
+                    )}
+
+                    {/* Vehicle type pin */}
+                    <div className="pc-type-pin" style={{ color: kxCfg.color, background: kxCfg.bg, border: `1px solid ${kxCfg.color}25` }}>
                         {kxCfg.label}
                     </div>
 
-                    {/* Wishlist Button */}
-                    <button onClick={handleWishlist}
-                        style={{ position: 'absolute', bottom: '16px', right: '16px', width: '44px', height: '44px', background: wishlisted ? 'var(--primary)' : 'white', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: wishlisted ? 'white' : 'var(--secondary)', boxShadow: 'var(--shadow-lg)', zIndex: 3, transition: 'all 0.3s' }}>
-                        <Heart size={18} fill={wishlisted ? 'white' : 'none'} />
+                    {/* Wishlist */}
+                    <button onClick={handleWishlist} className={`pc-wish ${wishlisted ? 'pc-wish--active' : ''}`} aria-label="Yêu thích">
+                        <Heart size={17} fill={wishlisted ? 'currentColor' : 'none'} />
                     </button>
 
-                    {/* Fuel Indicator */}
+                    {/* Electric badge */}
                     {product.loai_nhien_lieu === 'dien' && (
-                        <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', borderRadius: '10px', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid #ecfdf5' }}>
-                            <Zap size={14} color="#10b981" />
-                            <span style={{ fontSize: '11px', color: '#047857', fontWeight: 900 }}>ĐỘNG CƠ ĐIỆN ECO</span>
+                        <div className="pc-eco">
+                            <Zap size={13} /> ECO ĐIỆN
                         </div>
                     )}
                 </div>
 
-                {/* Content Section */}
-                <div style={{ padding: '24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                        {product.thuonghieu && (
-                            <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                {product.thuonghieu.ten_thuonghieu}
+                {/* ── Content ── */}
+                <div className="pc-body">
+                    {/* Brand + Rating row */}
+                    <div className="pc-meta">
+                        <span className="pc-brand">{product.thuonghieu?.ten_thuonghieu}</span>
+                        {Number(product.diem_danh_gia) > 0 ? (
+                            <span className="pc-rating">
+                                <Star size={11} fill="#f59e0b" color="#f59e0b" />
+                                {Number(product.diem_danh_gia).toFixed(1)}
                             </span>
+                        ) : (
+                            <span className="pc-new">Mới</span>
                         )}
-                        <span style={{ height: '4px', width: '4px', borderRadius: '50%', background: 'var(--border)' }} />
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <Star size={12} fill="#f59e0b" color="#f59e0b" />
-                            <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--secondary)' }}>{product.diem_danh_gia || 5.0}</span>
-                        </div>
                     </div>
 
-                    <h3 style={{
-                        fontSize: '19px',
-                        fontWeight: 900,
-                        color: 'var(--secondary)',
-                        marginBottom: '12px',
-                        lineHeight: 1.25,
-                        height: '48px',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        fontFamily: 'Outfit, sans-serif'
-                    }}>
+                    {/* Name */}
+                    <h3 className="pc-name">
                         {product.ten_sanpham.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')}
                     </h3>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '13px', fontWeight: 700, marginBottom: '20px' }}>
-                        <ShieldCheck size={14} /> Có bảo hành chính hãng
+                    {/* Warranty */}
+                    <div className="pc-warranty">
+                        <BadgeCheck size={13} /> Bảo hành chính hãng
                     </div>
 
-                    {/* Price & Action */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
-                        <div>
-                            <div className="price-tag">
-                                {formatPrice(salePrice)}
-                            </div>
+                    {/* Price + CTA */}
+                    <div className="pc-footer">
+                        <div className="pc-price-block">
+                            <span className="pc-price">{formatPrice(salePrice)}</span>
                             {hasDiscount && (
-                                <div style={{ fontSize: '13px', color: 'var(--text-muted)', textDecoration: 'line-through', fontWeight: 600 }}>
-                                    {formatPrice(Number(product.gia))}
-                                </div>
+                                <span className="pc-price-original">{formatPrice(Number(product.gia))}</span>
                             )}
                         </div>
-
                         <button
-                            className={`btn-premium ${adding ? 'btn-secondary' : 'btn-primary'}`}
-                            style={{
-                                width: '48px',
-                                height: '48px',
-                                padding: 0,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                borderRadius: '16px',
-                                opacity: product.ton_kho === 0 ? 0.5 : 1,
-                                border: 'none'
-                            }}
+                            className={`pc-cart-btn ${adding ? 'pc-cart-btn--loading' : ''} ${outOfStock ? 'pc-cart-btn--oos' : ''}`}
                             onClick={handleAddCart}
-                            disabled={adding || product.ton_kho === 0}
+                            disabled={adding || outOfStock}
+                            aria-label="Thêm vào giỏ"
                         >
-                            {adding ? <div className="loader" style={{ width: '16px', height: '16px', border: '2px solid white', borderTop: '2px solid transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} /> : <ShoppingCart size={20} />}
+                            {adding
+                                ? <div className="pc-spinner" />
+                                : <ShoppingCart size={18} />}
                         </button>
                     </div>
                 </div>
             </div>
 
             <style jsx>{`
-                @keyframes spin { to { transform: rotate(360deg); } }
+                .pc-root {
+                    background: #fff;
+                    border-radius: 24px;
+                    border: 1.5px solid #e8edf2;
+                    overflow: hidden;
+                    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .pc-root:hover {
+                    border-color: var(--primary);
+                    transform: translateY(-8px);
+                    box-shadow: 0 24px 48px rgba(0,0,0,0.1), 0 0 0 1px rgba(var(--primary-rgb), 0.15);
+                }
+                /* Image */
+                .pc-img-wrap {
+                    position: relative;
+                    padding-top: 68%;
+                    background: #f4f7fa;
+                    overflow: hidden;
+                }
+                .pc-img {
+                    position: absolute;
+                    inset: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+                }
+                .pc-root:hover .pc-img { transform: scale(1.07); }
+
+                /* Hover overlay */
+                .pc-overlay {
+                    position: absolute;
+                    inset: 0;
+                    background: rgba(15,23,42,0.35);
+                    backdrop-filter: blur(2px);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    z-index: 4;
+                }
+                .pc-root:hover .pc-overlay { opacity: 1; }
+                .pc-overlay-btn {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: white;
+                    color: #0f172a;
+                    font-size: 13px;
+                    font-weight: 800;
+                    padding: 10px 20px;
+                    border-radius: 14px;
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+                    transform: translateY(8px);
+                    transition: transform 0.3s ease;
+                    letter-spacing: 0.3px;
+                }
+                .pc-root:hover .pc-overlay-btn { transform: translateY(0); }
+
+                /* Badges */
+                .pc-badge-discount {
+                    position: absolute;
+                    top: 14px;
+                    left: 14px;
+                    background: var(--primary);
+                    color: white;
+                    padding: 5px 11px;
+                    border-radius: 10px;
+                    font-size: 12px;
+                    font-weight: 900;
+                    z-index: 5;
+                    box-shadow: 0 4px 10px rgba(var(--primary-rgb),0.35);
+                }
+                .pc-badge-oos {
+                    position: absolute;
+                    top: 14px;
+                    left: 14px;
+                    background: #334155;
+                    color: white;
+                    padding: 5px 11px;
+                    border-radius: 10px;
+                    font-size: 12px;
+                    font-weight: 900;
+                    z-index: 5;
+                }
+                .pc-type-pin {
+                    position: absolute;
+                    top: 14px;
+                    right: 14px;
+                    padding: 5px 12px;
+                    border-radius: 10px;
+                    font-size: 11px;
+                    font-weight: 900;
+                    z-index: 5;
+                }
+                /* Wishlist */
+                .pc-wish {
+                    position: absolute;
+                    bottom: 14px;
+                    right: 14px;
+                    width: 40px;
+                    height: 40px;
+                    background: white;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: none;
+                    cursor: pointer;
+                    color: #94a3b8;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+                    z-index: 6;
+                    transition: all 0.25s;
+                }
+                .pc-wish:hover, .pc-wish--active { color: var(--primary); background: rgba(var(--primary-rgb),0.08); }
+
+                /* Eco badge */
+                .pc-eco {
+                    position: absolute;
+                    bottom: 14px;
+                    left: 14px;
+                    background: rgba(255,255,255,0.92);
+                    backdrop-filter: blur(6px);
+                    border-radius: 8px;
+                    padding: 4px 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    font-size: 10px;
+                    font-weight: 900;
+                    color: #047857;
+                    border: 1px solid #d1fae5;
+                    z-index: 5;
+                }
+
+                /* Body */
+                .pc-body {
+                    padding: 20px 20px 18px;
+                    display: flex;
+                    flex-direction: column;
+                    flex: 1;
+                }
+                .pc-meta {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 8px;
+                }
+                .pc-brand {
+                    font-size: 11px;
+                    font-weight: 800;
+                    color: var(--primary);
+                    text-transform: uppercase;
+                    letter-spacing: 1.2px;
+                }
+                .pc-rating {
+                    display: flex;
+                    align-items: center;
+                    gap: 3px;
+                    font-size: 11px;
+                    font-weight: 800;
+                    color: #78716c;
+                    margin-left: auto;
+                }
+                .pc-new {
+                    margin-left: auto;
+                    font-size: 10px;
+                    font-weight: 800;
+                    color: #10b981;
+                    background: #ecfdf5;
+                    border: 1px solid #a7f3d0;
+                    padding: 2px 8px;
+                    border-radius: 8px;
+                }
+                .pc-name {
+                    font-size: 16px;
+                    font-weight: 800;
+                    color: #0f172a;
+                    margin-bottom: 10px;
+                    line-height: 1.3;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    font-family: 'Outfit', sans-serif;
+                    min-height: 42px;
+                }
+                .pc-warranty {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #94a3b8;
+                    margin-bottom: 16px;
+                    flex: 1;
+                }
+                /* Footer — price + cart */
+                .pc-footer {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    padding-top: 14px;
+                    border-top: 1px solid #f1f5f9;
+                }
+                .pc-price-block { display: flex; flex-direction: column; gap: 2px; }
+                .pc-price {
+                    font-family: 'Outfit', sans-serif;
+                    font-size: 20px;
+                    font-weight: 900;
+                    color: var(--primary);
+                    letter-spacing: -0.5px;
+                    line-height: 1;
+                }
+                .pc-price-original {
+                    font-size: 12px;
+                    color: #94a3b8;
+                    text-decoration: line-through;
+                    font-weight: 600;
+                }
+                /* Cart button */
+                .pc-cart-btn {
+                    width: 44px;
+                    height: 44px;
+                    flex-shrink: 0;
+                    border-radius: 14px;
+                    border: none;
+                    background: var(--primary);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: all 0.25s;
+                    box-shadow: 0 6px 14px rgba(var(--primary-rgb),0.3);
+                }
+                .pc-cart-btn:hover:not(:disabled) {
+                    transform: scale(1.1);
+                    box-shadow: 0 8px 20px rgba(var(--primary-rgb),0.4);
+                }
+                .pc-cart-btn--loading { background: #94a3b8; box-shadow: none; cursor: wait; }
+                .pc-cart-btn--oos    { background: #e2e8f0; box-shadow: none; cursor: not-allowed; color: #94a3b8; }
+                /* Spinner */
+                .pc-spinner {
+                    width: 16px;
+                    height: 16px;
+                    border: 2px solid rgba(255,255,255,0.3);
+                    border-top-color: white;
+                    border-radius: 50%;
+                    animation: pc-spin 0.7s linear infinite;
+                }
+                @keyframes pc-spin { to { transform: rotate(360deg); } }
             `}</style>
         </Link>
     );

@@ -77,12 +77,7 @@ export class ProductsController {
         @UploadedFile() file: Express.Multer.File,
         @Body() body: any,
     ) {
-        console.log(`[Upload] Product ID: ${id}, Body:`, body);
-        if (!file) {
-            console.error('[Upload] No file received!');
-            throw new BadRequestException('Không nhận được file ảnh');
-        }
-        console.log(`[Upload] File saved: ${file.filename}`);
+        if (!file) throw new BadRequestException('Không nhận được file ảnh');
         const url = `/uploads/products/${file.filename}`;
         return this.svc.addImage(id, url, body.is_main === 'true' || body.is_main === true, body.mo_ta_anh);
     }

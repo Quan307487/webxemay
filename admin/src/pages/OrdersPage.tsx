@@ -4,7 +4,7 @@ import { ordersApi, settingsApi } from '../lib/api';
 import toast from 'react-hot-toast';
 import {
     Clock, Truck,
-    CheckCircle, XCircle, RotateCcw, Search, X, CreditCard, Bike, ChevronDown, Printer
+    CheckCircle, RotateCcw, Search, X, CreditCard, ChevronDown, Printer, User, MapPin
 } from 'lucide-react';
 import { PageHeader, Spinner } from '../components/ui';
 
@@ -25,6 +25,8 @@ function OrdersPage() {
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [storeSettings, setStoreSettings] = useState<any>(null);
+    const [confirmingPayment, setConfirmingPayment] = useState(false);
+    const [pendingConfirmPayment, setPendingConfirmPayment] = useState(false);
 
     useEffect(() => {
         settingsApi.get().then(res => setStoreSettings(res.data)).catch(() => { });
@@ -119,7 +121,7 @@ function OrdersPage() {
                 }
             />
 
-            <div className="modern-table-container">
+            <div className="modern-table-container" style={{ overflowX: 'auto' }}>
                 <table className="modern-table">
                     <thead>
                         <tr>
@@ -208,8 +210,8 @@ function OrdersPage() {
                                         </td>
                                         <td style={{ textAlign: 'right' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-                                                {o.trang_thai === 'delivered' && (
-                                                    <button onClick={() => handleRefund(o.ma_donhang, o.donhang_code)} className="action-icon-btn" style={{ color: '#f59e0b' }} title="Hoàn tiền">
+                                                {(o.trang_thai === 'delivered' || (o.trang_thai === 'cancelled' && o.phuong_thuc_TT?.toLowerCase().includes('vnpay'))) && (
+                                                    <button onClick={() => handleRefund(o.ma_donhang, o.donhang_code)} className="action-icon-btn" style={{ color: o.trang_thai === 'cancelled' ? '#3b82f6' : '#f59e0b' }} title={o.trang_thai === 'cancelled' ? "Hoàn tiền VNPay" : "Hoàn tiền"}>
                                                         <RotateCcw size={18} />
                                                     </button>
                                                 )}
@@ -258,213 +260,270 @@ function OrdersPage() {
                 </table>
             </div>
 
-            {/* Modal */}
+            {/* Modal Redesign */}
             {isModalOpen && selectedOrder && createPortal(
-                <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', animation: 'fadeIn 0.3s ease' }}>
-                    <div style={{ position: 'relative', width: '100%', maxWidth: '900px', maxHeight: '90vh', background: 'var(--bg-main)', borderRadius: '24px', overflowY: 'auto', boxShadow: '0 32px 64px rgba(0,0,0,0.2)', border: '1px solid var(--border-subtle)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)', padding: '32px' }}>
-                        <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px' }}>
-                            <button
-                                onClick={handlePrint}
-                                style={{ background: 'var(--bg-deep)', color: 'var(--text-primary)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                title="In hóa đơn"
+                <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', animation: 'fadeIn 0.3s ease' }}>
+                    <div style={{ 
+                        position: 'relative', 
+                        width: '100%', 
+                        maxWidth: '1200px', 
+                        maxHeight: '92vh', 
+                        background: '#f8fafc', 
+                        borderRadius: '24px', 
+                        overflowY: 'auto', 
+                        boxShadow: '0 40px 100px rgba(0,0,0,0.25)', 
+                        border: '1.5px solid rgba(255,255,255,0.3)', 
+                        animation: 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }}>
+                        {/* Modal Top Bar */}
+                        <div style={{ position: 'sticky', top: 0, zIndex: 10, background: '#fff', padding: '20px 32px', borderBottom: '1.5px solid rgba(0,0,0,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '24px', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>
+                                        #{selectedOrder.donhang_code}
+                                    </h2>
+                                    <button 
+                                        onClick={handlePrint}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '10px', border: '1.5px solid rgba(0,0,0,0.1)', background: '#fff', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+                                        onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary)'}
+                                        onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'}
+                                    >
+                                        <Printer size={16} /> In hóa đơn
+                                    </button>
+                                </div>
+                                <div style={{ width: '1.5px', height: '24px', background: 'rgba(0,0,0,0.1)' }} />
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <div style={{ position: 'relative' }}>
+                                        <select 
+                                            className="input-premium" 
+                                            style={{ height: '44px', minWidth: '160px', paddingRight: '40px', fontWeight: 700, fontSize: '14px', background: '#fff' }}
+                                            value={selectedOrder.trang_thai}
+                                            onChange={(e) => updateStatus(selectedOrder.ma_donhang, e.target.value)}
+                                        >
+                                            {Object.entries(STATUS_LABELS).map(([v, { label }]) => (
+                                                <option key={v} value={v}>{label}</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown size={14} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                                    </div>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setIsModalOpen(false)}
+                                style={{ width: '40px', height: '40px', borderRadius: '12px', border: '1.5px solid rgba(0,0,0,0.06)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', cursor: 'pointer', transition: 'all 0.2s' }}
+                                onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
+                                onMouseLeave={e => e.currentTarget.style.background = '#fff'}
                             >
-                                <Printer size={18} />
-                            </button>
-                            <button style={{ background: 'var(--bg-deep)', color: 'var(--text-primary)', border: 'none', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setIsModalOpen(false)}>
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <div style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '24px', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div style={{ background: 'var(--primary)', width: '56px', height: '56px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 25px rgba(var(--primary-rgb), 0.3)' }}>
-                                    <Bike size={24} color="white" />
+                        {/* Modal Content Grid */}
+                        <div style={{ padding: '32px', display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
+                            
+                            {/* LEFT COLUMN: Products Table */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                <div style={{ background: '#fff', border: '1.5px solid rgba(0,0,0,0.12)', borderRadius: '18px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                        <thead>
+                                            <tr style={{ background: '#f8fafc', borderBottom: '1.5px solid rgba(0,0,0,0.12)' }}>
+                                                <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: 850, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>SẢN PHẨM</th>
+                                                <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: 850, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>BIẾN THỂ</th>
+                                                <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: 850, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>SL</th>
+                                                <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: 850, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'right' }}>ĐƠN GIÁ</th>
+                                                <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: 850, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'right' }}>THÀNH TIỀN</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {selectedOrder.chitietdonhang?.map((item: any) => (
+                                                <tr key={item.ma_CTDH} style={{ borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                                                    <td style={{ padding: '16px 24px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                                            <div style={{ width: '64px', height: '52px', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)', background: '#f1f5f9' }}>
+                                                                <img src={item.sanpham?.hinhanh?.[0]?.image_url ? `http://localhost:3001${item.sanpham.hinhanh[0].image_url}` : 'https://via.placeholder.com/80'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                                                            </div>
+                                                            <div>
+                                                                <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--text-primary)' }}>{item.ten_sanpham}</div>
+                                                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700 }}>#{item.sanpham_id}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style={{ padding: '16px 24px' }}>
+                                                        {item.mau_xe ? (
+                                                            <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', background: '#f1f5f9', padding: '4px 10px', borderRadius: '8px', textTransform: 'uppercase' }}>{item.mau_xe}</span>
+                                                        ) : <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>—</span>}
+                                                    </td>
+                                                    <td style={{ padding: '16px 24px', textAlign: 'center', fontWeight: 800, fontSize: '15px' }}>{item.so_luong}</td>
+                                                    <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: 600, color: 'var(--text-secondary)' }}>{Number(item.don_gia).toLocaleString()}đ</td>
+                                                    <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: 900, color: 'var(--primary)', fontSize: '16px', fontFamily: 'Outfit, sans-serif' }}>{(item.so_luong * item.don_gia).toLocaleString()}đ</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <div>
-                                    <h3 style={{ fontSize: '20px', fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>MotoShop</h3>
-                                    <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Hóa đơn điện tử</span>
-                                </div>
+                                
+                                {selectedOrder.ghi_chu && (
+                                    <div style={{ padding: '24px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '18px', border: '1.5px dashed rgba(59, 130, 246, 0.2)' }}>
+                                        <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Ghi chú từ khách hàng</p>
+                                        <p style={{ fontSize: '15px', color: 'var(--text-primary)', fontWeight: 600, fontStyle: 'italic', margin: 0, lineHeight: '1.6' }}>"{selectedOrder.ghi_chu}"</p>
+                                    </div>
+                                )}
                             </div>
-                            <div style={{ textAlign: 'right' }}>
-                                <p style={{ fontSize: '24px', fontWeight: 950, color: 'var(--text-primary)', fontFamily: 'Outfit, sans-serif', margin: 0 }}>#{selectedOrder.donhang_code}</p>
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
-                                    <div className="status-pill" style={{ color: STATUS_LABELS[selectedOrder.trang_thai]?.color, background: `${STATUS_LABELS[selectedOrder.trang_thai]?.color}15`, border: '1px solid currentColor', padding: '4px 12px', fontSize: '11px', fontWeight: 800 }}>
-                                        {STATUS_LABELS[selectedOrder.trang_thai]?.label.toUpperCase()}
+
+                            {/* RIGHT COLUMN: Info Cards */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                                {/* Customer Card */}
+                                <div style={{ background: '#fff', border: '1.5px solid rgba(0,0,0,0.12)', borderRadius: '18px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                                    <div style={{ background: '#f8fafc', padding: '16px 24px', borderBottom: '1.5px solid rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <User size={18} color="var(--primary)" />
+                                        <h3 style={{ fontSize: '13px', fontWeight: 850, margin: 0, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Khách hàng</h3>
+                                    </div>
+                                    <div style={{ padding: '24px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(var(--primary-rgb), 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px' }}>
+                                                {(selectedOrder.ten_nguoi_nhan || 'G')[0]}
+                                            </div>
+                                            <div>
+                                                <h4 style={{ fontSize: '16px', fontWeight: 800, margin: 0 }}>{selectedOrder.ten_nguoi_nhan || selectedOrder.user?.hovaten || 'Khách vãng lai'}</h4>
+                                                <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: '2px 0 0' }}>{selectedOrder.sdt_nguoi_nhan || selectedOrder.user?.so_dien_thoai}</p>
+                                            </div>
+                                        </div>
+                                        <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '16px 0' }} />
+                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                            <MapPin size={16} color="var(--text-muted)" style={{ marginTop: '2px', flexShrink: 0 }} />
+                                            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.6', margin: 0 }}>{selectedOrder.dia_chi_giao}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Payment Card */}
+                                <div style={{ background: '#fff', border: '1.5px solid rgba(0,0,0,0.12)', borderRadius: '18px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                                    <div style={{ background: '#f8fafc', padding: '16px 24px', borderBottom: '1.5px solid rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <CreditCard size={18} color="var(--primary)" />
+                                        <h3 style={{ fontSize: '13px', fontWeight: 850, margin: 0, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Thanh toán</h3>
+                                    </div>
+                                    <div style={{ padding: '24px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'var(--text-secondary)' }}>
+                                                <span>Tạm tính</span>
+                                                <span style={{ fontWeight: 700 }}>{Number(selectedOrder.tong_tien).toLocaleString()}đ</span>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#10b981' }}>
+                                                <span>Phí vận chuyển</span>
+                                                <span style={{ fontWeight: 800 }}>Miễn phí</span>
+                                            </div>
+                                            <div style={{ height: '1.5px', background: 'rgba(0,0,0,0.08)', margin: '4px 0' }} />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span style={{ fontWeight: 850, fontSize: '15px' }}>TỔNG CỘNG</span>
+                                                <span style={{ fontWeight: 950, fontSize: '26px', color: 'var(--primary)', fontFamily: 'Outfit, sans-serif' }}>{Number(selectedOrder.tong_tien).toLocaleString()}đ</span>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '14px', border: '1.5px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div>
+                                                <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Trạng thái</p>
+                                                <div className="status-pill" style={{ background: selectedOrder.trang_thai_TT === 'paid' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', color: selectedOrder.trang_thai_TT === 'paid' ? '#10b981' : '#f59e0b', fontSize: '11px', fontWeight: 800, padding: '4px 12px' }}>
+                                                    {selectedOrder.trang_thai_TT === 'paid' ? 'Đã thanh toán' : 'Chờ thanh toán'}
+                                                </div>
+                                            </div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Phương thức</p>
+                                                <p style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>{selectedOrder.phuong_thuc_TT?.toUpperCase()}</p>
+                                            </div>
+                                        </div>
+
+
+                                        {selectedOrder.trang_thai_TT !== 'paid' && selectedOrder.trang_thai !== 'cancelled' && (
+                                            <div style={{ marginTop: '20px' }}>
+                                                {pendingConfirmPayment ? (
+                                                    <div style={{ background: 'rgba(16,185,129,0.08)', border: '1.5px solid #10b981', borderRadius: '14px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                        <p style={{ margin: 0, fontSize: '13px', fontWeight: 700, color: '#065f46', textAlign: 'center' }}>
+                                                            Xác nhận đã thu <strong>{Number(selectedOrder.tong_tien).toLocaleString()}đ</strong> từ khách?
+                                                        </p>
+                                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                                            <button
+                                                                style={{ flex: 1, height: '40px', borderRadius: '10px', border: '1.5px solid #d1d5db', background: 'white', fontWeight: 700, fontSize: '13px', cursor: 'pointer', color: '#6b7280' }}
+                                                                onClick={() => setPendingConfirmPayment(false)}
+                                                            >
+                                                                Huỷ
+                                                            </button>
+                                                            <button
+                                                                id="btn-confirm-payment-final"
+                                                                style={{ flex: 2, height: '40px', borderRadius: '10px', background: confirmingPayment ? '#6ee7b7' : '#10b981', color: 'white', border: 'none', fontWeight: 800, fontSize: '13px', cursor: confirmingPayment ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                                                                disabled={confirmingPayment}
+                                                                onClick={async () => {
+                                                                    try {
+                                                                        setConfirmingPayment(true);
+                                                                        const res = await ordersApi.confirmPayment(selectedOrder.ma_donhang);
+                                                                        const updated = res.data;
+                                                                        setSelectedOrder(updated);
+                                                                        setOrders(prev => prev.map(o => o.ma_donhang === updated.ma_donhang ? { ...o, trang_thai_TT: updated.trang_thai_TT } : o));
+                                                                        setPendingConfirmPayment(false);
+                                                                        toast.success('✅ Xác nhận thu tiền thành công!');
+                                                                    } catch (err: any) {
+                                                                        toast.error(err?.response?.data?.message || 'Không thể xác nhận thu tiền');
+                                                                    } finally {
+                                                                        setConfirmingPayment(false);
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {confirmingPayment
+                                                                    ? <><span style={{ width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} /> Đang xử lý...</>
+                                                                    : <><CheckCircle size={15} /> Chắc chắn rồi</>
+                                                                }
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        id="btn-confirm-payment"
+                                                        style={{ width: '100%', height: '48px', borderRadius: '14px', fontWeight: 800, fontSize: '14px', background: '#10b981', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', gap: '8px' }}
+                                                        onClick={() => setPendingConfirmPayment(true)}
+                                                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                                                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                                                    >
+                                                        <CheckCircle size={18} /> Xác nhận thu tiền
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {selectedOrder.trang_thai === 'delivered' && (
+                                            <button 
+                                                style={{ width: '100%', marginTop: '12px', height: '48px', borderRadius: '14px', fontWeight: 800, fontSize: '14px', background: '#f97316', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+                                                onClick={() => handleRefund(selectedOrder.ma_donhang, selectedOrder.donhang_code)}
+                                                onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                                                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                                            >
+                                                <RotateCcw size={18} style={{ marginRight: '8px' }} /> Trả hàng / Hoàn tiền
+                                            </button>
+                                        )}
+
+                                        {selectedOrder.trang_thai === 'cancelled' && selectedOrder.phuong_thuc_TT?.toLowerCase().includes('vnpay') && (
+                                            <button 
+                                                style={{ width: '100%', marginTop: '12px', height: '48px', borderRadius: '14px', fontWeight: 800, fontSize: '14px', background: 'linear-gradient(135deg, #0062cc, #0891b2)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s', gap: '8px' }}
+                                                onClick={() => {
+                                                    if (window.confirm(`Xác nhận hoàn tiền VNPay cho đơn #${selectedOrder.donhang_code}?\nSố tiền: ${Number(selectedOrder.tong_tien).toLocaleString()}đ`)) {
+                                                        toast.success('Yêu cầu hoàn tiền VNPay đã được gửi!');
+                                                    }
+                                                }}
+                                                onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                                                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                                            >
+                                                <RotateCcw size={18} /> Hoàn tiền VNPay
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div style={{ padding: '0 20px', marginBottom: '40px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
-                                {/* Background Line */}
-                                <div style={{ position: 'absolute', top: '24px', left: '40px', right: '40px', height: '2px', background: 'rgba(var(--primary-rgb), 0.05)', zIndex: 0 }} />
-
-                                {/* Progress Filling */}
-                                {(() => {
-                                    const steps = ['pending', 'confirmed', 'shipped', 'delivered'];
-                                    const currentIndex = steps.indexOf(selectedOrder.trang_thai);
-                                    const progressWidth = currentIndex === -1 ? 0 : (currentIndex / (steps.length - 1)) * 100;
-
-                                    return (
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '24px',
-                                            left: '40px',
-                                            width: currentIndex === -1 ? '0' : `calc(${progressWidth}% - 80px)`,
-                                            height: '2px',
-                                            background: 'var(--primary)',
-                                            zIndex: 1,
-                                            transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-                                            boxShadow: '0 0 10px rgba(var(--primary-rgb), 0.5)'
-                                        }} />
-                                    );
-                                })()}
-
-                                {/* Steps */}
-                                {['pending', 'confirmed', 'shipped', 'delivered'].map((step, idx) => {
-                                    const config = STATUS_LABELS[step];
-                                    const Icon = config.icon;
-                                    const steps = ['pending', 'confirmed', 'shipped', 'delivered'];
-                                    const currentIndex = steps.indexOf(selectedOrder.trang_thai);
-                                    const isCompleted = currentIndex >= idx;
-                                    const isActive = currentIndex === idx;
-
-                                    return (
-                                        <div key={step} style={{ zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
-                                            <div style={{
-                                                width: '48px',
-                                                height: '48px',
-                                                borderRadius: '50%',
-                                                background: isCompleted ? 'var(--primary)' : 'var(--bg-deep)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                color: isCompleted ? 'white' : 'var(--text-muted)',
-                                                border: isActive ? '4px solid rgba(var(--primary-rgb), 0.2)' : '2px solid transparent',
-                                                transition: 'all 0.4s ease',
-                                                boxShadow: isCompleted ? '0 8px 16px rgba(var(--primary-rgb), 0.2)' : 'none',
-                                                transform: isActive ? 'scale(1.2)' : 'scale(1)',
-                                                position: 'relative'
-                                            }}>
-                                                <Icon size={20} />
-                                                {isActive && (
-                                                    <div style={{
-                                                        position: 'absolute',
-                                                        inset: '-4px',
-                                                        borderRadius: '50%',
-                                                        border: '2px solid var(--primary)',
-                                                        animation: 'pulse 2s infinite'
-                                                    }} />
-                                                )}
-                                            </div>
-                                            <span style={{
-                                                fontSize: '12px',
-                                                fontWeight: isCompleted ? 900 : 600,
-                                                color: isCompleted ? 'var(--text-primary)' : 'var(--text-muted)',
-                                                transition: 'all 0.4s ease'
-                                            }}>
-                                                {config.label}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-
-                            {/* Handling special states like Cancelled/Returned */}
-                            {['cancelled', 'returned'].includes(selectedOrder.trang_thai) && (
-                                <div style={{
-                                    marginTop: '24px',
-                                    padding: '12px 20px',
-                                    background: 'rgba(239, 68, 68, 0.05)',
-                                    borderRadius: '12px',
-                                    border: '1px solid rgba(239, 68, 68, 0.1)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px',
-                                    color: '#ef4444',
-                                    animation: 'fadeIn 0.5s ease'
-                                }}>
-                                    <XCircle size={18} />
-                                    <span style={{ fontSize: '14px', fontWeight: 800 }}>
-                                        {selectedOrder.trang_thai === 'cancelled' ? 'Đơn hàng này đã bị hủy' : 'Đơn hàng đã được trả về'}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-
-                        <style>{`
-                            @keyframes pulse {
-                                0% { transform: scale(1); opacity: 1; }
-                                50% { transform: scale(1.1); opacity: 0.5; }
-                                100% { transform: scale(1); opacity: 1; }
-                            }
-                        `}</style>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px' }}>
-                            <div className="premium-card" style={{ padding: '24px', background: 'var(--bg-deep)' }}>
-                                <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-muted)', marginBottom: '16px' }}>NGƯỜI NHẬN</p>
-                                <h4 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>{selectedOrder.ten_nguoi_nhan || selectedOrder.user?.hovaten}</h4>
-                                <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '12px' }}>{selectedOrder.sdt_nguoi_nhan || selectedOrder.user?.so_dien_thoai}</p>
-                                <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{selectedOrder.dia_chi_giao}</p>
-                            </div>
-                            <div className="premium-card" style={{ padding: '24px', background: 'var(--bg-deep)' }}>
-                                <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-muted)', marginBottom: '16px' }}>THANH TOÁN</p>
-                                <p style={{ fontSize: '14px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>{selectedOrder.phuong_thuc_TT?.toUpperCase()}</p>
-                                <div className="status-pill" style={{ background: selectedOrder.trang_thai_TT === 'paid' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', color: selectedOrder.trang_thai_TT === 'paid' ? '#10b981' : '#f59e0b', fontSize: '10px' }}>
-                                    {selectedOrder.trang_thai_TT === 'paid' ? 'Đã thanh toán' : 'Chờ thanh toán'}
-                                </div>
-                            </div>
-                            <div className="premium-card" style={{ padding: '24px', background: 'var(--bg-deep)' }}>
-                                <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--text-muted)', marginBottom: '16px' }}>TỔNG CỘNG</p>
-                                <span style={{ color: 'var(--primary)', fontWeight: 950, fontSize: '28px', fontFamily: 'Outfit, sans-serif' }}>{Number(selectedOrder.tong_tien).toLocaleString()}đ</span>
-                                <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>Đã bao gồm VAT & Phí vận chuyển</p>
-                            </div>
-                        </div>
-
-                        {selectedOrder.ghi_chu && (
-                            <div style={{ marginBottom: '32px', padding: '20px', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '18px', border: '1px dashed rgba(59, 130, 246, 0.2)' }}>
-                                <p style={{ fontSize: '10px', fontWeight: 900, color: 'var(--primary)', marginBottom: '8px', textTransform: 'uppercase' }}>GHI CHÚ TỪ KHÁCH HÀNG</p>
-                                <p style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 500, fontStyle: 'italic', margin: 0 }}>"{selectedOrder.ghi_chu}"</p>
-                            </div>
-                        )}
-
-                        <div className="modern-table-container">
-                            <table className="modern-table">
-                                <thead>
-                                    <tr>
-                                        <th>SẢN PHẨM</th>
-                                        <th style={{ textAlign: 'center' }}>SL</th>
-                                        <th style={{ textAlign: 'right' }}>ĐƠN GIÁ</th>
-                                        <th style={{ textAlign: 'right' }}>THÀNH TIỀN</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {selectedOrder.chitietdonhang?.map((item: any, i: number) => (
-                                        <tr key={i}>
-                                            <td>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                                    <div style={{ width: '56px', height: '56px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-light)', background: 'var(--bg-main)' }}>
-                                                        <img src={item.sanpham?.hinhanh?.[0]?.image_url ? `http://localhost:3001${item.sanpham.hinhanh[0].image_url}` : 'https://via.placeholder.com/80'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-                                                    </div>
-                                                    <div>
-                                                        <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--text-primary)' }}>{item.ten_sanpham}</div>
-                                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700 }}>#{item.sanpham_id}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td style={{ textAlign: 'center', fontWeight: 900 }}>x{item.so_luong}</td>
-                                            <td style={{ textAlign: 'right' }}>{item.don_gia.toLocaleString()}đ</td>
-                                            <td style={{ textAlign: 'right', fontWeight: 900, fontFamily: 'Outfit, sans-serif' }}>{(item.so_luong * item.don_gia).toLocaleString()}đ</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                 </div>,
                 document.body
             )}
+
 
             {/* Print Layout */}
             {selectedOrder && (
@@ -548,6 +607,7 @@ function OrdersPage() {
 
             <style>{`
                 .modern-table tr:hover td { background: rgba(var(--primary-rgb), 0.03) !important; }
+                @keyframes spin { to { transform: rotate(360deg); } }
                 
                 .print-only { display: none; }
                 @media print {

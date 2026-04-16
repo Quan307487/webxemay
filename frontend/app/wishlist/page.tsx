@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { wishlistApi, cartApi } from '@/lib/api';
+import { wishlistApi, cartApi, getImageUrl } from '@/lib/api';
 import { useAuthStore, useCartStore } from '@/lib/store';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -82,7 +82,7 @@ export default function WishlistPage() {
                                         <Trash2 size={13} />
                                     </button>
                                     <Link href={`/products/${p.ma_sanpham}`} style={{ textDecoration: 'none' }}>
-                                        <img src={mainImg ? `http://localhost:3001${mainImg.image_url}` : '/placeholder-bike.jpg'} alt={p.ten_sanpham} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+                                        <img src={getImageUrl(mainImg?.image_url)} alt={p.ten_sanpham} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
                                         <div className="product-card-body">
                                             {p.thuonghieu && <p style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase' }}>{p.thuonghieu.ten_thuonghieu}</p>}
                                             <h3 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '8px', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', color: 'var(--text)' }}>{p.ten_sanpham}</h3>
